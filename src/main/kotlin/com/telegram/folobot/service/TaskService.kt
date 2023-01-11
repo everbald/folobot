@@ -17,6 +17,27 @@ class TaskService(
     private val userService: UserService,
     private val foloIndexService: FoloIndexService
 ) : KLogging() {
+    companion object {
+        const val PATH = "/static/images/index/"
+        private val indexUp = listOf(
+            "index_up1.png",
+            "index_up2.png",
+            "index_up3.png",
+            "index_up4.png",
+            "index_up5.png"
+        )
+        private val indexDown = listOf(
+            "index_down1.png",
+            "index_down2.png",
+            "index_down3.png"
+        )
+        private val indexNeutral = listOf(
+            "index_neutral1.png",
+            "index_neutral2.png",
+            "index_neutral3.png"
+        )
+    }
+
     fun foloAnimal(chatId: Long) {
         messageService.sendVoice(chatId = chatId, voiceId = messageService.randomVoice)
     }
@@ -47,13 +68,13 @@ class TaskService(
         val indexChange = ((todayIndex - yesterdayIndex) * 100).roundToInt()
 
         if (indexChange > 0) {
-            photoPath = "/static/images/index/index_up.jpg"
+            photoPath = PATH + indexUp.random()
             indexText = "растет на ${Utils.getNumText(indexChange.absoluteValue, NumTypeEnum.POINT)}"
         } else if (indexChange < 0) {
-            photoPath = "/static/images/index/index_down.jpg"
+            photoPath = PATH + indexDown.random()
             indexText = "падает на ${Utils.getNumText(indexChange.absoluteValue, NumTypeEnum.POINT)}"
         } else {
-            photoPath = "/static/images/index/index_neutral.jpg"
+            photoPath = PATH + indexNeutral.random()
             indexText = "не изменился"
         }
         val forecast = listOf("Продавать", "Держать", "Покупать").random()
