@@ -55,7 +55,7 @@ class UserService(private val foloUserService: FoloUserService) : KLogging() {
         return try {
             foloBot.execute(GetChatMember(chatId.toString(), userId))
         } catch (e: TelegramApiException) {
-            logger.warn(e) { "Can't get user $userId for chat $chatId" }
+            logger.warn("Can't get user $userId for chat $chatId" )
             null
         }
     }
