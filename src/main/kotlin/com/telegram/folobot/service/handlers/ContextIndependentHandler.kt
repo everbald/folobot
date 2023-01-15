@@ -13,7 +13,8 @@ class ContextIndependentHandler(
     private val foloUserService: FoloUserService,
     private val foloPidorService: FoloPidorService,
     private val messageService: MessageService,
-    private val foloIndexService: FoloIndexService
+    private val foloIndexService: FoloIndexService,
+    private val foloCoinService: FoloCoinService
 ) : KLogging() {
 
     fun handle(update: Update) {
@@ -70,5 +71,6 @@ class ContextIndependentHandler(
 
     private fun addActivityPoints(update: Update) {
         foloIndexService.addActivityPoints(update)
+        foloCoinService.addCoinPoints(update)
     }
 }

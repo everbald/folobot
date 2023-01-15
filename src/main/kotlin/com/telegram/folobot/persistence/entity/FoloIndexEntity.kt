@@ -12,6 +12,7 @@ class FoloIndexEntity(
     @EmbeddedId
     @Column(nullable = false)
     val id: FoloIndexId,
+    @Column(nullable = false)
     val points: Int,
     val index: Double?
 )

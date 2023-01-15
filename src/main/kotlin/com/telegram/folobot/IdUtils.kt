@@ -26,6 +26,10 @@ class IdUtils {
             return chat != null && chat.id == FOLO_CHAT_ID
         }
 
+        fun isFoloTestChat(chat: Chat?): Boolean {
+            return chat != null && chat.id == FOLO_TEST_CHAT_ID
+        }
+
         fun isAndrew(user: User?): Boolean {
             return user != null && user.id == ANDREW_ID
         }
@@ -50,6 +54,7 @@ class IdUtils {
                                 "фолик",
                                 "алекс фо",
                                 "гуру",
+                                "саша",
                                 "сашк",
                                 "фоломб",
                                 "сашок",
