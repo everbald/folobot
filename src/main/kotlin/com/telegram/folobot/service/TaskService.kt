@@ -15,7 +15,8 @@ class TaskService(
     private val messageService: MessageService,
     private val foloPidorService: FoloPidorService,
     private val userService: UserService,
-    private val foloIndexService: FoloIndexService
+    private val foloIndexService: FoloIndexService,
+    private val foloCoinService: FoloCoinService
 ) : KLogging() {
     companion object {
         const val PATH = "/static/images/index/"
@@ -86,5 +87,9 @@ class TaskService(
                     "#фолоиндекс",
             chatId
         ).also { logger.info { "Sent foloindex to ${IdUtils.getChatIdentity(chatId)}" } }
+    }
+
+    fun foloCoin() {
+        foloCoinService.issueCoins()
     }
 }

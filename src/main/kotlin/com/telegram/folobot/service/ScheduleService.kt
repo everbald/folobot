@@ -23,4 +23,9 @@ class ScheduleService(
     private fun foloIndex() {
         taskService.foloIndex(FOLO_CHAT_ID)
     }
+
+    @Scheduled(cron = "0 * * ? * *")
+    private fun foloCoin() {
+        taskService.foloCoin()
+    }
 }

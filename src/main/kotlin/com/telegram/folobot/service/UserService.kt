@@ -34,6 +34,21 @@ class UserService(private val foloUserService: FoloUserService) : KLogging() {
     }
 
     /**
+     * Получение имени пользователя
+     *
+     * @param userId [Long]
+     * @return Имя пользователя
+     */
+    fun getFoloUserName(userId: Long): String {
+        val foloUser: FoloUserDto = foloUserService.findById(userId)
+        // По тэгу
+        var userName: String = foloUser.getTagName()
+        // Если не удалось определить
+        if (userName.isEmpty()) userName = "Загадочный незнакомец"
+        return userName
+    }
+
+    /**
      * Получение имени фолопидора
      *
      * @param foloPidorDto [FoloPidorDto]
