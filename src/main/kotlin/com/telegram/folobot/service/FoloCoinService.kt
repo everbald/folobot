@@ -1,14 +1,17 @@
 package com.telegram.folobot.service
 
 import com.telegram.folobot.IdUtils.Companion.isAboutFo
+import com.telegram.folobot.IdUtils.Companion.isFoloTestChat
 import com.telegram.folobot.IdUtils.Companion.isFolochat
 import com.telegram.folobot.model.dto.FoloCoinDto
+import com.telegram.folobot.model.dto.FoloPidorDto
 import com.telegram.folobot.model.dto.toEntity
 import com.telegram.folobot.persistence.entity.toDto
 import com.telegram.folobot.persistence.repos.FoloCoinRepo
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.objects.Update
+import java.time.LocalDate
 
 @Service
 class FoloCoinService(
@@ -17,6 +20,10 @@ class FoloCoinService(
 ) : KLogging() {
     fun getById(userId: Long): FoloCoinDto {
         return foloCoinRepo.findCoinByUserId(userId)?.toDto() ?: FoloCoinDto(userId)
+    }
+
+    fun getTop(): List<FoloCoinDto> {
+        return foloCoinRepo.findTop10ByOrderByCoinsDesc().map { it.toDto() }
     }
 
     fun addCoinPoints(update: Update) {
@@ -37,7 +44,7 @@ class FoloCoinService(
 
     fun issueCoins() {
         val threshold = getCoinThreshold()
-        logger.info { "Current threshold is $threshold" }
+        logger.info { "Current coin threshold is $threshold" }
         getValidForCoinIssue(threshold).forEach {
             it.calcCoins(threshold)
             foloCoinRepo.save(it.toEntity())

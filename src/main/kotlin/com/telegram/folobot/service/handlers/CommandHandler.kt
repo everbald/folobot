@@ -1,9 +1,11 @@
 package com.telegram.folobot.service.handlers
 
 import com.ibm.icu.text.RuleBasedNumberFormat
+import com.telegram.folobot.IdUtils
 import com.telegram.folobot.IdUtils.Companion.ANDREW_ID
 import com.telegram.folobot.IdUtils.Companion.getChatIdentity
 import com.telegram.folobot.IdUtils.Companion.isFo
+import com.telegram.folobot.Utils
 import com.telegram.folobot.Utils.Companion.getNumText
 import com.telegram.folobot.Utils.Companion.getPeriodText
 import com.telegram.folobot.model.BotCommandsEnum
@@ -23,6 +25,7 @@ import java.util.*
 class CommandHandler(
     private val foloVarService: FoloVarService,
     private val foloPidorService: FoloPidorService,
+    private val foloCoinService: FoloCoinService,
     private val messageService: MessageService,
     private val userService: UserService,
     private val textService: TextService,
@@ -50,6 +53,8 @@ class CommandHandler(
             BotCommandsEnum.FOLOSLACKERS -> return foloSlackers(update)
             BotCommandsEnum.FOLOUNDERDOGS -> return foloUnderdogs(update)
             BotCommandsEnum.FOLOPIDORALPHA -> return alphaTimer(update)
+            BotCommandsEnum.FOLOCOIN -> return coinBalance(update)
+            BotCommandsEnum.FOLOMILLIONAIRE -> return foloMillionaire(update)
             else -> return null
         }
         return null
@@ -296,5 +301,41 @@ class CommandHandler(
                 update
             )
         }.also { logger.info { "Replied to ${getChatIdentity(it.chatId)} with ${it.text}" } }
+    }
+
+    /**
+     * Баланс фолокойнов
+     *
+     * @param update [Update]
+     */
+    private fun coinBalance(update: Update): BotApiMethod<*> {
+        val balance = foloCoinService.getById(update.message.from.id).coins
+        return if (balance > 0) {
+            messageService.buildMessage(
+                "На твоем счете *${getNumText(balance, NumTypeEnum.COIN)}*, уважаемый фолопидор " +
+                        userService.getFoloUserNameLinked(update.message.from),
+                update
+            )
+        } else {
+            messageService.buildMessage(
+                "На твоем счете нет фолокойнов, уважаемый фолопидор " +
+                        userService.getFoloUserNameLinked(update.message.from),
+                update
+            )
+        }.also { logger.info { "Replied to ${getChatIdentity(it.chatId)} with ${it.text}" } }
+    }
+
+    fun foloMillionaire(update: Update): BotApiMethod<*> {
+        return messageService.buildMessage(
+            foloCoinService.getTop().withIndex().joinToString(
+                separator = "\n",
+                prefix = "*10 богатейших фолопидоров мира — ${LocalDate.now().year}. Рейтинг Forbes*:\n",
+                transform = {
+                    "\u2004*${it.index + 1}*.\u2004${ userService.getFoloUserName(it.value.userId) }. " +
+                            "Состояние: *₣${it.value.coins}*"
+                }
+            ),
+            update
+        ).also { logger.info { "Sent day stats to ${getChatIdentity(update.message.chatId)}" } }
     }
 }
