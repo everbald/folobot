@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface FoloCoinRepo : CrudRepository<FoloCoinEntity, Long> {
     fun findCoinByUserId(userId: Long): FoloCoinEntity?
+    fun findTop10ByOrderByCoinsDesc(): List<FoloCoinEntity>
     fun findByPointsGreaterThanEqual(points: Int): List<FoloCoinEntity>
     @Query(value = "select sum(coins) from folo_coin", nativeQuery = true)
     fun getSumCoins(): Int?

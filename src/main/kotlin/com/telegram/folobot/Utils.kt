@@ -14,7 +14,8 @@ class Utils {
             NumTypeEnum.COUNT to arrayOf("раз", "раз", "раза", "раз"),
             NumTypeEnum.YEARISH to arrayOf("годиков", "годик", "годика", "годиков"),
             NumTypeEnum.MESSAGE to arrayOf("сообщений", "сообщение", "сообщения", "сообщений"),
-            NumTypeEnum.POINT to arrayOf("пунктов", "пункт", "пункта", "пунктов")
+            NumTypeEnum.POINT to arrayOf("пунктов", "пункт", "пункта", "пунктов"),
+            NumTypeEnum.COIN to arrayOf("фолокойнов", "фолокойн", "фолокойна", "фолокойнов")
         )
 
         /**
