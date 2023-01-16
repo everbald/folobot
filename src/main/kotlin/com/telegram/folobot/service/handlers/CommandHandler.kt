@@ -1,11 +1,9 @@
 package com.telegram.folobot.service.handlers
 
 import com.ibm.icu.text.RuleBasedNumberFormat
-import com.telegram.folobot.IdUtils
 import com.telegram.folobot.IdUtils.Companion.ANDREW_ID
 import com.telegram.folobot.IdUtils.Companion.getChatIdentity
 import com.telegram.folobot.IdUtils.Companion.isFo
-import com.telegram.folobot.Utils
 import com.telegram.folobot.Utils.Companion.getNumText
 import com.telegram.folobot.Utils.Companion.getPeriodText
 import com.telegram.folobot.model.BotCommandsEnum
@@ -105,7 +103,7 @@ class CommandHandler(
                             .format(noFapCount.toLong(), "%spellout-ordinal-masculine") +
                         "* раз повторяю тут Вам, что я с *" +
                         DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-                            .withLocale(Locale("ru"))
+                            .withLocale(Locale.of("ru"))
                             .format(noFapDate) +
                         "* и до сих пор вот уже *" +
                         getPeriodText(
@@ -295,7 +293,7 @@ class CommandHandler(
                 "День рождения моего хорошего друга и главного фолопидора " +
                         "[Андрея](tg://user?id=$ANDREW_ID) *" +
                         DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-                            .withLocale(Locale("ru"))
+                            .withLocale(Locale.of("ru"))
                             .format(alfaBirthday) +
                         "* через *${getPeriodText(Period.between(LocalDate.now(), nextAlphaBirthday))}*",
                 update
@@ -336,6 +334,6 @@ class CommandHandler(
                 }
             ),
             update
-        ).also { logger.info { "Sent day stats to ${getChatIdentity(update.message.chatId)}" } }
+        ).also { logger.info { "Replied to ${getChatIdentity(it.chatId)} with ${it.text}" } }
     }
 }
