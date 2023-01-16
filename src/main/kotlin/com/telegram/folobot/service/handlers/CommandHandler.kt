@@ -103,7 +103,7 @@ class CommandHandler(
                             .format(noFapCount.toLong(), "%spellout-ordinal-masculine") +
                         "* раз повторяю тут Вам, что я с *" +
                         DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-                            .withLocale(Locale.of("ru"))
+                            .withLocale(Locale("ru"))
                             .format(noFapDate) +
                         "* и до сих пор вот уже *" +
                         getPeriodText(
@@ -293,7 +293,7 @@ class CommandHandler(
                 "День рождения моего хорошего друга и главного фолопидора " +
                         "[Андрея](tg://user?id=$ANDREW_ID) *" +
                         DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-                            .withLocale(Locale.of("ru"))
+                            .withLocale(Locale("ru"))
                             .format(alfaBirthday) +
                         "* через *${getPeriodText(Period.between(LocalDate.now(), nextAlphaBirthday))}*",
                 update
