@@ -45,7 +45,7 @@ class IdUtils {
         }
 
         fun isFromFoloSwarm(update: Update): Boolean {
-            return FOLO_SWARM.contains(update.message.forwardFromChat?.id) || update.message.forwardFrom.id == FOLOMKIN_ID
+            return FOLO_SWARM.contains(update.message.forwardFromChat?.id) || update.message.forwardFrom?.id == FOLOMKIN_ID
         }
 
         fun isAboutFo(update: Update): Boolean {
