@@ -33,7 +33,7 @@ class FoloCoinService(
             val receiver = if (update.message.isAutomaticForward == true) FOLOMKIN_ID
             else update.message.from.id
             foloCoinRepo.save(getById(receiver).addPoints(points).toEntity())
-            logger.trace { "Added $points folocoin points to ${userService.getFoloUserName(receiver)}" }
+            logger.info { "Added $points folocoin points to ${userService.getFoloUserName(receiver)}" }
         }
     }
 
