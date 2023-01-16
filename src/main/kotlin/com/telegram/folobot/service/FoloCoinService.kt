@@ -29,10 +29,11 @@ class FoloCoinService(
     fun addCoinPoints(update: Update) {
         if (update.hasMessage() && isFolochat(update.message.chat)) {
             val points = if (isAboutFo(update)) 3 else 1
-            val receiver = if (isFromFoloSwarm(update) || update.message.isAutomaticForward == true) FOLOMKIN_ID
+//            val receiver = if (isFromFoloSwarm(update) || update.message.isAutomaticForward == true) FOLOMKIN_ID
+            val receiver = if (update.message.isAutomaticForward == true) FOLOMKIN_ID
             else update.message.from.id
             foloCoinRepo.save(getById(receiver).addPoints(points).toEntity())
-            logger.trace { "Added $points folocoin points to ${userService.getFoloUserName(receiver)}" }
+            logger.info { "Added $points folocoin points to ${userService.getFoloUserName(receiver)}" }
         }
     }
 
