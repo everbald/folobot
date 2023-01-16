@@ -7,6 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.User
 class IdUtils {
 
     companion object {
+        val TECH_GROUP_ID = 777000L
+
         val FOLO_CHAT_ID = -1001439088515L
         val FOLO_GROUP_ID = -1001375766618L
         val POC_ID = -1001154453685L

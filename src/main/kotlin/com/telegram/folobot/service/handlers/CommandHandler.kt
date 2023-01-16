@@ -327,10 +327,11 @@ class CommandHandler(
         return messageService.buildMessage(
             foloCoinService.getTop().withIndex().joinToString(
                 separator = "\n",
-                prefix = "*10 богатейших фолопидоров мира — ${LocalDate.now().year}. Рейтинг Forbes*:\n",
+                prefix = "*10 богатейших фолопидоров мира, чье состояние исчисляется в фолокойнах " +
+                        "— ${LocalDate.now().year}. Рейтинг Forbes*:\n",
                 transform = {
-                    "\u2004*${it.index + 1}*.\u2004${ userService.getFoloUserName(it.value.userId) }. " +
-                            "Состояние: *₣${it.value.coins}*"
+                    "\u2004*${it.index + 1}*.\u2004${ userService.getFoloUserName(it.value.userId) } — " +
+                            "*₣${it.value.coins}*"
                 }
             ),
             update
