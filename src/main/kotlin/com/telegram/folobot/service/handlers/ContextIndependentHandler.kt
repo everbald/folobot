@@ -35,7 +35,7 @@ class ContextIndependentHandler(
      */
     private fun saveFoloUser(update: Update) {
         val message = update.message
-        if (message.isAutomaticForward == null || !message.isAutomaticForward) {
+        if (message.isAutomaticForward != true) {
             (message.from ?: message.newChatMembers?.firstOrNull())?.run {
                 // Фолопользователь
                 foloUserService.save(foloUserService.findById(this.id).setName(this.getName()))

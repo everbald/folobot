@@ -1,17 +1,15 @@
 package com.telegram.folobot.service
 
+import com.telegram.folobot.IdUtils.Companion.FOLOMKIN_ID
 import com.telegram.folobot.IdUtils.Companion.isAboutFo
-import com.telegram.folobot.IdUtils.Companion.isFoloTestChat
 import com.telegram.folobot.IdUtils.Companion.isFolochat
 import com.telegram.folobot.model.dto.FoloCoinDto
-import com.telegram.folobot.model.dto.FoloPidorDto
 import com.telegram.folobot.model.dto.toEntity
 import com.telegram.folobot.persistence.entity.toDto
 import com.telegram.folobot.persistence.repos.FoloCoinRepo
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.objects.Update
-import java.time.LocalDate
 
 @Service
 class FoloCoinService(
@@ -23,14 +21,15 @@ class FoloCoinService(
     }
 
     fun getTop(): List<FoloCoinDto> {
-        return foloCoinRepo.findTop10ByOrderByCoinsDesc().map { it.toDto() }
+        return foloCoinRepo.findTop10ByOrderByCoinsDescPointsDesc().map { it.toDto() }
     }
 
     fun addCoinPoints(update: Update) {
         if (update.hasMessage() && isFolochat(update.message.chat)) {
             val points = if (isAboutFo(update)) 3 else 1
-            foloCoinRepo.save(getById(update.message.from.id).addPoints(points).toEntity())
-            logger.info { "Added $points folocoin points to ${userService.getFoloUserName(update.message.from)}" }
+            val receiver = if (update.message.isAutomaticForward == true) FOLOMKIN_ID else update.message.from.id
+            foloCoinRepo.save(getById(receiver).addPoints(points).toEntity())
+            logger.trace { "Added $points folocoin points to ${userService.getFoloUserName(receiver)}" }
         }
     }
 
@@ -44,7 +43,7 @@ class FoloCoinService(
 
     fun issueCoins() {
         val threshold = getCoinThreshold()
-        logger.info { "Current coin threshold is $threshold" }
+        logger.trace { "Current coin threshold is $threshold" }
         getValidForCoinIssue(threshold).forEach {
             it.calcCoins(threshold)
             foloCoinRepo.save(it.toEntity())
