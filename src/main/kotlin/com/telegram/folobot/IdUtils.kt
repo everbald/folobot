@@ -87,7 +87,7 @@ class IdUtils {
         }
 
         fun getPremium(user: User): String {
-            return if (user.isPremium) "премиум " else ""
+            return if (user.isPremium == true) "премиум " else ""
         }
     }
 }
