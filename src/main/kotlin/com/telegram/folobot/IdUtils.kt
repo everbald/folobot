@@ -1,6 +1,7 @@
 package com.telegram.folobot
 
 import org.telegram.telegrambots.meta.api.objects.Chat
+import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.User
 
@@ -25,23 +26,23 @@ class IdUtils {
         val FOLOMKIN_ID = 362689512L
 
         fun isFolochat(chat: Chat?): Boolean {
-            return chat != null && chat.id == FOLO_CHAT_ID
+            return chat?.id == FOLO_CHAT_ID
         }
 
         fun isFoloTestChat(chat: Chat?): Boolean {
-            return chat != null && chat.id == FOLO_TEST_CHAT_ID
+            return chat?.id == FOLO_TEST_CHAT_ID
         }
 
         fun isAndrew(user: User?): Boolean {
-            return user != null && user.id == ANDREW_ID
+            return user?.id == ANDREW_ID
         }
 
         fun isVitalik(user: User?): Boolean {
-            return user != null && user.id == VITALIK_ID
+            return user?.id == VITALIK_ID
         }
 
         fun isFo(user: User?): Boolean {
-            return user != null && user.id == FOLOMKIN_ID
+            return user?.id == FOLOMKIN_ID
         }
 
         fun isFromFoloSwarm(update: Update): Boolean {
@@ -52,25 +53,21 @@ class IdUtils {
             return (update.message.isReply && update.message.replyToMessage.from.id == FOLOMKIN_ID) ||
                     (update.message.hasText() &&
                             listOf(
-                                "фоломкин",
+                                "фоло",
                                 "фолик",
-                                "алекс фо",
+                                "алекс",
                                 "гуру",
-                                "саша",
-                                "сашк",
-                                "фоломб",
-                                "сашок",
+                                "саш",
                                 "санчоус",
-                                "фоломкиен",
                                 "шурк",
-                                "александр",
                                 "гурманыч",
                                 "вайтифас",
                                 "просвещения",
                                 "цветочкин",
-                                "расческин"
-                            )
-                                .any { update.message.text.contains(it, ignoreCase = true) })
+                                "расческин",
+                                "folo"
+                            ).any { update.message.text.contains(it, ignoreCase = true) }) ||
+                    (update.message?.entities?.any { it.type == EntityType.TEXTMENTION && isFo(it.user) } == true)
         }
 
         fun getChatIdentity(chatId: Long?) : String {
@@ -87,6 +84,10 @@ class IdUtils {
 
         fun getChatIdentity(chatId: String): String {
             return getChatIdentity(chatId.toLong())
+        }
+
+        fun getPremium(user: User): String {
+            return if (user.isPremium) "премиум " else ""
         }
     }
 }

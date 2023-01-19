@@ -15,6 +15,6 @@ enum class BotCommandsEnum(val command: String) {
 
     companion object {
         private val map = BotCommandsEnum.values().associateBy(BotCommandsEnum::command)
-        fun fromCommand(command: String) = map[command]
+        fun fromCommand(command: String?) = map[command]
     }
 }

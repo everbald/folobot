@@ -5,6 +5,7 @@ import com.telegram.folobot.model.dto.FoloUserDto
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember
+import org.telegram.telegrambots.meta.api.objects.MemberStatus
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
@@ -128,7 +129,7 @@ class UserService(private val foloUserService: FoloUserService) : KLogging() {
      */
     fun isInChat(foloPidorDto: FoloPidorDto, chatId: Long): Boolean {
         return getChatMember(foloPidorDto.id.userId, chatId)
-            ?.let { !(it.status == "left" || it.status == "kicked") } ?: false
+            ?.let { !(it.status == MemberStatus.LEFT || it.status == MemberStatus.KICKED) } ?: false
     }
 }
 

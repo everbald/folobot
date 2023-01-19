@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.bots.TelegramWebhookBot
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
+import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.util.*
 
@@ -79,10 +80,10 @@ class FoloBot(
         val message = update.message
         return when {
             // Команда
-            message.hasText() &&
-                    ((message.chat.isUserChat && message.text.startsWith("/")) ||
-                            (!message.chat.isUserChat && message.text.startsWith("/") &&
-                                    message.text.endsWith("@$botUsername"))) -> ActionsEnum.COMMAND
+            message.forwardFrom == null &&
+                    message.entities?.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text?.let {
+                        message.chat.isUserChat || (!message.chat.isUserChat && it.contains(botUsername))
+                    } == true -> ActionsEnum.COMMAND
             // Личное сообщение
             message.isUserMessage -> ActionsEnum.USERMESSAGE
             // Ответ на обращение
@@ -108,8 +109,8 @@ class FoloBot(
      * @param update пробрасывается из onUpdateReceived
      * @return [BotApiMethod]
      */
-    private fun onAction(action: ActionsEnum?, update: Update): BotApiMethod<*>? {
-        if (action?.let { it !== ActionsEnum.UNDEFINED } == true) {
+    private fun onAction(action: ActionsEnum, update: Update): BotApiMethod<*>? {
+        if (action != ActionsEnum.UNDEFINED) {
             return when (action) {
                 ActionsEnum.COMMAND -> commandHandler.handle(update)
                 ActionsEnum.USERMESSAGE -> userMessageHandler.handle(update)
