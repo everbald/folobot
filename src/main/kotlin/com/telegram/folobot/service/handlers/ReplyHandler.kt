@@ -1,6 +1,7 @@
 package com.telegram.folobot.service.handlers
 
 import com.telegram.folobot.IdUtils.Companion.getChatIdentity
+import com.telegram.folobot.IdUtils.Companion.getPremium
 import com.telegram.folobot.IdUtils.Companion.isAndrew
 import com.telegram.folobot.service.MessageService
 import com.telegram.folobot.service.UserService
@@ -25,13 +26,14 @@ class ReplyHandler(
         // Сообщение в чат
         val text = update.message.text.lowercase()
         if (text.contains("привет") || Random(System.nanoTime()).nextInt(100) < 20) {
-            val userName = userService.getFoloUserName(update.message.from)
+            val userName =
             return if (isAndrew(update.message.from)) {
                 messageService
                     .buildMessage("Привет, моя сладкая бориспольская булочка!", update, true)
             } else {
                 messageService
-                    .buildMessage("Привет, уважаемый фолофил $userName!", update, true)
+                    .buildMessage("Привет, уважаемый ${getPremium(update.message.from)}" +
+                            "фолофил ${userService.getFoloUserName(update.message.from)}!", update, true)
             }.also { logger.info { "Replied to ${getChatIdentity(it.chatId)} with ${it.text}" } }
         }
         return null

@@ -37,10 +37,10 @@ dependencies {
 
     // db
     implementation("org.postgresql:postgresql")
-    runtimeOnly("org.liquibase:liquibase-core:4.18.0")
+    runtimeOnly("org.liquibase:liquibase-core:4.19.0")
 
     // telegram api
-    implementation("org.telegram:telegrambots:6.1.0")
+    implementation("org.telegram:telegrambots:6.4.0")
 
     // serialisation
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -49,7 +49,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
 
     // testing
-    implementation("org.junit.jupiter:junit-jupiter:5.9.0")
+    implementation("org.junit.jupiter:junit-jupiter:5.9.2")
 
     // formatter
     implementation("com.ibm.icu:icu4j:72.1")

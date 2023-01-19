@@ -3,6 +3,7 @@ package com.telegram.folobot.service.handlers
 import com.ibm.icu.text.RuleBasedNumberFormat
 import com.telegram.folobot.IdUtils.Companion.ANDREW_ID
 import com.telegram.folobot.IdUtils.Companion.getChatIdentity
+import com.telegram.folobot.IdUtils.Companion.getPremium
 import com.telegram.folobot.IdUtils.Companion.isFo
 import com.telegram.folobot.Utils.Companion.getNumText
 import com.telegram.folobot.Utils.Companion.getPeriodText
@@ -37,13 +38,19 @@ class CommandHandler(
      */
     fun handle(update: Update): BotApiMethod<*>? {
 
-        when (BotCommandsEnum.fromCommand(update.message.text.substringBefore("@"))
-            .also { logger.info { "Received command $it in chat ${getChatIdentity(update.message.chatId)}" } }
+        when (
+            BotCommandsEnum.fromCommand(
+                update.message?.entities?.firstOrNull { it.type == "bot_command" }?.text?.substringBefore("@")
+            ).also {
+                logger.info { "Received command ${it ?: "UNDEFINED"} in chat ${getChatIdentity(update.message.chatId)}" }
+            }
         ) {
             BotCommandsEnum.START -> messageService.sendSticker(messageService.randomSticker, update)
                 .also { logger.info { "Sent sticker to ${getChatIdentity(update.message.chatId)}" } }
+
             BotCommandsEnum.SILENTSTREAM -> messageService.sendSticker(messageService.randomSticker, update)
                 .also { logger.info { "Sent sticker to ${getChatIdentity(update.message.chatId)}" } }
+
             BotCommandsEnum.FREELANCE -> return frelanceTimer(update)
             BotCommandsEnum.NOFAP -> return nofapTimer(update)
             BotCommandsEnum.FOLOPIDOR -> return foloPidor(update)
@@ -316,7 +323,7 @@ class CommandHandler(
             )
         } else {
             messageService.buildMessage(
-                "На твоем счете нет фолокойнов, уважаемый фолопидор " +
+                "На твоем счете нет фолокойнов, уважаемый ${getPremium(update.message.from)}фолопидор " +
                         userService.getFoloUserNameLinked(update.message.from),
                 update
             )
@@ -330,7 +337,7 @@ class CommandHandler(
                 prefix = "*10 богатейших фолопидоров мира, чье состояние исчисляется в фолокойнах " +
                         "— ${LocalDate.now().year}. Рейтинг Forbes*:\n",
                 transform = {
-                    "\u2004*${it.index + 1}*.\u2004${ userService.getFoloUserName(it.value.userId) } — " +
+                    "\u2004*${it.index + 1}*.\u2004${userService.getFoloUserName(it.value.userId)} — " +
                             "*₣${it.value.coins}*"
                 }
             ),
