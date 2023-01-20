@@ -80,7 +80,7 @@ class FoloBot(
         val message = update.message
         return when {
             // Команда
-            message.forwardFrom == null &&
+            message.forwardFrom == null && message.forwardSenderName == null &&
                     message.entities?.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text?.let {
                         message.chat.isUserChat || (!message.chat.isUserChat && it.contains(botUsername))
                     } == true -> ActionsEnum.COMMAND
