@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @Component
-class ContextIndependentHandler(
+class RegistryHandler(
     private val foloUserService: FoloUserService,
     private val foloPidorService: FoloPidorService,
     private val messageService: MessageService,
@@ -40,7 +40,7 @@ class ContextIndependentHandler(
                 // Фолопользователь
                 foloUserService.save(foloUserService.findById(this.id).setName(this.getName()))
                 // И фолопидор
-                if (!message.isUserMessage) {
+                if (!message.isUserMessage && message.from != null) {
                     foloPidorService.save(foloPidorService.findById(message.chatId, this.id).updateMessagesPerDay())
                 }
                 logger.trace { "Saved foloUser ${this.getName()}" }
