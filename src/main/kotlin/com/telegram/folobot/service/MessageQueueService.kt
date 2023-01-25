@@ -17,7 +17,7 @@ class MessageQueueService(
     private val messageQueue: MutableList<MessageQueueDto> = mutableListOf()
 
     fun addToQueue(message: Message) {
-        if (isLikesToDelete(message.from)) {
+        if (message.forwardFrom == null && message.forwardSenderName == null && isLikesToDelete(message.from)) {
             messageService.silentForwardMessage(MESSAGE_QUEUE_ID, message)?.run {
                 messageQueue.add(MessageQueueDto(LocalDateTime.now(), message, this))
             }
