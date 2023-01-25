@@ -2,6 +2,7 @@ package com.telegram.folobot.service.handlers
 
 import com.telegram.folobot.IdUtils
 import com.telegram.folobot.config.BotCredentialsConfig
+import com.telegram.folobot.isNotForward
 import com.telegram.folobot.model.ActionsEnum
 import mu.KLogging
 import org.springframework.stereotype.Service
@@ -41,7 +42,7 @@ class ActionHandler(
         val message = update.message
         return when {
             // Команда
-            message.forwardFrom == null && message.forwardSenderName == null &&
+            message.isNotForward() &&
                     message.entities?.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text?.let {
                         message.chat.isUserChat || (!message.chat.isUserChat && it.contains(botCredentials.botUsername))
                     } == true -> ActionsEnum.COMMAND
