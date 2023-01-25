@@ -14,7 +14,8 @@ class RegistryHandler(
     private val foloPidorService: FoloPidorService,
     private val messageService: MessageService,
     private val foloIndexService: FoloIndexService,
-    private val foloCoinService: FoloCoinService
+    private val foloCoinService: FoloCoinService,
+    private val messageQueueService: MessageQueueService
 ) : KLogging() {
 
     fun handle(update: Update) {
@@ -26,6 +27,9 @@ class RegistryHandler(
 
         //Добавление очков активности
         addActivityPoints(update)
+
+        //Добавить в очередь
+        addToMessageQueue(update)
     }
 
     /**
@@ -72,5 +76,9 @@ class RegistryHandler(
     private fun addActivityPoints(update: Update) {
         foloIndexService.addActivityPoints(update)
         foloCoinService.addCoinPoints(update)
+    }
+
+    private fun addToMessageQueue(update: Update) {
+        messageQueueService.addToQueue(update.message)
     }
 }

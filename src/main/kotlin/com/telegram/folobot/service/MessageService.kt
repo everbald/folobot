@@ -1,5 +1,6 @@
 package com.telegram.folobot.service
 
+import com.telegram.folobot.IdUtils.Companion.MESSAGE_QUEUE_ID
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.ActionType
@@ -167,6 +168,24 @@ class MessageService : KLogging() {
         }
     }
 
+    fun silentForwardMessage(chatId: Long, message: Message?): Message? {
+        return message?.let {
+            try {
+                foloBot.execute(
+                    ForwardMessage
+                        .builder()
+                        .chatId(chatId.toString())
+                        .messageId(it.messageId)
+                        .fromChatId(it.chatId.toString())
+                        .disableNotification(true)
+                        .build()
+                )
+            } catch (e: TelegramApiException) {
+                null
+            }
+        }
+    }
+
     /**
      * Отправить статус "печатает"
      *
@@ -212,9 +231,9 @@ class MessageService : KLogging() {
     /**
      * Отправить изображение
      *
-     * @param photoId идентификатор изображения
-     * @param text    текст сообщения
-     * @param chatId  ID чата(пользователя)
+     * @param photoPath путь к фото в ресурсах
+     * @param text      текст сообщения
+     * @param chatId    ID чата(пользователя)
      */
     fun sendPhotoFromResources(photoPath: String, text: String, chatId: Long) {
         try {
@@ -273,6 +292,17 @@ class MessageService : KLogging() {
     }
 
     /**
+     * Удалить сообщение
+     */
+    fun deleteMessage(chatId: Long, messageId: Int) {
+        try {
+            foloBot.execute(DeleteMessage(chatId.toString(), messageId))
+        } catch (e: TelegramApiException) {
+            logger.error { e }
+        }
+    }
+
+    /**
      * Заместить сообщение
      *
      * @param update [Update]
@@ -280,6 +310,14 @@ class MessageService : KLogging() {
     fun substituteMessage(update: Update) {
         forwardMessage(update.message.chatId, update)
         deleteMessage(update)
+    }
+
+    fun checkIfMessageDeleted(message: Message): Boolean {
+        val checkMsg = silentForwardMessage(MESSAGE_QUEUE_ID, message)
+        return if (checkMsg != null) {
+            deleteMessage(MESSAGE_QUEUE_ID, checkMsg.messageId)
+            false
+        } else true
     }
 
     /**

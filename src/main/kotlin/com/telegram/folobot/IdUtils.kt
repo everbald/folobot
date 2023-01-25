@@ -19,11 +19,15 @@ class IdUtils {
         val FOLO_TEST_GROUP_ID = -1001739309365L
         val FOLO_SWARM = listOf(-1001200306934L, -1001405153506L, -1001354661440L)
         val ADEQUATE_COMMUNICATION = -1001286289850L
+        val MESSAGE_QUEUE_ID = -800718824L
 
 
         val ANDREW_ID = 146072069L
         val VITALIK_ID = 800522859L
         val FOLOMKIN_ID = 362689512L
+        val VASYA_ID = listOf(512485120L, 5038748126L, 5454744825L)
+
+
 
         fun isFolochat(chat: Chat?): Boolean {
             return chat?.id == FOLO_CHAT_ID
@@ -47,6 +51,13 @@ class IdUtils {
 
         fun isFromFoloSwarm(update: Update): Boolean {
             return FOLO_SWARM.contains(update.message.forwardFromChat?.id) || update.message.forwardFrom?.id == FOLOMKIN_ID
+        }
+
+        fun isVasya(user: User?): Boolean {
+            return VASYA_ID.contains(user?.id)
+        }
+        fun isLikesToDelete(user: User?): Boolean {
+            return isAndrew(user) || isFo(user) || isVasya(user)
         }
 
         fun isAboutFo(update: Update): Boolean {
