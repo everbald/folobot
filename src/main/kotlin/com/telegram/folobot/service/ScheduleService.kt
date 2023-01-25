@@ -28,4 +28,9 @@ class ScheduleService(
     private fun foloCoin() {
         taskService.foloCoin()
     }
+
+    @Scheduled(cron = "0 * * ? * *")
+    private fun restoreMessages() {
+        taskService.restoreMessages()
+    }
 }

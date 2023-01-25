@@ -16,7 +16,8 @@ class TaskService(
     private val foloPidorService: FoloPidorService,
     private val userService: UserService,
     private val foloIndexService: FoloIndexService,
-    private val foloCoinService: FoloCoinService
+    private val foloCoinService: FoloCoinService,
+    private val messageQueueService: MessageQueueService
 ) : KLogging() {
     companion object {
         const val PATH = "/static/images/index/"
@@ -91,5 +92,9 @@ class TaskService(
 
     fun foloCoin() {
         foloCoinService.issueCoins()
+    }
+
+    fun restoreMessages() {
+        messageQueueService.restoreMessages()
     }
 }
