@@ -4,6 +4,7 @@ import com.telegram.folobot.IdUtils.Companion.MESSAGE_QUEUE_ID
 import com.telegram.folobot.IdUtils.Companion.getChatIdentity
 import com.telegram.folobot.IdUtils.Companion.isLikesToDelete
 import com.telegram.folobot.isNotForward
+import com.telegram.folobot.isNotUserJoin
 import com.telegram.folobot.model.dto.MessageQueueDto
 import mu.KLogging
 import org.springframework.stereotype.Service
@@ -18,7 +19,7 @@ class MessageQueueService(
     private val messageQueue: MutableList<MessageQueueDto> = mutableListOf()
 
     fun addToQueue(message: Message) {
-        if (message.isNotForward() && isLikesToDelete(message.from)) {
+        if (message.isNotForward() && message.isNotUserJoin() && isLikesToDelete(message.from)) {
             messageService.silentForwardMessage(MESSAGE_QUEUE_ID, message)?.run {
                 messageQueue.add(MessageQueueDto(LocalDateTime.now(), message, this))
             }

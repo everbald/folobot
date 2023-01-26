@@ -6,14 +6,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class ScheduleService(
-    private val taskService: TaskService,
-
-
+    private val taskService: TaskService
 ) {
-    fun foloAnimal() {
-        taskService.foloAnimal(FOLO_CHAT_ID)
-    }
-
     @Scheduled(cron = "0 59 23 ? * MON-FRI")
     private fun dayStats() {
         taskService.dayStats(FOLO_CHAT_ID)
@@ -29,8 +23,7 @@ class ScheduleService(
         taskService.foloCoin()
     }
 
-    @Scheduled(cron = "0 * * ? * *")
-    private fun restoreMessages() {
+    fun restoreMessages() {
         taskService.restoreMessages()
     }
 }
