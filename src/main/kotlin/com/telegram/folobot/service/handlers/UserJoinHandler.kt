@@ -6,6 +6,7 @@ import com.telegram.folobot.IdUtils.Companion.isFolochat
 import com.telegram.folobot.IdUtils.Companion.isVitalik
 import com.telegram.folobot.service.MessageService
 import com.telegram.folobot.service.UserService
+import com.telegram.folobot.service.getName
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
@@ -50,7 +51,7 @@ class UserJoinHandler(
                 messageService.sendMessage("настоящий тут: \nt.me/alexfolomkin", update)
             }
         }
-        logger.info { "Greeted user ${user.userName} in chat ${getChatIdentity(update.message.chatId)}" }
+        logger.info { "Greeted user ${user.getName()} in chat ${getChatIdentity(update.message.chatId)}" }
         return null
     }
 
@@ -67,6 +68,6 @@ class UserJoinHandler(
         } else {
             messageService
                 .buildMessage("Куда же ты, " + userService.getFoloUserName(user) + "! Не уходи!", update)
-        }.also { logger.info { "Said goodbye to ${user.userName} in chat ${getChatIdentity(update.message.chatId)}" } }
+        }.also { logger.info { "Said goodbye to ${user.getName()} in chat ${getChatIdentity(update.message.chatId)}" } }
     }
 }
