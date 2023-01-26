@@ -28,11 +28,11 @@ class DynamicSchedulingConfig(
     override fun configureTasks(taskRegistrar: ScheduledTaskRegistrar) {
         taskRegistrar.setScheduler(taskExecutor())
         taskRegistrar.addTriggerTask(
-            { scheduleService.foloAnimal() },
+            { scheduleService.restoreMessages() },
             {
                 val lastCompletion = it.lastCompletion()
                     .also {
-                        logger.info {
+                        logger.trace {
                             "Last task completion time is ${
                                 it?.let { LocalDateTime.ofInstant(it, ZoneId.systemDefault()) } ?: "undefined"
                             }"
@@ -40,7 +40,7 @@ class DynamicSchedulingConfig(
                     }
                 generateNextExecutionTime(lastCompletion)
                     .also {
-                        logger.info {
+                        logger.trace {
                             "Next task execution time is ${LocalDateTime.ofInstant(it, ZoneId.systemDefault())}"
                         }
                     }
@@ -49,30 +49,7 @@ class DynamicSchedulingConfig(
     }
 
     private fun generateNextExecutionTime(lastCompletionTime: Instant?): Instant {
-        val todayBegin = LocalDateTime.now().withHour(10).withMinute(0).withSecond(0)
-        val todayEnd = LocalDateTime.now().withHour(23).withMinute(0).withSecond(0)
-        val alreadyTriggeredToday =
-            lastCompletionTime?.let { LocalDate.ofInstant(it, ZoneId.systemDefault()) } == LocalDate.now()
-        return if (alreadyTriggeredToday || LocalDateTime.now() > todayEnd) {
-            Instant.ofEpochSecond(
-                ThreadLocalRandom
-                    .current()
-                    .nextLong(
-                        todayBegin.plusDays(1).atZone(ZoneId.systemDefault()).toEpochSecond(),
-                        todayEnd.plusDays(1).atZone(ZoneId.systemDefault()).toEpochSecond(),
-                    )
-            )
-        } else {
-            Instant.ofEpochSecond(
-                ThreadLocalRandom
-                    .current()
-                    .nextLong(
-                        maxOf(todayBegin, LocalDateTime.now().plusMinutes(1))
-                            .atZone(ZoneId.systemDefault()).toEpochSecond(),
-                        todayEnd.atZone(ZoneId.systemDefault()).toEpochSecond(),
-                    )
-            )
-        }
+        return (lastCompletionTime ?: Instant.now()).plusSeconds(60)
     }
 
 }

@@ -334,29 +334,4 @@ class MessageService : KLogging() {
                 "CAACAgIAAxkBAAICCmKCCN_lePGRwqFYK4cPGBD4k_lpAAJcGQACmGshS9K8iR0VSuDVJAQ"
             ).random()
         }
-
-    /**
-     * Получить случайный войс
-     *
-     * @return [InputFile]
-     */
-    val randomVoice: String
-        get() {
-            return arrayOf(
-                "AwACAgIAAx0CalJ4RAACBBVjsMmKi5mXdrptLdPr3l0iP1GgDwACPSAAAtdTaEmR_F2nU3-2SC0E",
-                "AwACAgIAAx0CalJ4RAACBBZjsMmKzahNVLCHGsXr4rZI-kpr-AACQCAAAtdTaElCaBn1tNd33y0E",
-                "AwACAgIAAx0CalJ4RAACBBdjsMmKJvi0kY6ZrQXcin5FjBZtTgACQSAAAtdTaEmfcn7TGEbnRS0E",
-                "AwACAgIAAx0CalJ4RAACBBhjsMmKNJBkzTy9cDMcaAZsYhMVhwACRCAAAtdTaEmwShiRBaMuVS0E",
-                "AwACAgIAAx0CalJ4RAACBBljsMmKfSlxH8HSoXn30vKeSZdZgAACRyAAAtdTaEnOjaACAklQ3S0E",
-                "AwACAgIAAx0CalJ4RAACBBpjsMmKb-MRDMA84bs-QvS5-FQ83gACSSAAAtdTaEk15jd6A2irzi0E",
-                "AwACAgIAAx0CalJ4RAACBBtjsMmKs3OkxcXJ4BGWy3rFIoU5ogACTyAAAtdTaElGaFICyutkdS0E",
-                "AwACAgIAAx0CalJ4RAACBBxjsMmKjEZ1-nsrObYFz3E6OalKVAACUCAAAtdTaEmftSLquEa8GS0E",
-                "AwACAgIAAx0CalJ4RAACBB1jsMmKlwPveslO3qG6hJGOWmpo2gACUSAAAtdTaEl8D6NwlexODy0E",
-                "AwACAgIAAx0CalJ4RAACBB5jsMmKaVJ6KOLjI_todVKQ-9zyzgACViAAAtdTaEklG8wzFEN2Wi0E",
-                "AwACAgIAAx0CalJ4RAACBB9jsMmK-rb94OCqEXrr8PHrAuKGWwACWiAAAtdTaEmXrdHjHqpcuS0E",
-                "AwACAgIAAx0CalJ4RAACBCBjsMmKsIp1aANpMdd7qAyG9iU-FwACjSAAAtdTaEnvNbYGU1yo1C0E",
-                "AwACAgIAAx0CalJ4RAACBCFjsMmK5VKXbBpYegU8KXObugLz8gACVCUAAjifcEkyH_coYlbNJS0E"
-            ).random().also { logger.info { "Random voiceId is $it" } }
-
-        }
 }

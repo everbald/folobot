@@ -3,6 +3,7 @@ package com.telegram.folobot.service.handlers
 import com.telegram.folobot.IdUtils
 import com.telegram.folobot.IdUtils.Companion.isAndrew
 import com.telegram.folobot.IdUtils.Companion.isFo
+import com.telegram.folobot.isNotUserJoin
 import com.telegram.folobot.service.*
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -44,7 +45,7 @@ class RegistryHandler(
                 // Фолопользователь
                 foloUserService.save(foloUserService.findById(this.id).setName(this.getName()))
                 // И фолопидор
-                if (!message.isUserMessage && message.from != null) {
+                if (!message.isUserMessage && message.isNotUserJoin()) {
                     foloPidorService.save(foloPidorService.findById(message.chatId, this.id).updateMessagesPerDay())
                 }
                 logger.trace { "Saved foloUser ${this.getName()}" }
@@ -58,7 +59,7 @@ class RegistryHandler(
      * @param update [Update]
      */
     private fun forwardPrivate(update: Update) {
-        if (update.hasMessage()) {
+        if (update.hasMessage() && update.message.isNotUserJoin()) {
             if (update.message.isUserMessage) {
                 messageService.forwardMessage(IdUtils.POC_ID, update)
                 logger.info { "Forwarded message to POC" }
@@ -67,7 +68,6 @@ class RegistryHandler(
                 logger.info { "Forwarded message to Fo's legacy" }
             } else if (isAndrew(update.message.from)) {
                 messageService.forwardMessage(IdUtils.ANDREWSLEGACY_ID, update)
-//                messageService.substituteMessage(update)
                 logger.info { "Forwarded message to Andrews legacy" }
             }
         }

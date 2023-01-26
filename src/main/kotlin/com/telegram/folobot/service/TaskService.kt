@@ -40,10 +40,6 @@ class TaskService(
         )
     }
 
-    fun foloAnimal(chatId: Long) {
-        messageService.sendVoice(chatId = chatId, voiceId = messageService.randomVoice)
-    }
-
     fun dayStats(chatId: Long) {
         messageService.sendMessage(
             foloPidorService.getTopActive(chatId).withIndex().joinToString(
