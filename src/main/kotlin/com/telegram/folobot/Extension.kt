@@ -9,7 +9,7 @@ fun Message.isNotForward(): Boolean {
     return !this.isForward()
 }
 fun Message.isUserJoin(): Boolean {
-    return this.newChatMembers != null
+    return this.newChatMembers.isNotEmpty()
 }
 
 fun Message.isNotUserJoin(): Boolean {
