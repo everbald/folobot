@@ -1,6 +1,7 @@
 package com.telegram.folobot.service
 
 import com.telegram.folobot.IdUtils.Companion.MESSAGE_QUEUE_ID
+import com.telegram.folobot.IdUtils.Companion.getChatIdentity
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.ActionType
@@ -14,7 +15,9 @@ import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 @Component
-class MessageService : KLogging() {
+class MessageService(
+    private val userService: UserService
+) : KLogging() {
     lateinit var foloBot: FoloBot
 
     /**
@@ -317,7 +320,11 @@ class MessageService : KLogging() {
         return if (checkMsg != null) {
             deleteMessage(MESSAGE_QUEUE_ID, checkMsg.messageId)
             false
-        } else true
+        } else {
+            logger.info { "found deleted message from ${userService.getFoloUserName(message.from)} " +
+                    "in chat ${getChatIdentity(message.chatId)}" }
+            true
+        }
     }
 
     /**

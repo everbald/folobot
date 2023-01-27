@@ -30,7 +30,7 @@ class MessageQueueService(
         messageQueue.removeIf { it.recievedAt < LocalDateTime.now().minusDays(1) || it.restored }
         messageQueue.forEach {
             if (messageService.checkIfMessageDeleted(it.message)) {
-                messageService.silentForwardMessage(it.message.chatId, it.backupMessage)
+                messageService.forwardMessage(it.message.chatId, it.backupMessage)
                 messageService.deleteMessage(MESSAGE_QUEUE_ID, it.backupMessage.messageId)
                 it.restored = true
                 logger.info { "Restored message from ${userService.getFoloUserName(it.message.from)} " +
