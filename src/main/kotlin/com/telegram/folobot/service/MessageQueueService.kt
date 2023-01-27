@@ -17,6 +17,7 @@ class MessageQueueService(
     private val userService: UserService
 ): KLogging() {
     private val messageQueue: MutableList<MessageQueueDto> = mutableListOf()
+    private val monitoredMessages: MutableList<MessageQueueDto> = mutableListOf()
 
     fun addToQueue(message: Message) {
         if (message.isNotForward() && message.isNotUserJoin() && isLikesToDelete(message.from)) {
@@ -26,9 +27,12 @@ class MessageQueueService(
         }
     }
 
-    fun restoreMessages() {
-        messageQueue.removeIf { it.recievedAt < LocalDateTime.now().minusDays(1) || it.restored }
-        messageQueue.forEach {
+    fun processMessages() {
+        monitoredMessages.addAll(messageQueue)
+        messageQueue.clear()
+        monitoredMessages.removeIf { it.recievedAt < LocalDateTime.now().minusDays(1) || it.restored }
+
+        monitoredMessages.forEach {
             if (messageService.checkIfMessageDeleted(it.message)) {
                 messageService.forwardMessage(it.message.chatId, it.backupMessage)
                 messageService.deleteMessage(MESSAGE_QUEUE_ID, it.backupMessage.messageId)
