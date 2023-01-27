@@ -26,7 +26,6 @@ class ReplyHandler(
         // Сообщение в чат
         val text = update.message.text.lowercase()
         if (text.contains("привет") || Random(System.nanoTime()).nextInt(100) < 20) {
-            val userName =
             return if (isAndrew(update.message.from)) {
                 messageService
                     .buildMessage("Привет, моя сладкая бориспольская булочка!", update, true)

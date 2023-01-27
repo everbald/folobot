@@ -4,6 +4,7 @@ import com.telegram.folobot.IdUtils
 import com.telegram.folobot.config.BotCredentialsConfig
 import com.telegram.folobot.isNotForward
 import com.telegram.folobot.isUserJoin
+import com.telegram.folobot.isUserLeft
 import com.telegram.folobot.model.ActionsEnum
 import mu.KLogging
 import org.springframework.stereotype.Service
@@ -50,12 +51,12 @@ class ActionHandler(
             // Личное сообщение
             message.isUserMessage -> ActionsEnum.USERMESSAGE
             // Ответ на обращение
-            message.hasText() && (message.text.lowercase().contains("гурманыч") ||
+            message.isNotForward() && message.hasText() && (message.text.lowercase().contains("гурманыч") ||
                     message.text.lowercase().contains(botCredentials.botUsername.lowercase())) -> ActionsEnum.REPLY
             // Пользователь зашел в чат
             message.isUserJoin() -> ActionsEnum.USERNEW
             // Пользователь покинул чат
-            Objects.nonNull(message.leftChatMember) -> ActionsEnum.USERLEFT
+            message.isUserLeft() -> ActionsEnum.USERLEFT
             // Неопределено
             else -> ActionsEnum.UNDEFINED
         }.also {
