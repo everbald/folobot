@@ -4,6 +4,8 @@ server:
   tomcat:
     accesslog:
       enabled: true
+    relaxed-query-chars: '|,{,},[,]'
+    relaxed-path-chars: '|,{,},[,]'
   servlet:
     encoding:
       charset: UTF-8
