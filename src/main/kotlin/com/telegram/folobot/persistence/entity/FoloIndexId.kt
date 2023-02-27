@@ -6,8 +6,8 @@ import java.time.LocalDate
 
 @Embeddable
 data class FoloIndexId(
-    private val chatId: Long,
-    private val date: LocalDate = LocalDate.now()
+    val chatId: Long,
+    val date: LocalDate = LocalDate.now()
 ) : Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
