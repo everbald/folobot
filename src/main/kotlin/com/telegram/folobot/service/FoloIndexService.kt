@@ -11,8 +11,12 @@ import com.telegram.folobot.persistence.entity.FoloIndexId
 import com.telegram.folobot.persistence.entity.toDto
 import com.telegram.folobot.persistence.repos.FoloIndexRepo
 import mu.KLogging
+import org.jfree.chart.ChartUtilities
 import org.springframework.stereotype.Service
+import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Update
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
@@ -23,7 +27,7 @@ class FoloIndexService(
     private val foloIndexRepo: FoloIndexRepo,
     private val userService: UserService,
     private val messageService: MessageService,
-    private val weeklyIndexChartService: WeeklyIndexChartService
+    private val foloIndexChartService: FoloIndexChartService
 ) : KLogging() {
     companion object {
         const val PATH = "/static/images/index/"
@@ -98,15 +102,19 @@ class FoloIndexService(
             indexText = "не изменился"
         }
 
-        messageService.sendPhotoFromResources(
-            photoPath,
+        messageService.sendPhoto(
+            photoPath, chatId,
             "Индекс фолоактивности *$indexText* и на сегодня составляет *$todayIndex%* от среднегодового значения\n" +
-                    "#фолоиндекс",
-            chatId
+                    "#фолоиндекс"
         ).also { logger.info { "Sent foloindex to ${getChatIdentity(chatId)}" } }
     }
 
-    fun weeklyIndex(chatId: Long) {
-        weeklyIndexChartService.weeklyIndex(chatId)
+    fun monthlyIndex(chatId: Long) {
+        val chart = foloIndexChartService.buildChart(
+            chatId,
+            LocalDate.now().minusMonths(1),
+            LocalDate.now()
+        )
+        messageService.sendPhoto(chart, chatId,"#динамикафолоиндекса")
     }
 }

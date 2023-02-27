@@ -6,7 +6,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class ScheduleService(
-    private val taskService: TaskService
+    private val taskService: TaskService,
+    private val foloIndexService: FoloIndexService
 ) {
 //    @Scheduled(cron = "0 59 23 ? * MON-FRI")
 //    private fun dayStats() {

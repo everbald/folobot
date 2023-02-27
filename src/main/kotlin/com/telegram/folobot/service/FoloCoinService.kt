@@ -18,6 +18,8 @@ class FoloCoinService(
     private val foloCoinRepo: FoloCoinRepo,
     private val userService: UserService
 ) : KLogging() {
+    private val THRESHOLD_MULTIPLIER = 10
+
     fun getById(userId: Long): FoloCoinDto {
         return foloCoinRepo.findCoinByUserId(userId)?.toDto() ?: FoloCoinDto(userId)
     }
@@ -37,7 +39,7 @@ class FoloCoinService(
     }
 
     fun getCoinThreshold(): Int {
-        return ((foloCoinRepo.getSumCoins() ?: 0) + 1) * 10
+        return ((foloCoinRepo.getSumCoins() ?: 0) + 1) * THRESHOLD_MULTIPLIER
     }
 
     fun getValidForCoinIssue(threshold: Int): List<FoloCoinDto> {

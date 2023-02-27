@@ -208,23 +208,39 @@ class MessageService(
         }
     }
 
+    fun buildPhoto(photo: InputFile, chatId: Long, text: String): SendPhoto {
+        return SendPhoto
+            .builder()
+            .parseMode(ParseMode.MARKDOWN)
+            .chatId(chatId.toString())
+            .photo(photo)
+            .caption(text)
+            .build()
+    }
+
+    fun buildPhoto(photoPath: String, chatId: Long, text: String): SendPhoto {
+        return buildPhoto(
+            InputFile(
+                this::class.java.getResourceAsStream(photoPath),
+                photoPath.substringAfterLast("/")
+            ),
+            chatId,
+            text
+        )
+    }
+
+
     /**
      * Отправить изображение
      *
-     * @param photoId идентификатор изображения
+     * @param photo изображениe
      * @param text    текст сообщения
      * @param chatId  ID чата(пользователя)
      */
-    fun sendPhoto(photoId: String, text: String, chatId: Long) {
+    fun sendPhoto(photo: InputFile, chatId: Long, text: String) {
         try {
             foloBot.execute(
-                SendPhoto
-                    .builder()
-                    .parseMode(ParseMode.MARKDOWN)
-                    .chatId(chatId.toString())
-                    .photo(InputFile(photoId))
-                    .caption(text)
-                    .build()
+                buildPhoto(photo, chatId, text)
             )
         } catch (e: TelegramApiException) {
             logger.error { e }
@@ -261,21 +277,10 @@ class MessageService(
      * @param text      текст сообщения
      * @param chatId    ID чата(пользователя)
      */
-    fun sendPhotoFromResources(photoPath: String, text: String, chatId: Long) {
+    fun sendPhoto(photoPath: String, chatId: Long, text: String) {
         try {
             foloBot.execute(
-                SendPhoto
-                    .builder()
-                    .parseMode(ParseMode.MARKDOWN)
-                    .chatId(chatId.toString())
-                    .photo(
-                        InputFile(
-                            this::class.java.getResourceAsStream(photoPath),
-                            photoPath.substringAfterLast("/")
-                        )
-                    )
-                    .caption(text)
-                    .build()
+                buildPhoto(photoPath, chatId, text)
             )
         } catch (e: Exception) {
             logger.error { e }
@@ -344,8 +349,10 @@ class MessageService(
             deleteMessage(MESSAGE_QUEUE_ID, checkMsg.messageId)
             false
         } else {
-            logger.info { "found deleted message from ${userService.getFoloUserName(message.from)} " +
-                    "in chat ${getChatIdentity(message.chatId)}" }
+            logger.info {
+                "found deleted message from ${userService.getFoloUserName(message.from)} " +
+                        "in chat ${getChatIdentity(message.chatId)}"
+            }
             true
         }
     }

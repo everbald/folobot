@@ -11,7 +11,8 @@ enum class BotCommandsEnum(val command: String) {
     FOLOUNDERDOGS("/folounderdogs"),
     FOLOPIDORALPHA("/folopidoralpha"),
     FOLOCOIN("/folocoin"),
-    FOLOMILLIONAIRE("/folomillionaire");
+    FOLOMILLIONAIRE("/folomillionaire"),
+    FOLOINDEXDYNAMICS("/foloindexdynamics");
 
     companion object {
         private val map = BotCommandsEnum.values().associateBy(BotCommandsEnum::command)
