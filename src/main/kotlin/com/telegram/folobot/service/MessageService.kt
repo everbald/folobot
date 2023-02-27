@@ -234,6 +234,29 @@ class MessageService(
     /**
      * Отправить изображение
      *
+     * @param photo изображениe
+     * @param text    текст сообщения
+     * @param chatId  ID чата(пользователя)
+     */
+    fun sendPhoto(photo: InputFile, text: String, chatId: Long) {
+        try {
+            foloBot.execute(
+                SendPhoto
+                    .builder()
+                    .parseMode(ParseMode.MARKDOWN)
+                    .chatId(chatId.toString())
+                    .photo(photo)
+                    .caption(text)
+                    .build()
+            )
+        } catch (e: TelegramApiException) {
+            logger.error { e }
+        }
+    }
+
+    /**
+     * Отправить изображение
+     *
      * @param photoPath путь к фото в ресурсах
      * @param text      текст сообщения
      * @param chatId    ID чата(пользователя)

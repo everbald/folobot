@@ -53,6 +53,9 @@ dependencies {
 
     // formatter
     implementation("com.ibm.icu:icu4j:72.1")
+
+    // charts
+    implementation("jfree:jfreechart:1.0.13")
 }
 
 allOpen {
