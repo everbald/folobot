@@ -347,17 +347,14 @@ class CommandHandler(
     }
 
     fun foloIndexDinamics(update: Update): BotApiMethod<*>? {
-        logger.info { "в точку 1 мы добираемся" }
         val endDate = LocalDate.now().minusDays(1)
         val chart = foloIndexChartService.buildChart(
             update.message.chatId,
             endDate.minusMonths(1),
             endDate
         )
-        logger.info { "в точку 2 мы добираемся" }
         messageService.sendPhoto(chart, update.message.chatId,"#динамикафолоиндекса")
             .also { logger.info { "Replied to ${getChatIdentity(update.message.chatId)} with IndexChart" } }
-        logger.info { "в точку 3 мы добираемся" }
         return null
     }
 }

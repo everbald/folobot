@@ -39,14 +39,9 @@ class FoloIndexChartService(
     fun buildChart(chatId: Long, startDate: LocalDate, endDate: LocalDate): InputFile {
         val plot = getPlot(chatId, startDate, endDate)
         val chart = JFreeChart(plot).applyStyle()
-
-        logger.info { "после построения" }
-
-        val ba = ChartUtilities.encodeAsPNG(chart.createBufferedImage(800, 600))
-
-        logger.info { "после формирования bytearray" }
-
-        return InputFile(ByteArrayInputStream(ba), "weekly_chart.png")
+        return InputFile(
+            ByteArrayInputStream(ChartUtilities.encodeAsPNG(chart.createBufferedImage(800, 600))),
+            "weekly_chart.png")
     }
 
     private fun getPlot(chatId: Long, startDate: LocalDate, endDate: LocalDate): Plot {
