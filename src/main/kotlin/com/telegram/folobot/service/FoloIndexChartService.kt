@@ -88,7 +88,7 @@ class FoloIndexChartService(
     }
 
     private fun JFreeChart.applyStyle(): JFreeChart {
-        val fontName = "Lucida Sans"
+        val fontName = "Vollkorn"
 
         val theme = StandardChartTheme.createJFreeTheme() as StandardChartTheme
         theme.titlePaint = Color.decode("#666666")
