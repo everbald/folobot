@@ -1,6 +1,5 @@
 package com.telegram.folobot.service
 
-import com.telegram.folobot.IdUtils
 import com.telegram.folobot.persistence.entity.toDto
 import com.telegram.folobot.persistence.repos.FoloIndexRepo
 import org.jfree.chart.ChartUtilities

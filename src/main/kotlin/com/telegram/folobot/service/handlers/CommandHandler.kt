@@ -13,7 +13,6 @@ import com.telegram.folobot.service.*
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.time.LocalDate
 import java.time.Period
@@ -39,7 +38,6 @@ class CommandHandler(
      * @return [BotApiMethod]
      */
     fun handle(update: Update): BotApiMethod<*>? {
-
         when (
             BotCommandsEnum.fromCommand(
                 update.message?.entities?.firstOrNull { it.type == "bot_command" }?.text?.substringBefore("@")
@@ -349,13 +347,17 @@ class CommandHandler(
     }
 
     fun foloIndexDinamics(update: Update): BotApiMethod<*>? {
+        logger.info { "в точку 1 мы добираемся" }
         val endDate = LocalDate.now().minusDays(1)
         val chart = foloIndexChartService.buildChart(
             update.message.chatId,
             endDate.minusMonths(1),
             endDate
         )
+        logger.info { "в точку 2 мы добираемся" }
         messageService.sendPhoto(chart, update.message.chatId,"#динамикафолоиндекса")
+            .also { logger.info { "Replied to ${getChatIdentity(update.message.chatId)} with IndexChart" } }
+        logger.info { "в точку 3 мы добираемся" }
         return null
     }
 }
