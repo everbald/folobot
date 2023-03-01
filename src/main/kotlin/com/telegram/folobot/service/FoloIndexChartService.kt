@@ -42,12 +42,11 @@ class FoloIndexChartService(
 
         logger.info { "после построения" }
 
-        val chartOs = ByteArrayOutputStream()
-        ChartUtilities.writeChartAsPNG(chartOs, chart, 800, 600)
+        val ba = ChartUtilities.encodeAsPNG(chart.createBufferedImage(800, 600))
 
-        logger.info { "после формирования outputstream" }
+        logger.info { "после формирования bytearray" }
 
-        return InputFile(ByteArrayInputStream(chartOs.toByteArray()), "weekly_chart.png")
+        return InputFile(ByteArrayInputStream(ba), "weekly_chart.png")
     }
 
     private fun getPlot(chatId: Long, startDate: LocalDate, endDate: LocalDate): Plot {
