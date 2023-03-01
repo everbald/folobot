@@ -2,6 +2,7 @@ package com.telegram.folobot.service
 
 import com.telegram.folobot.persistence.entity.toDto
 import com.telegram.folobot.persistence.repos.FoloIndexRepo
+import mu.KLogging
 import org.jfree.chart.ChartUtilities
 import org.jfree.chart.JFreeChart
 import org.jfree.chart.StandardChartTheme
@@ -28,18 +29,24 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import kotlin.math.log
 
 
 @Component
 class FoloIndexChartService(
     private val foloIndexRepo: FoloIndexRepo
-) {
+): KLogging() {
     fun buildChart(chatId: Long, startDate: LocalDate, endDate: LocalDate): InputFile {
         val plot = getPlot(chatId, startDate, endDate)
         val chart = JFreeChart(plot).applyStyle()
 
+        logger.info { "после построения" }
+
         val chartOs = ByteArrayOutputStream()
         ChartUtilities.writeChartAsPNG(chartOs, chart, 800, 600)
+
+        logger.info { "после формирования outputstream" }
+
         return InputFile(ByteArrayInputStream(chartOs.toByteArray()), "weekly_chart.png")
     }
 
