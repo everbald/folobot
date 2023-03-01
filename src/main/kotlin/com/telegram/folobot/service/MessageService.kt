@@ -189,25 +189,6 @@ class MessageService(
         }
     }
 
-    /**
-     * Отправить статус "печатает"
-     *
-     * @param update [Update]
-     */
-    fun sendChatTyping(update: Update) {
-        try {
-            foloBot.execute(
-                SendChatAction
-                    .builder()
-                    .chatId(update.message.chatId.toString())
-                    .action(ActionType.TYPING.toString())
-                    .build()
-            )
-        } catch (e: TelegramApiException) {
-            logger.error { e }
-        }
-    }
-
     fun buildPhoto(photo: InputFile, chatId: Long, text: String): SendPhoto {
         return SendPhoto
             .builder()
@@ -241,29 +222,6 @@ class MessageService(
         try {
             foloBot.execute(
                 buildPhoto(photo, chatId, text)
-            )
-        } catch (e: TelegramApiException) {
-            logger.error { e }
-        }
-    }
-
-    /**
-     * Отправить изображение
-     *
-     * @param photo изображениe
-     * @param text    текст сообщения
-     * @param chatId  ID чата(пользователя)
-     */
-    fun sendPhoto(photo: InputFile, text: String, chatId: Long) {
-        try {
-            foloBot.execute(
-                SendPhoto
-                    .builder()
-                    .parseMode(ParseMode.MARKDOWN)
-                    .chatId(chatId.toString())
-                    .photo(photo)
-                    .caption(text)
-                    .build()
             )
         } catch (e: TelegramApiException) {
             logger.error { e }
