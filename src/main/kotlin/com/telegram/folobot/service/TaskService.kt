@@ -34,7 +34,7 @@ class TaskService(
 
     fun foloIndex(chatId: Long) {
         foloIndexService.dailyIndex(chatId)
-        if (LocalDate.now().dayOfWeek == DayOfWeek.SUNDAY) foloIndexService.weeklyIndex(chatId)
+        if (LocalDate.now().dayOfWeek == DayOfWeek.SUNDAY) foloIndexService.monthlyIndex(chatId)
     }
 
     fun foloCoin() {

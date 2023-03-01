@@ -13,6 +13,7 @@ import com.telegram.folobot.service.*
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.time.LocalDate
 import java.time.Period
@@ -28,6 +29,7 @@ class CommandHandler(
     private val messageService: MessageService,
     private val userService: UserService,
     private val textService: TextService,
+    private val foloIndexChartService: FoloIndexChartService
 ) : KLogging() {
 
     /**
@@ -60,6 +62,7 @@ class CommandHandler(
             BotCommandsEnum.FOLOPIDORALPHA -> return alphaTimer(update)
             BotCommandsEnum.FOLOCOIN -> return coinBalance(update)
             BotCommandsEnum.FOLOMILLIONAIRE -> return foloMillionaire(update)
+            BotCommandsEnum.FOLOINDEXDYNAMICS -> return foloIndexDinamics(update)
             else -> return null
         }
         return null
@@ -343,5 +346,16 @@ class CommandHandler(
             ),
             update
         ).also { logger.info { "Replied to ${getChatIdentity(it.chatId)} with ${it.text}" } }
+    }
+
+    fun foloIndexDinamics(update: Update): BotApiMethod<*>? {
+        val endDate = LocalDate.now().minusDays(1)
+        val chart = foloIndexChartService.buildChart(
+            update.message.chatId,
+            endDate.minusMonths(1),
+            endDate
+        )
+        messageService.sendPhoto(chart, update.message.chatId,"#динамикафолоиндекса")
+        return null
     }
 }
