@@ -6,12 +6,12 @@ import com.telegram.folobot.isNotForward
 import com.telegram.folobot.isUserJoin
 import com.telegram.folobot.isUserLeft
 import com.telegram.folobot.model.ActionsEnum
+import com.telegram.folobot.service.OpenAIService
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Update
-import java.util.*
 
 @Service
 class ActionHandler(
@@ -20,7 +20,8 @@ class ActionHandler(
     private val userMessageHandler: UserMessageHandler,
     private val replyHandler: ReplyHandler,
     private val userJoinHandler: UserJoinHandler,
-    private val registryHandler: RegistryHandler
+    private val registryHandler: RegistryHandler,
+    private val openAIService: OpenAIService
 ) : KLogging() {
 
     fun handle(update: Update): BotApiMethod<*>? {
@@ -57,6 +58,8 @@ class ActionHandler(
             message.isUserJoin() -> ActionsEnum.USERNEW
             // Пользователь покинул чат
             message.isUserLeft() -> ActionsEnum.USERLEFT
+            // Беседа
+            message.isNotForward() && IdUtils.isAboutFo(update) -> ActionsEnum.SMALLTALK
             // Неопределено
             else -> ActionsEnum.UNDEFINED
         }.also {
@@ -81,6 +84,7 @@ class ActionHandler(
                 ActionsEnum.REPLY -> replyHandler.handle(update)
                 ActionsEnum.USERNEW -> userJoinHandler.handleJoin(update)
                 ActionsEnum.USERLEFT -> userJoinHandler.handleLeft(update)
+                ActionsEnum.SMALLTALK -> openAIService.smallTalkAsync(update)
                 else -> null
             }
         }
