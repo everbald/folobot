@@ -24,17 +24,15 @@ class ReplyHandler(
      */
     fun handle(update: Update): BotApiMethod<*>? {
         // Сообщение в чат
-        val text = update.message.text.lowercase()
-        if (text.contains("привет") || Random(System.nanoTime()).nextInt(100) < 20) {
-            return if (isAndrew(update.message.from)) {
-                messageService
-                    .buildMessage("Привет, моя сладкая бориспольская булочка!", update, true)
-            } else {
-                messageService
-                    .buildMessage("Привет, уважаемый ${getPremium(update.message.from)}" +
-                            "фолофил ${userService.getFoloUserName(update.message.from)}!", update, true)
-            }.also { logger.info { "Replied to ${getChatIdentity(it.chatId)} with ${it.text}" } }
-        }
-        return null
+        return if (isAndrew(update.message.from)) {
+            messageService
+                .buildMessage("Привет, моя сладкая бориспольская булочка!", update, true)
+        } else {
+            messageService
+                .buildMessage(
+                    "Привет, уважаемый ${getPremium(update.message.from)}" +
+                            "фолофил ${userService.getFoloUserName(update.message.from)}!", update, true
+                )
+        }.also { logger.info { "Replied to ${getChatIdentity(it.chatId)} with ${it.text}" } }
     }
 }

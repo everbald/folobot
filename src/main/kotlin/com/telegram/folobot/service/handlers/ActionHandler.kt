@@ -52,14 +52,16 @@ class ActionHandler(
             // Личное сообщение
             message.isUserMessage -> ActionsEnum.USERMESSAGE
             // Ответ на обращение
-            message.isNotForward() && message.hasText() && (message.text.lowercase().contains("гурманыч") ||
-                    message.text.lowercase().contains(botCredentials.botUsername.lowercase())) -> ActionsEnum.REPLY
+            message.isNotForward() && message.hasText() &&
+                    (message.text.lowercase().contains("гурманыч") &&
+                                    message.text.lowercase().contains("привет")) -> ActionsEnum.REPLY
+            // Беседа
+            message.isNotForward() && (IdUtils.isAboutFo(update) ||
+                    (message.hasText() && message.text.lowercase().contains("гурманыч"))) -> ActionsEnum.SMALLTALK
             // Пользователь зашел в чат
             message.isUserJoin() -> ActionsEnum.USERNEW
             // Пользователь покинул чат
             message.isUserLeft() -> ActionsEnum.USERLEFT
-            // Беседа
-            message.isNotForward() && IdUtils.isAboutFo(update) -> ActionsEnum.SMALLTALK
             // Неопределено
             else -> ActionsEnum.UNDEFINED
         }.also {
