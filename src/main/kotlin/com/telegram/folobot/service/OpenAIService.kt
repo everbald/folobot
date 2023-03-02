@@ -18,27 +18,17 @@ class OpenAIService(
     private val openAI: OpenAI = OpenAI(openAICredentialsConfig.token),
     private val messageService: MessageService
 ) {
-
-    fun smallTalk(update: Update): BotApiMethod<*>? = runBlocking {
-        val prompt = update.message.text + if (listOf('.', '!').none { it == update.message.text.last() }) "." else ""
-        val completionRequest = CompletionRequest(
-            model = ModelId("text-davinci-003"),
-            prompt = prompt,
-            maxTokens = 1000,
-            echo = true
-        )
-        return@runBlocking openAI.completion(completionRequest).choices.firstOrNull()?.let {
-            messageService.buildMessage(it.text.trimMargin().trimIndent(), update, true)
-        }
-    }
-
     @OptIn(DelicateCoroutinesApi::class)
-    fun smallTalkAsync(update: Update): BotApiMethod<*>? {
-        val prompt = update.message.text + if (listOf('.', '!', '?').none { it == update.message.text.last() }) "." else ""
+    fun smallTalk(update: Update): BotApiMethod<*>? {
+        var prompt = update.message.text.take(
+            (Regex("[.!?]").findAll(update.message.text.take(1000))
+                .lastOrNull()?.groups?.first()?.range?.last?.plus(1)) ?: 1000
+        )
+        prompt += if (listOf('.', '!', '?').none { it == update.message.text.last() }) "." else ""
         val completionRequest = CompletionRequest(
             model = ModelId("text-davinci-003"),
             prompt = prompt,
-            maxTokens = 1000
+            maxTokens = 2048
         )
         GlobalScope.async {
             openAI.completion(completionRequest).choices.firstOrNull()?.let {

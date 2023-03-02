@@ -86,7 +86,7 @@ class ActionHandler(
                 ActionsEnum.REPLY -> replyHandler.handle(update)
                 ActionsEnum.USERNEW -> userJoinHandler.handleJoin(update)
                 ActionsEnum.USERLEFT -> userJoinHandler.handleLeft(update)
-                ActionsEnum.SMALLTALK -> openAIService.smallTalkAsync(update)
+                ActionsEnum.SMALLTALK -> openAIService.smallTalk(update)
                 else -> null
             }
         }
