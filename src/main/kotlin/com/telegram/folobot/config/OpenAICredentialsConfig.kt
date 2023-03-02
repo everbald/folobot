@@ -5,6 +5,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class OpenAICredentialsConfig {
-    @Value("\${openapi.token}")
+    @Value("\${openai.token}")
     val token: String = ""
 }

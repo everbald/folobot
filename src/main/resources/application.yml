@@ -38,5 +38,5 @@ bot:
   token: ${BOT_TOKEN}
   path: ${BOT_PATH}
 
-openapi:
+openai:
   token: ${OPENAI_TOKEN}
