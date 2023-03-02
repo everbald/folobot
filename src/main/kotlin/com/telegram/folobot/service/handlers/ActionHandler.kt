@@ -56,8 +56,8 @@ class ActionHandler(
                     (message.text.lowercase().contains("гурманыч") &&
                                     message.text.lowercase().contains("привет")) -> ActionsEnum.REPLY
             // Беседа
-            message.isNotForward() && (IdUtils.isAboutFo(update) ||
-                    (message.hasText() && message.text.lowercase().contains("гурманыч"))) -> ActionsEnum.SMALLTALK
+            message.hasText() && (IdUtils.isFromFoloSwarm(update) ||
+                    message.text.lowercase().contains("гурманыч")) -> ActionsEnum.SMALLTALK
             // Пользователь зашел в чат
             message.isUserJoin() -> ActionsEnum.USERNEW
             // Пользователь покинул чат
