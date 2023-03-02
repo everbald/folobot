@@ -11,15 +11,15 @@ server:
       charset: UTF-8
       force: true
 
-#logging:
-#  group:
-#    tomcat: org.apache.catalina, org.apache.coyote, org.apache.tomcat
-#  level:
-#    tomcat: OFF
+logging:
+  group:
+    tomcat: org.apache.catalina, org.apache.coyote, org.apache.tomcat
+  level:
+    tomcat: OFF
 
 spring:
   datasource:
-    url: jdbc:postgresql://db:5432/${DB_NAME}?user=${DB_USER}&password=${DB_PASS}
+    url: jdbc:postgresql://folomkin.ru:9876/${DB_NAME}?user=${DB_USER}&password=${DB_PASS}
   jpa:
     properties:
       hibernate:
@@ -34,9 +34,9 @@ spring:
     servlet:
       expose-request-attributes: true
 bot:
-  username: ${BOT_USERNAME}
-  token: ${BOT_TOKEN}
-  path: ${BOT_PATH}
+  username: ShurkaGurmanychBot
+  token: 5306754558:AAGLFdpVE-VQJ3-Ym0uvLq5fbAU9q98cg-I
+  path: https://7b27-2a02-2168-a97e-3700-71b9-a8b3-ab61-4222.eu.ngrok.io
 
 openapi:
   token: ${OPENAI_TOKEN}

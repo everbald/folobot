@@ -39,8 +39,14 @@ dependencies {
     implementation("org.postgresql:postgresql")
     runtimeOnly("org.liquibase:liquibase-core:4.19.0")
 
+    // HTTP client engine
+    implementation("io.ktor:ktor-client-apache:2.2.4")
+
     // telegram api
     implementation("org.telegram:telegrambots:6.4.0")
+
+    // open api
+    implementation("com.aallam.openai:openai-client:2.1.3")
 
     // serialisation
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
