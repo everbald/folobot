@@ -17,6 +17,7 @@ services:
       - DB_NAME
       - DB_USER
       - DB_PASS
+      - OPENAI_TOKEN
       - TZ=Europe/Moscow
   db:
     image: postgres:latest
