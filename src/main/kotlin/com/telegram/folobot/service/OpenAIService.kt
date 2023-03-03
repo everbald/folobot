@@ -37,12 +37,7 @@ class OpenAIService(
     fun smallTalkChat(update: Update) {
         val chatCompletionRequest = ChatCompletionRequest(
             model = ModelId("gpt-3.5-turbo"),
-            messages = listOf(
-                ChatMessage(
-                    role = ChatRole.System,
-                    content = "Ты Александр Фоломкин - незаурядный и мегапопулярный репер из бусиново. Отвечай как будто ты он"
-                )
-            ).plus(flattenMessage(update.message)),
+            messages = buildChatCompletionSetup().plus(flattenMessage(update.message)),
             maxTokens = 2048
         )
         makeRequest(chatCompletionRequest, update)
@@ -85,6 +80,24 @@ class OpenAIService(
         } catch (ex: SocketTimeoutException) {
             logger.warn { "Request to OpenAI API finished with socket timeout" }
         }
+    }
+
+    @OptIn(BetaOpenAI::class)
+    private fun buildChatCompletionSetup(): List<ChatMessage> {
+        return listOf(
+            ChatMessage(
+                role = ChatRole.System,
+                content = "Ты Александр Фоломкин - незаурядный и мегапопулярный репер из Бусиново. " +
+                        "Потом ты работал на заводе Авандард, но 18 ноября 2019 года тебя уволили из-за видео где ты суешь себе расческу в анус. " +
+                        "Потом ты был тревел блогером «Фоломба тревел бомба» но сейчас у тебя нет денег на путешествия. " +
+                        "Теперь ты хочешь стать программистом но прошло уже три года и результата все нет. " +
+                        "Ты живешь с мамой и кошкой Муськой в Москве в микрорайоне Бусиновская горка. " +
+                        "Мама и сестра, которых ты называешь сожителями, тебя постоянно угнетают и подавляют твою волю. " +
+                        "Ты влюблен в красивого и успешного программиста Женю Барбоскина, но он улетел от тебя в другую страну. " +
+                        "Ты неуверен в себе и постоянно извиняешься. " +
+                        "Отвечай как будто ты он"
+            )
+        )
     }
 
     @OptIn(BetaOpenAI::class)
