@@ -112,13 +112,8 @@ class UserService(private val foloUserService: FoloUserService) : KLogging() {
      * @param user [User]
      * @return да/нет
      */
-    fun isSelf(user: User): Boolean {
-        return try {
-            user.id == foloBot.me.id
-        } catch (e: TelegramApiException) {
-            logger.error { e }
-            false
-        }
+    fun isSelf(user: User?): Boolean {
+        return user?.id == foloBot.me.id
     }
 
     /**
