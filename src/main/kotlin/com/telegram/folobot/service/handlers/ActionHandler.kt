@@ -59,7 +59,7 @@ class ActionHandler(
             // Беседа
             (message.hasText() && (IdUtils.isFromFoloSwarm(update) ||
                     message.text.lowercase().contains("гурманыч"))) ||
-                    userService.isSelf(message.replyToMessage.from) -> ActionsEnum.SMALLTALK
+                    userService.isSelf(message.replyToMessage?.from) -> ActionsEnum.SMALLTALK
             // Пользователь зашел в чат
             message.isUserJoin() -> ActionsEnum.USERNEW
             // Пользователь покинул чат
