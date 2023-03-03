@@ -3,39 +3,51 @@ package com.telegram.folobot.service
 import com.aallam.openai.api.completion.CompletionRequest
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
-import com.telegram.folobot.config.OpenAICredentialsConfig
+import com.telegram.folobot.IdUtils
+import io.ktor.client.network.sockets.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import mu.KLogging
 import org.springframework.stereotype.Service
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod
+import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @Service
 class OpenAIService(
-    private val openAICredentialsConfig: OpenAICredentialsConfig,
-    private val openAI: OpenAI = OpenAI(openAICredentialsConfig.token),
+    private val openAI: OpenAI,
     private val messageService: MessageService
-) {
-    @OptIn(DelicateCoroutinesApi::class)
-    fun smallTalk(update: Update): BotApiMethod<*>? {
-        var prompt = update.message.text.take(
-            (Regex("[.!?]").findAll(update.message.text.take(1000))
-                .lastOrNull()?.groups?.first()?.range?.last?.plus(1)) ?: 1000
-        )
-        prompt += if (listOf('.', '!', '?').none { it == update.message.text.last() }) "." else ""
+): KLogging(){
+    fun smallTalk(update: Update) {
         val completionRequest = CompletionRequest(
             model = ModelId("text-davinci-003"),
-            prompt = prompt,
-            maxTokens = 2048
+            prompt = buildPrompt(update.message),
+            maxTokens = 2048,
+            user = update.message.from.id.toString()
         )
-        GlobalScope.async {
-            openAI.completion(completionRequest).choices.firstOrNull()?.let {
+        makeRequest(completionRequest, update)
+    }
+
+    private fun buildPrompt(message: Message): String {
+        var prompt = message.text.take(
+            (Regex("[.!?]").findAll(message.text.take(1000))
+                .lastOrNull()?.groups?.first()?.range?.last?.plus(1)) ?: 1000
+        )
+        prompt += if (listOf('.', '!', '?').none { it == message.text.last() }) "." else ""
+        return prompt
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun makeRequest(request: CompletionRequest, update: Update) = GlobalScope.async {
+        try {
+            openAI.completion(request).choices.firstOrNull()?.let {
                 messageService.sendMessage(it.text.trimMargin().trimIndent(), update, true)
             }
+            logger.info { "Had a small talk with ${update.message.from.getName()} " +
+                    "in chat ${IdUtils.getChatIdentity(update.message.chatId)}" }
+        } catch (ex: SocketTimeoutException) {
+            logger.warn { "Request to OpenAI API finished with socket timeout" }
         }
-        return null
     }
 
 }
