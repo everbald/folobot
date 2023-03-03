@@ -6,7 +6,7 @@ import com.telegram.folobot.isNotForward
 import com.telegram.folobot.isUserJoin
 import com.telegram.folobot.isUserLeft
 import com.telegram.folobot.model.ActionsEnum
-import com.telegram.folobot.service.OpenAIService
+import com.telegram.folobot.service.UserService
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
@@ -21,7 +21,8 @@ class ActionHandler(
     private val replyHandler: ReplyHandler,
     private val userJoinHandler: UserJoinHandler,
     private val registryHandler: RegistryHandler,
-    private val openAIService: OpenAIService
+    private val smallTalkHandler: SmallTalkHandler,
+    private val userService: UserService
 ) : KLogging() {
 
     fun handle(update: Update): BotApiMethod<*>? {
@@ -54,10 +55,11 @@ class ActionHandler(
             // Ответ на обращение
             message.isNotForward() && message.hasText() &&
                     (message.text.lowercase().contains("гурманыч") &&
-                                    message.text.lowercase().contains("привет")) -> ActionsEnum.REPLY
+                            message.text.lowercase().contains("привет")) -> ActionsEnum.REPLY
             // Беседа
-            message.hasText() && (IdUtils.isFromFoloSwarm(update) ||
-                    message.text.lowercase().contains("гурманыч")) -> ActionsEnum.SMALLTALK
+            (message.hasText() && (IdUtils.isFromFoloSwarm(update) ||
+                    message.text.lowercase().contains("гурманыч"))) ||
+                    userService.isSelf(message.replyToMessage.from) -> ActionsEnum.SMALLTALK
             // Пользователь зашел в чат
             message.isUserJoin() -> ActionsEnum.USERNEW
             // Пользователь покинул чат
@@ -86,7 +88,7 @@ class ActionHandler(
                 ActionsEnum.REPLY -> replyHandler.handle(update)
                 ActionsEnum.USERNEW -> userJoinHandler.handleJoin(update)
                 ActionsEnum.USERLEFT -> userJoinHandler.handleLeft(update)
-                ActionsEnum.SMALLTALK -> openAIService.smallTalk(update)
+                ActionsEnum.SMALLTALK -> smallTalkHandler.handle(update)
                 else -> null
             }
         }
