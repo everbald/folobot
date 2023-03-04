@@ -51,7 +51,7 @@ class ActionHandler(
                         message.chat.isUserChat || (!message.chat.isUserChat && it.contains(botCredentials.botUsername))
                     } == true -> ActionsEnum.COMMAND
             // Личное сообщение
-            message.isUserMessage -> ActionsEnum.USERMESSAGE
+            message.isUserMessage -> ActionsEnum.SMALLTALK //ActionsEnum.USERMESSAGE
             // Ответ на обращение
             message.isNotForward() && message.hasText() &&
                     (message.text.lowercase().contains("гурманыч") &&

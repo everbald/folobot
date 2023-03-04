@@ -1,6 +1,7 @@
 package com.telegram.folobot.service
 
 import com.telegram.folobot.IdUtils.Companion.MESSAGE_QUEUE_ID
+import com.telegram.folobot.IdUtils.Companion.POC_ID
 import com.telegram.folobot.IdUtils.Companion.getChatIdentity
 import com.telegram.folobot.IdUtils.Companion.isLikesToDelete
 import com.telegram.folobot.isNotForward
@@ -38,6 +39,7 @@ class MessageQueueService(
     fun sendAndAddToQueue(text: String, update: Update, reply: Boolean) {
         messageService.sendMessage(text, update, reply)?.let {
             messageQueue.add(MessageQueueDto(LocalDateTime.now(), it))
+            if (update.message.isUserMessage) messageService.forwardMessage(POC_ID, it)
         }
     }
 
