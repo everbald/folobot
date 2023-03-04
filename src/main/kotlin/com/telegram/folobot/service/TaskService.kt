@@ -42,6 +42,6 @@ class TaskService(
     }
 
     fun restoreMessages() {
-        messageQueueService.processMessages()
+        messageQueueService.restoreMessages()
     }
 }

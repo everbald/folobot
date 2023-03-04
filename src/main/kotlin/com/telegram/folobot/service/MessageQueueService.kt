@@ -9,37 +9,84 @@ import com.telegram.folobot.model.dto.MessageQueueDto
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.Update
 import java.time.LocalDateTime
 
 @Service
 class MessageQueueService(
     private val messageService: MessageService,
     private val userService: UserService
-): KLogging() {
+) : KLogging() {
     private val messageQueue: MutableList<MessageQueueDto> = mutableListOf()
-    private val monitoredMessages: MutableList<MessageQueueDto> = mutableListOf()
+    val messageStack: MutableList<MessageQueueDto> = mutableListOf()
 
     fun addToQueue(message: Message) {
-        if (message.isNotForward() && message.isNotUserJoin() && isLikesToDelete(message.from)) {
-            messageService.silentForwardMessage(MESSAGE_QUEUE_ID, message)?.run {
-                messageQueue.add(MessageQueueDto(LocalDateTime.now(), message, this))
+        if (message.isNotForward() && message.isNotUserJoin()) {
+            messageQueue.add(
+                MessageQueueDto(
+                    LocalDateTime.now(),
+                    message,
+                    if (isLikesToDelete(message.from)) messageService.silentForwardMessage(
+                        MESSAGE_QUEUE_ID,
+                        message
+                    ) else null
+                )
+            )
+        }
+    }
+
+    fun sendAndAddToQueue(text: String, update: Update, reply: Boolean) {
+        messageService.sendMessage(text, update, reply)?.let {
+            messageQueue.add(MessageQueueDto(LocalDateTime.now(), it))
+        }
+    }
+
+
+    fun restoreMessages() {
+        messageStack.addAll(messageQueue)
+        messageQueue.clear()
+        messageStack.removeIf { it.recievedAt < LocalDateTime.now().minusDays(1) || it.restored }
+
+        messageStack.forEach { queueMessage ->
+            queueMessage.backupMessage?.let {
+                if (messageService.checkIfMessageDeleted(queueMessage.message)) {
+                    messageService.forwardMessage(queueMessage.message.chatId, it)
+                    messageService.deleteMessage(MESSAGE_QUEUE_ID, it.messageId)
+                    queueMessage.restored = true
+                    logger.info {
+                        "Restored message from ${userService.getFoloUserName(queueMessage.message.from)} " +
+                                "in chat ${getChatIdentity(queueMessage.message.chatId)}"
+                    }
+                }
             }
         }
     }
 
-    fun processMessages() {
-        monitoredMessages.addAll(messageQueue)
-        messageQueue.clear()
-        monitoredMessages.removeIf { it.recievedAt < LocalDateTime.now().minusDays(1) || it.restored }
+    fun getStack(message: Message): List<Message> {
+        val fullStack = messageStack.plus(messageQueue).associateBy { it.message.messageId }
+        val stack = flattenStack(message.messageId, fullStack)
+        return stack.ifEmpty { flattenMessage(message) }
+    }
 
-        monitoredMessages.forEach {
-            if (messageService.checkIfMessageDeleted(it.message)) {
-                messageService.forwardMessage(it.message.chatId, it.backupMessage)
-                messageService.deleteMessage(MESSAGE_QUEUE_ID, it.backupMessage.messageId)
-                it.restored = true
-                logger.info { "Restored message from ${userService.getFoloUserName(it.message.from)} " +
-                        "in chat ${getChatIdentity(it.message.chatId)}" }
+    private fun flattenStack(messageId: Int?, fullStack: Map<Int, MessageQueueDto>): MutableList<Message> {
+        val messages = mutableListOf<Message>()
+        messageId?.let { id ->
+            fullStack[id]?.message?.let { stackMessage ->
+                stackMessage.replyToMessage?.let {
+                    messages.addAll(flattenStack(it.messageId, fullStack))
+                }
+                messages.add(stackMessage)
             }
         }
+        return messages
+    }
+
+    private fun flattenMessage(message: Message?): MutableList<Message> {
+        val messages = mutableListOf<Message>()
+        message?.let {
+            messages.addAll(flattenMessage(it.replyToMessage))
+            messages.add(it)
+        }
+        return messages
     }
 }

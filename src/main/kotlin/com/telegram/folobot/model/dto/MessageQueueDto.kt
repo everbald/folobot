@@ -6,6 +6,6 @@ import java.time.LocalDateTime
 data class MessageQueueDto(
     val recievedAt: LocalDateTime,
     val message: Message,
-    val backupMessage: Message,
+    var backupMessage: Message? = null,
     var restored: Boolean = false
 )
