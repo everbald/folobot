@@ -117,6 +117,7 @@ class OpenAIService(
     private fun buildChatMessageStack(message: Message): List<ChatMessage> {
         return messageQueueService.getStack(message)
             .filter { it.hasText() }
+            .takeLast(5)
             .map {
             ChatMessage(
                 role = if (userService.isSelf(it.from)) ChatRole.Assistant else ChatRole.User,
