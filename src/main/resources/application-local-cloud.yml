@@ -11,11 +11,11 @@ server:
       charset: UTF-8
       force: true
 
-logging:
-  group:
-    tomcat: org.apache.catalina, org.apache.coyote, org.apache.tomcat
-  level:
-    tomcat: OFF
+#logging:
+#  group:
+#    tomcat: org.apache.catalina, org.apache.coyote, org.apache.tomcat
+#  level:
+#    tomcat: OFF
 
 spring:
   datasource:

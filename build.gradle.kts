@@ -62,6 +62,9 @@ dependencies {
 
     // charts
     implementation("jfree:jfreechart:1.0.13")
+
+    //image cropping
+    implementation("net.coobird:thumbnailator:0.4.19")
 }
 
 allOpen {

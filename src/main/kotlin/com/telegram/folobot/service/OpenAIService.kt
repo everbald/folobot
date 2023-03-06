@@ -7,21 +7,35 @@ import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.completion.CompletionRequest
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import com.telegram.folobot.FoloId
+import com.telegram.folobot.FoloId.FOLO_TEST_CHAT_ID
 import com.telegram.folobot.extensions.getChatIdentity
 import io.ktor.client.network.sockets.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import mu.KLogging
+import net.coobird.thumbnailator.Thumbnails
+import net.coobird.thumbnailator.filters.Canvas
+import net.coobird.thumbnailator.geometry.Positions
 import org.springframework.stereotype.Service
+import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import java.awt.image.BufferedImage
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.net.URL
+import javax.imageio.ImageIO
 
 @Service
 class OpenAIService(
     private val openAI: OpenAI,
     private val userService: UserService,
-    private val messageQueueService: MessageQueueService
+    private val messageQueueService: MessageQueueService,
+    private val messageService: MessageService,
+    private val fileService: FileService
 ) : KLogging() {
     fun smallTalkCompletion(update: Update) {
         val completionRequest = CompletionRequest(
@@ -35,11 +49,26 @@ class OpenAIService(
 
     @OptIn(BetaOpenAI::class)
     fun smallTalk(update: Update) {
-        val chatCompletionRequest = ChatCompletionRequest(
-            model = ModelId("gpt-3.5-turbo"),
-            messages = buildChatCompletionSetup().plus(buildChatMessageStack(update.message)),
-        )
-        makeRequest(chatCompletionRequest, update)
+//        if (update.message.hasPhoto()) {
+//            val file = fileService.downloadPhoto(update)
+//
+//            val os = ByteArrayOutputStream()
+//            Thumbnails.of(file)
+//                .size(1024, 1024)
+//                .addFilter( Canvas(1024, 1024, Positions.CENTER, true))
+//                .outputFormat("PNG")
+//                .toOutputStream(os)
+//            val ins = ByteArrayInputStream(os.toByteArray())
+//            messageService.sendPhoto(InputFile(ins, "magic.png"), FOLO_TEST_CHAT_ID, "wololo")
+//        }
+        val messageStack = buildChatMessageStack(update.message)
+        if (messageStack.isNotEmpty()) {
+            val chatCompletionRequest = ChatCompletionRequest(
+                model = ModelId("gpt-3.5-turbo"),
+                messages = buildChatCompletionSetup().plus(buildChatMessageStack(update.message)),
+            )
+            makeRequest(chatCompletionRequest, update)
+        }
     }
 
     private fun buildPrompt(message: Message): String? {
