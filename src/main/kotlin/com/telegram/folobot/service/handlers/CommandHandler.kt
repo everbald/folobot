@@ -176,10 +176,10 @@ class CommandHandler(
             }
         } else {
             return messageService.buildMessage(
-                "Для меня вы все фолопидоры, " +
+                text = "Для меня вы все фолопидоры, " +
                         userService.getFoloUserName(update.message.from),
-                update,
-                true
+                update = update,
+                reply = true
             ).also { logger.info { "Replied to ${getChatIdentity(it.chatId)} with ${it.text}" } }
         }
         return null
@@ -266,7 +266,7 @@ class CommandHandler(
                 "Для меня вы все фолопидоры, " +
                         userService.getFoloUserName(update.message.from),
                 update,
-                true
+                reply = true
             )
         }.also { logger.info { "Replied to ${getChatIdentity(it.chatId)} with ${it.text}" } }
     }

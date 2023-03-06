@@ -25,12 +25,12 @@ class ReplyHandler(
         // Сообщение в чат
         return if (update.message.from.isAndrew()) {
             messageService
-                .buildMessage("Привет, моя сладкая бориспольская булочка!", update, true)
+                .buildMessage("Привет, моя сладкая бориспольская булочка!", update, reply = true)
         } else {
             messageService
                 .buildMessage(
                     "Привет, уважаемый ${update.message.from.getPremiumPrefix()}" +
-                            "фолофил ${userService.getFoloUserName(update.message.from)}!", update, true
+                            "фолофил ${userService.getFoloUserName(update.message.from)}!", update, reply = true
                 )
         }.also { logger.info { "Replied to ${getChatIdentity(it.chatId)} with ${it.text}" } }
     }

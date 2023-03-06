@@ -9,6 +9,7 @@ import com.telegram.folobot.extensions.isNotUserJoin
 import com.telegram.folobot.model.dto.MessageQueueDto
 import mu.KLogging
 import org.springframework.stereotype.Service
+import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.time.LocalDateTime
@@ -36,8 +37,8 @@ class MessageQueueService(
         }
     }
 
-    fun sendAndAddToQueue(text: String, update: Update, reply: Boolean) {
-        messageService.sendMessage(text, update, reply)?.let {
+    fun sendAndAddToQueue(text: String, update: Update, parseMode: String = ParseMode.HTML, reply: Boolean) {
+        messageService.sendMessage(text, update, parseMode, reply)?.let {
             messageQueue.add(MessageQueueDto(LocalDateTime.now(), it))
             if (update.message.isUserMessage) messageService.forwardMessage(POC_ID, it)
         }
