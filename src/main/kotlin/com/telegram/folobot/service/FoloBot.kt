@@ -10,9 +10,9 @@ import org.telegram.telegrambots.meta.api.objects.Update
 @Service
 class FoloBot(
     private val actionHandler: ActionHandler,
-
     private val messageService: MessageService,
     private val userService: UserService,
+    private val fileService: FileService,
     private val botCredentials: BotCredentialsConfig
 ) : TelegramWebhookBot() {
     /**
@@ -21,6 +21,7 @@ class FoloBot(
     init {
         messageService.foloBot = this
         userService.foloBot = this
+        fileService.foloBot = this
     }
 
     override fun getBotToken(): String? {
