@@ -28,7 +28,7 @@ class UserJoinHandler(
         val user = update.message.newChatMembers[0]
         if (user.isAndrew()) {
             return messageService
-                .buildMessage("Наконец то ты вернулся, мой сладкий пирожочек Андрюша!", update, true)
+                .buildMessage("Наконец то ты вернулся, мой сладкий пирожочек Андрюша!", update, reply = true)
         } else if (user.isVitalik()) {
             messageService.sendMessage("Как же я горю сейчас", update)
             messageService.sendMessage("Слово мужчини", update)
@@ -41,7 +41,7 @@ class UserJoinHandler(
                 return messageService
                     .buildMessage(
                         "Добро пожаловать в замечательный высокоинтеллектуальный фолочат, "
-                                + userService.getFoloUserName(user) + "!", update, true
+                                + userService.getFoloUserName(user) + "!", update, reply = true
                     )
             } else {
                 messageService.sendMessage(

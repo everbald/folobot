@@ -7,35 +7,23 @@ import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.completion.CompletionRequest
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
-import com.telegram.folobot.FoloId
-import com.telegram.folobot.FoloId.FOLO_TEST_CHAT_ID
 import com.telegram.folobot.extensions.getChatIdentity
+import com.telegram.folobot.extensions.telegramEscape
 import io.ktor.client.network.sockets.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import mu.KLogging
-import net.coobird.thumbnailator.Thumbnails
-import net.coobird.thumbnailator.filters.Canvas
-import net.coobird.thumbnailator.geometry.Positions
 import org.springframework.stereotype.Service
-import org.telegram.telegrambots.meta.api.objects.InputFile
+import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
-import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.net.URL
-import javax.imageio.ImageIO
 
 @Service
 class OpenAIService(
     private val openAI: OpenAI,
     private val userService: UserService,
     private val messageQueueService: MessageQueueService,
-    private val messageService: MessageService,
-    private val fileService: FileService
 ) : KLogging() {
     fun smallTalkCompletion(update: Update) {
         val completionRequest = CompletionRequest(
@@ -49,18 +37,6 @@ class OpenAIService(
 
     @OptIn(BetaOpenAI::class)
     fun smallTalk(update: Update) {
-//        if (update.message.hasPhoto()) {
-//            val file = fileService.downloadPhoto(update)
-//
-//            val os = ByteArrayOutputStream()
-//            Thumbnails.of(file)
-//                .size(1024, 1024)
-//                .addFilter( Canvas(1024, 1024, Positions.CENTER, true))
-//                .outputFormat("PNG")
-//                .toOutputStream(os)
-//            val ins = ByteArrayInputStream(os.toByteArray())
-//            messageService.sendPhoto(InputFile(ins, "magic.png"), FOLO_TEST_CHAT_ID, "wololo")
-//        }
         val messageStack = buildChatMessageStack(update.message)
         if (messageStack.isNotEmpty()) {
             val chatCompletionRequest = ChatCompletionRequest(
@@ -70,6 +46,7 @@ class OpenAIService(
             makeRequest(chatCompletionRequest, update)
         }
     }
+
 
     private fun buildPrompt(message: Message): String? {
         return when {
@@ -85,7 +62,7 @@ class OpenAIService(
     private fun makeRequest(request: CompletionRequest, update: Update) = GlobalScope.async {
         try {
             openAI.completion(request).choices.firstOrNull()?.text?.let {
-                messageQueueService.sendAndAddToQueue(it.trimMargin().trimIndent(), update, true)
+                messageQueueService.sendAndAddToQueue(it.telegramEscape(), update, parseMode = ParseMode.MARKDOWNV2, reply = true)
             }
             logger.info {
                 "Had a small talk with ${update.message.from.getName()} " +
@@ -100,7 +77,7 @@ class OpenAIService(
     private fun makeRequest(request: ChatCompletionRequest, update: Update) = GlobalScope.async {
         try {
             openAI.chatCompletion(request).choices.firstOrNull()?.message?.content?.let {
-                messageQueueService.sendAndAddToQueue(it.trimMargin().trimIndent(), update, true)
+                messageQueueService.sendAndAddToQueue(it.telegramEscape(), update, parseMode = ParseMode.MARKDOWNV2, reply = true)
             }
             logger.info {
                 "Had a small talk with ${update.message.from.getName()} " +
@@ -119,7 +96,7 @@ class OpenAIService(
                 content = "Александр Фоломкин пытается выучиться на программиста, но прошло уже три года и результата нет. " +
                         "Он коренной москвич с высшим образованием, но не можешь найти удаленную работу кроме работы курьера потому что всю работу уводят понаехавшие. " +
                         "Он занудный и не любишь общаться с людьми, потому что ко всем относишься с подозрением, стараешься получить всё бесплатно или за дёшево, считаешь, что другие люди не зарабатывают деньги, а деньги падают на них с неба. " +
-                        "Он неуверен в себе, избегаешь конфликтов, часто имитируешь работу, любишь плотно поесть, любишь работать за персональным компьютером, любишь гулять по пустярям и паркам, не любишь столичную суматоху, любишь отдыхать на диване и переставлять вещи по комнате. " +
+                        "Он неуверен в себе, избегаешь конфликтов, часто имитируешь работу, любишь плотно поесть, любишь работать за персональным компьютером, любишь гулять по пустырям и паркам, не любишь столичную суматоху, любишь отдыхать на диване и переставлять вещи по комнате. " +
                         "Он любишь носить сразу две куртки. Любишь носить белорусскую обувь, хоть она и стирает ноги до мозолей. Покупаешь вещи по скидкам. Любишь магазин Декатлон. Любишь ходить в жару в штанах и в одежде с длинным рукавом, от этого сильно потеешь и плохо пахнешь. " +
                         "Он любишь вспоминать былые деньки, путешествия, тусовки. Никогда не пьёшь алкоголь и не куришь, эти привычки для тебя табу. Любишь дурачиться с едой и её фотографировать. Любишь делать сразу много одинаковых фотографий и выкладывать в свой блог, чтоб учёные будущего узнали, как ты жил. " +
                         "Он ведёшь youtube канал, телеграм канал, инстаграмм. Выкладываешь видео, в которых рассказываешь о своей жизни, постишь свои селфи и фото завтраков, обедов, ужинов. У тебя есть верные фанаты, которые называют себя фолопидоры. " +
@@ -155,7 +132,7 @@ class OpenAIService(
     }
 
     private fun String?.preparePrompt() = this?.take(
-            (Regex("[.!?]").findAll(this.take(1000))
+            ("[.!?]".toRegex().findAll(this.take(1000))
                 .lastOrNull()?.groups?.first()?.range?.last?.plus(1)) ?: 1000
         )?.run { this + if (listOf('.', '!', '?').none { it == this.last() }) "." else "" }
 }

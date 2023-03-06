@@ -19,48 +19,32 @@ class MessageService(
 ) : KLogging() {
     lateinit var foloBot: FoloBot
 
-    /**
-     * Собрать объект [SendMessage]
-     *
-     * @param text   Текст сообщения
-     * @param update [Update]
-     * @return [SendMessage]
-     */
-    fun buildMessage(text: String, update: Update): SendMessage {
+    fun buildMessage(text: String, update: Update, parseMode: String = ParseMode.MARKDOWN): SendMessage {
         return SendMessage
             .builder()
-            .parseMode(ParseMode.MARKDOWN)
+            .parseMode(parseMode)
             .chatId(update.message.chatId.toString())
             .text(text)
             .build()
     }
 
-    /**
-     * Собрать объект [SendMessage]
-     *
-     * @param text   Текст сообщения
-     * @param update [Update]
-     * @param reply  В ответ на сообщение
-     * @return [SendMessage]
-     */
-    fun buildMessage(text: String, update: Update, reply: Boolean): SendMessage {
-        val sendMessage: SendMessage = buildMessage(text, update)
+    fun buildMessage(
+        text: String,
+        update: Update,
+        parseMode: String = ParseMode.MARKDOWN,
+        reply: Boolean
+    ): SendMessage {
+        val sendMessage: SendMessage = buildMessage(text, update, parseMode)
         if (reply) sendMessage.replyToMessageId = update.message.messageId
         return sendMessage
     }
 
-    /**
-     * Отправить сообщение
-     *
-     * @param text   текст сообщения
-     * @param chatId ID чата(пользователя)
-     */
-    fun sendMessage(text: String, chatId: Long) {
+    fun sendMessage(text: String, chatId: Long, parseMode: String = ParseMode.MARKDOWN) {
         try {
             foloBot.execute(
                 SendMessage
                     .builder()
-                    .parseMode(ParseMode.MARKDOWN)
+                    .parseMode(parseMode)
                     .chatId(chatId.toString())
                     .text(text)
                     .build()
@@ -70,36 +54,21 @@ class MessageService(
         }
     }
 
-    /**
-     * Отправить сообщение
-     *
-     * @param text   текст сообщения
-     * @param update [Update]
-     * @return [Message]
-     */
-    fun sendMessage(text: String, update: Update): Message? {
+    fun sendMessage(text: String, update: Update, parseMode: String = ParseMode.MARKDOWN): Message? {
         try {
-            return foloBot.execute(buildMessage(text, update))
+            return foloBot.execute(buildMessage(text, update, parseMode))
         } catch (e: TelegramApiException) {
             logger.error { e }
         }
         return null
     }
 
-    /**
-     * Отправить сообщение буз реплая
-     *
-     * @param text   текст сообщения
-     * @param update [Update]
-     * @param reply  да/нет
-     * @return [Message]
-     */
-    fun sendMessage(text: String, update: Update, reply: Boolean): Message? {
+    fun sendMessage(text: String, update: Update, parseMode: String = ParseMode.MARKDOWN, reply: Boolean): Message? {
         if (!reply) {
-            return sendMessage(text, update)
+            return sendMessage(text, update, parseMode)
         } else {
             try {
-                return foloBot.execute(buildMessage(text, update, reply))
+                return foloBot.execute(buildMessage(text, update, parseMode, reply))
             } catch (e: TelegramApiException) {
                 logger.error { e }
             }
@@ -116,12 +85,6 @@ class MessageService(
             .build()
     }
 
-    /**
-     * Отправить стикер
-     *
-     * @param stickerId [String]
-     * @param update      [Update]
-     */
     fun sendSticker(stickerId: String?, update: Update) {
         stickerId?.let {
             try {
@@ -132,12 +95,6 @@ class MessageService(
         }
     }
 
-    /**
-     * Пересылка сообщений
-     *
-     * @param chatId Чат куда будет переслано сообщение
-     * @param update [Update]
-     */
     fun forwardMessage(chatId: Long, update: Update) {
         try {
             foloBot.execute(
@@ -188,73 +145,53 @@ class MessageService(
         }
     }
 
-    fun buildPhoto(photo: InputFile, chatId: Long, text: String): SendPhoto {
+    fun buildPhoto(photo: InputFile, chatId: Long, text: String, parseMode: String = ParseMode.MARKDOWN): SendPhoto {
         return SendPhoto
             .builder()
-            .parseMode(ParseMode.MARKDOWN)
+            .parseMode(parseMode)
             .chatId(chatId.toString())
             .photo(photo)
             .caption(text)
             .build()
     }
 
-    fun buildPhoto(photoPath: String, chatId: Long, text: String): SendPhoto {
+    fun buildPhoto(photoPath: String, chatId: Long, text: String, parseMode: String = ParseMode.MARKDOWN): SendPhoto {
         return buildPhoto(
             InputFile(
                 this::class.java.getResourceAsStream(photoPath),
                 photoPath.substringAfterLast("/")
             ),
             chatId,
-            text
+            text,
+            parseMode
         )
     }
 
 
-    /**
-     * Отправить изображение
-     *
-     * @param photo изображениe
-     * @param text    текст сообщения
-     * @param chatId  ID чата(пользователя)
-     */
-    fun sendPhoto(photo: InputFile, chatId: Long, text: String) {
+    fun sendPhoto(photo: InputFile, chatId: Long, text: String, parseMode: String = ParseMode.MARKDOWN) {
         try {
             foloBot.execute(
-                buildPhoto(photo, chatId, text)
+                buildPhoto(photo, chatId, text, parseMode)
             )
         } catch (e: TelegramApiException) {
             logger.error { e }
         }
     }
 
-    /**
-     * Отправить изображение
-     *
-     * @param photoPath путь к фото в ресурсах
-     * @param text      текст сообщения
-     * @param chatId    ID чата(пользователя)
-     */
-    fun sendPhoto(photoPath: String, chatId: Long, text: String) {
+    fun sendPhoto(photoPath: String, chatId: Long, text: String, parseMode: String = ParseMode.MARKDOWN) {
         try {
             foloBot.execute(
-                buildPhoto(photoPath, chatId, text)
+                buildPhoto(photoPath, chatId, text, parseMode)
             )
         } catch (e: Exception) {
             logger.error { e }
         }
     }
 
-    /**
-     * Отправить аудио
-     *
-     * @param voiceId идентификатор audio
-     * @param text    текст сообщения
-     * @param chatId  ID чата(пользователя)
-     */
-    fun sendVoice(voiceId: String, text: String? = null, chatId: Long) {
+    fun sendVoice(voiceId: String, text: String? = null, chatId: Long, parseMode: String = ParseMode.MARKDOWN) {
         val voice = SendVoice
             .builder()
-            .parseMode(ParseMode.MARKDOWN)
+            .parseMode(parseMode)
             .chatId(chatId.toString())
             .voice(InputFile(voiceId))
         text?.let { voice.caption(text) }
@@ -266,11 +203,6 @@ class MessageService(
     }
 
 
-    /**
-     * Удалить сообщение
-     *
-     * @param update [Update]
-     */
     fun deleteMessage(update: Update) {
         try {
             foloBot.execute(DeleteMessage(update.message.chatId.toString(), update.message.messageId))
@@ -279,9 +211,6 @@ class MessageService(
         }
     }
 
-    /**
-     * Удалить сообщение
-     */
     fun deleteMessage(chatId: Long, messageId: Int) {
         try {
             foloBot.execute(DeleteMessage(chatId.toString(), messageId))
@@ -290,11 +219,6 @@ class MessageService(
         }
     }
 
-    /**
-     * Заместить сообщение
-     *
-     * @param update [Update]
-     */
     fun substituteMessage(update: Update) {
         forwardMessage(update.message.chatId, update)
         deleteMessage(update)
@@ -314,11 +238,6 @@ class MessageService(
         }
     }
 
-    /**
-     * Получить случайный стикер (из гиф пака)
-     *
-     * @return [InputFile]
-     */
     val randomSticker: String
         get() {
             return arrayOf(

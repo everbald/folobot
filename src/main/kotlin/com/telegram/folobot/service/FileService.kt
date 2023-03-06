@@ -4,16 +4,20 @@ import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.GetFile
 import org.telegram.telegrambots.meta.api.objects.Update
-import java.io.File
+import java.io.InputStream
 
 
 @Component
 class FileService() : KLogging() { //TODO add logs
     lateinit var foloBot: FoloBot
 
-    fun downloadPhoto(update: Update): File? {
+    fun downloadPhoto(update: Update): InputStream? {
         val filePath = getFilePath(update)
-        return downloadPhotoByFilePath(filePath)
+        return downloadPhotoAsStream(filePath)
+    }
+
+    fun downloadPhoto(filePath: String): InputStream? {
+        return downloadPhotoAsStream(filePath)
     }
 
     fun getFilePath(update: Update): String? {
@@ -27,4 +31,8 @@ class FileService() : KLogging() { //TODO add logs
 
     private fun downloadPhotoByFilePath(filePath: String?) =
         filePath?.let { runCatching { foloBot.downloadFile(filePath) }.getOrNull() }
+
+    private fun downloadPhotoAsStream(filePath: String?) =
+        filePath?.let { runCatching { foloBot.downloadFileAsStream(filePath)  }.getOrNull() }
+
 }
