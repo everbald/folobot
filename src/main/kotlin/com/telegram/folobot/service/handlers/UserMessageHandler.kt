@@ -1,7 +1,7 @@
 package com.telegram.folobot.service.handlers
 
-import com.telegram.folobot.IdUtils
-import com.telegram.folobot.IdUtils.Companion.isAndrew
+import com.telegram.folobot.FoloId.POC_ID
+import com.telegram.folobot.extensions.isAndrew
 import com.telegram.folobot.service.MessageService
 import com.telegram.folobot.service.TextService
 import mu.KLogging
@@ -22,11 +22,11 @@ class UserMessageHandler(
      * @return [BotApiMethod]
      */
     fun handle(update: Update): BotApiMethod<*>? {
-        if (isAndrew(update.message.from) &&
+        if (update.message.from.isAndrew() &&
             Random(System.nanoTime()).nextInt(100) < 7
         ) {
             messageService.forwardMessage(
-                IdUtils.POC_ID,
+                POC_ID,
                 messageService.sendMessage(textService.quoteForAndrew, update, true)
                     .also { logger.info { "Replied to Andrew with ${it?.text}" } }
             )

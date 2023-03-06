@@ -1,9 +1,11 @@
 package com.telegram.folobot.service.handlers
 
-import com.telegram.folobot.IdUtils
-import com.telegram.folobot.IdUtils.Companion.isAndrew
-import com.telegram.folobot.IdUtils.Companion.isFo
-import com.telegram.folobot.isNotUserJoin
+import com.telegram.folobot.FoloId.ANDREWSLEGACY_ID
+import com.telegram.folobot.FoloId.FO_LEGACY_ID
+import com.telegram.folobot.FoloId.POC_ID
+import com.telegram.folobot.extensions.isAndrew
+import com.telegram.folobot.extensions.isFo
+import com.telegram.folobot.extensions.isNotUserJoin
 import com.telegram.folobot.service.*
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -61,13 +63,13 @@ class RegistryHandler(
     private fun forwardPrivate(update: Update) {
         if (update.hasMessage() && update.message.isNotUserJoin()) {
             if (update.message.isUserMessage) {
-                messageService.forwardMessage(IdUtils.POC_ID, update)
+                messageService.forwardMessage(POC_ID, update)
                 logger.info { "Forwarded message to POC" }
-            } else if (isFo(update.message.from)) {
-                messageService.forwardMessage(IdUtils.FO_LEGACY_ID, update)
+            } else if (update.message.from.isFo()) {
+                messageService.forwardMessage(FO_LEGACY_ID, update)
                 logger.info { "Forwarded message to Fo's legacy" }
-            } else if (isAndrew(update.message.from)) {
-                messageService.forwardMessage(IdUtils.ANDREWSLEGACY_ID, update)
+            } else if (update.message.from.isAndrew()) {
+                messageService.forwardMessage(ANDREWSLEGACY_ID, update)
                 logger.info { "Forwarded message to Andrews legacy" }
             }
         }

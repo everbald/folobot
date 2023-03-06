@@ -1,10 +1,9 @@
 package com.telegram.folobot.service
 
-import com.telegram.folobot.IdUtils.Companion.MESSAGE_QUEUE_ID
-import com.telegram.folobot.IdUtils.Companion.getChatIdentity
+import com.telegram.folobot.FoloId.MESSAGE_QUEUE_ID
+import com.telegram.folobot.extensions.getChatIdentity
 import mu.KLogging
 import org.springframework.stereotype.Component
-import org.telegram.telegrambots.meta.api.methods.ActionType
 import org.telegram.telegrambots.meta.api.methods.ForwardMessage
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.methods.send.*

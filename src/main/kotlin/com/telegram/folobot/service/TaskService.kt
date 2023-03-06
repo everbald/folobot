@@ -1,7 +1,7 @@
 package com.telegram.folobot.service
 
-import com.telegram.folobot.IdUtils
 import com.telegram.folobot.Utils
+import com.telegram.folobot.extensions.getChatIdentity
 import com.telegram.folobot.model.NumTypeEnum
 import mu.KLogging
 import org.springframework.stereotype.Service
@@ -29,7 +29,7 @@ class TaskService(
                 }
             ),
             chatId
-        ).also { logger.info { "Sent day stats to ${IdUtils.getChatIdentity(chatId)}" } }
+        ).also { logger.info { "Sent day stats to ${getChatIdentity(chatId)}" } }
     }
 
     fun foloIndex(chatId: Long) {

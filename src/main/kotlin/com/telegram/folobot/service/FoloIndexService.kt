@@ -1,9 +1,9 @@
 package com.telegram.folobot.service
 
-import com.telegram.folobot.IdUtils.Companion.getChatIdentity
-import com.telegram.folobot.IdUtils.Companion.isAboutFo
-import com.telegram.folobot.IdUtils.Companion.isFo
 import com.telegram.folobot.Utils
+import com.telegram.folobot.extensions.getChatIdentity
+import com.telegram.folobot.extensions.isAboutFo
+import com.telegram.folobot.extensions.isFo
 import com.telegram.folobot.model.NumTypeEnum
 import com.telegram.folobot.model.dto.FoloIndexDto
 import com.telegram.folobot.model.dto.toEntity
@@ -11,12 +11,8 @@ import com.telegram.folobot.persistence.entity.FoloIndexId
 import com.telegram.folobot.persistence.entity.toDto
 import com.telegram.folobot.persistence.repos.FoloIndexRepo
 import mu.KLogging
-import org.jfree.chart.ChartUtilities
 import org.springframework.stereotype.Service
-import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Update
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
@@ -58,8 +54,8 @@ class FoloIndexService(
     fun addActivityPoints(update: Update) {
         if (update.hasMessage()) {
             val points =
-                if (isFo(update.message.from)) 3
-                else if (isAboutFo(update)) 2
+                if (update.message.from.isFo()) 3
+                else if (update.message.isAboutFo()) 2
                 else 1
             foloIndexRepo.save(getById(update.message.chatId, LocalDate.now()).addPoints(points).toEntity())
             logger.trace {

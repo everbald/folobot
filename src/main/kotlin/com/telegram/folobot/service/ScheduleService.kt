@@ -1,6 +1,6 @@
 package com.telegram.folobot.service
 
-import com.telegram.folobot.IdUtils.Companion.FOLO_CHAT_ID
+import com.telegram.folobot.FoloId.FOLO_CHAT_ID
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 

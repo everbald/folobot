@@ -17,7 +17,7 @@ class SmallTalkHandler(
      * @return [BotApiMethod]
      */
     fun handle(update: Update): BotApiMethod<*>? {
-        openAIService.smallTalkChat(update)
+        openAIService.smallTalk(update)
         return null
     }
 }

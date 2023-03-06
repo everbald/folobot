@@ -1,16 +1,14 @@
 package com.telegram.folobot.service.handlers
 
-import com.telegram.folobot.IdUtils
 import com.telegram.folobot.config.BotCredentialsConfig
-import com.telegram.folobot.isNotForward
-import com.telegram.folobot.isUserJoin
-import com.telegram.folobot.isUserLeft
+import com.telegram.folobot.extensions.*
 import com.telegram.folobot.model.ActionsEnum
 import com.telegram.folobot.service.UserService
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
+import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @Service
@@ -46,20 +44,13 @@ class ActionHandler(
         val message = update.message
         return when {
             // Команда
-            message.isNotForward() &&
-                    message.entities?.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text?.let {
-                        message.chat.isUserChat || (!message.chat.isUserChat && it.contains(botCredentials.botUsername))
-                    } == true -> ActionsEnum.COMMAND
+            message.isMyCommand() -> ActionsEnum.COMMAND
             // Личное сообщение
             message.isUserMessage -> ActionsEnum.SMALLTALK //ActionsEnum.USERMESSAGE
             // Ответ на обращение
-            message.isNotForward() && message.hasText() &&
-                    (message.text.lowercase().contains("гурманыч") &&
-                            message.text.lowercase().contains("привет")) -> ActionsEnum.REPLY
+            message.isGreetMe() -> ActionsEnum.SMALLTALK //ActionsEnum.REPLY
             // Беседа
-            (message.hasText() && (IdUtils.isFromFoloSwarm(update) ||
-                    message.text.lowercase().contains("гурманыч"))) ||
-                    userService.isSelf(message.replyToMessage?.from) -> ActionsEnum.SMALLTALK
+            message.isSmallTalk() -> ActionsEnum.SMALLTALK
             // Пользователь зашел в чат
             message.isUserJoin() -> ActionsEnum.USERNEW
             // Пользователь покинул чат
@@ -68,7 +59,7 @@ class ActionHandler(
             else -> ActionsEnum.UNDEFINED
         }.also {
             if (it != ActionsEnum.UNDEFINED) logger.info {
-                "Received request with action $it in chat ${IdUtils.getChatIdentity(message.chatId)}"
+                "Received request with action $it in chat ${getChatIdentity(message.chatId)}"
             }
         }
     }
@@ -94,4 +85,19 @@ class ActionHandler(
         }
         return null
     }
+
+    fun Message.isMyCommand() =
+        this.isCommand && this.isNotForward() &&
+                (this.chat.isUserChat ||
+                        this.entities.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text
+                            ?.contains(botCredentials.botUsername) == true)
+
+    fun Message.isGreetMe() =
+        this.isNotForward() && this.hasText() &&
+                (this.text.lowercase().contains("гурманыч") &&
+                        this.text.lowercase().contains("привет"))
+
+    fun Message.isSmallTalk() =
+        userService.isSelf(this.replyToMessage?.from) || this.isFromFoloSwarm() || this.isAboutBot()
+
 }

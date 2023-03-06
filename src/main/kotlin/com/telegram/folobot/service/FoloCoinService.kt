@@ -1,9 +1,9 @@
 package com.telegram.folobot.service
 
-import com.telegram.folobot.IdUtils.Companion.FOLOMKIN_ID
-import com.telegram.folobot.IdUtils.Companion.isAboutFo
-import com.telegram.folobot.IdUtils.Companion.isFolochat
-import com.telegram.folobot.IdUtils.Companion.isFromFoloSwarm
+import com.telegram.folobot.FoloId.FOLOMKIN_ID
+import com.telegram.folobot.extensions.isAboutFo
+import com.telegram.folobot.extensions.isFolochat
+import com.telegram.folobot.extensions.isFromFoloSwarm
 import com.telegram.folobot.model.dto.FoloCoinDto
 import com.telegram.folobot.model.dto.toEntity
 import com.telegram.folobot.persistence.entity.toDto
@@ -29,9 +29,9 @@ class FoloCoinService(
     }
 
     fun addCoinPoints(update: Update) {
-        if (update.hasMessage() && isFolochat(update.message.chat)) {
-            val points = if (isAboutFo(update)) 3 else 1
-            val receiver = if (isFromFoloSwarm(update) || update.message.isAutomaticForward == true) FOLOMKIN_ID
+        if (update.hasMessage() && update.message.chat.isFolochat()) {
+            val points = if (update.message.isAboutFo()) 3 else 1
+            val receiver = if (update.message.isFromFoloSwarm() || update.message.isAutomaticForward == true) FOLOMKIN_ID
             else update.message.from.id
             foloCoinRepo.save(getById(receiver).addPoints(points).toEntity())
             logger.trace { "Added $points folocoin points to ${userService.getFoloUserName(receiver)}" }
