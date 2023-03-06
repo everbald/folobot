@@ -1,12 +1,12 @@
 package com.telegram.folobot.service.handlers
 
 import com.ibm.icu.text.RuleBasedNumberFormat
-import com.telegram.folobot.IdUtils.Companion.ANDREW_ID
-import com.telegram.folobot.IdUtils.Companion.getChatIdentity
-import com.telegram.folobot.IdUtils.Companion.getPremium
-import com.telegram.folobot.IdUtils.Companion.isFo
+import com.telegram.folobot.FoloId.ANDREW_ID
 import com.telegram.folobot.Utils.Companion.getNumText
 import com.telegram.folobot.Utils.Companion.getPeriodText
+import com.telegram.folobot.extensions.getChatIdentity
+import com.telegram.folobot.extensions.getPremiumPrefix
+import com.telegram.folobot.extensions.isFo
 import com.telegram.folobot.model.BotCommandsEnum
 import com.telegram.folobot.model.NumTypeEnum
 import com.telegram.folobot.service.*
@@ -89,7 +89,7 @@ class CommandHandler(
         val noFapDate: LocalDate
         var noFapCount = 0
         // Фо устанавливает дату
-        if (isFo(update.message.from)) {
+        if (update.message.from.isFo()) {
             noFapDate = LocalDate.now()
             foloVarService.setLastFapDate(noFapDate)
         } else {
@@ -324,7 +324,7 @@ class CommandHandler(
             )
         } else {
             messageService.buildMessage(
-                "На твоем счете нет фолокойнов, уважаемый ${getPremium(update.message.from)}фолопидор " +
+                "На твоем счете нет фолокойнов, уважаемый ${update.message.from.getPremiumPrefix()}фолопидор " +
                         userService.getFoloUserNameLinked(update.message.from),
                 update
             )
