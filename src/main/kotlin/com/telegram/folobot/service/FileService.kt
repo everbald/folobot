@@ -8,7 +8,7 @@ import java.io.InputStream
 
 
 @Component
-class FileService() : KLogging() { //TODO add logs
+class FileService() : KLogging() {
     lateinit var foloBot: FoloBot
 
     fun downloadPhoto(update: Update): InputStream? {
@@ -24,15 +24,28 @@ class FileService() : KLogging() { //TODO add logs
         val photo = getPhoto(update)
         return photo?.filePath ?: runCatching {
             photo?.fileId?.let { foloBot.execute(GetFile.builder().fileId(it).build()).filePath }
-        }.getOrNull()
+        }.getOrElse {
+            logger.error { it }
+            null
+        }
     }
 
     private fun getPhoto(update: Update) = update.message?.photo?.maxByOrNull { it.fileSize }
 
     private fun downloadPhotoByFilePath(filePath: String?) =
-        filePath?.let { runCatching { foloBot.downloadFile(filePath) }.getOrNull() }
+        filePath?.let {
+            runCatching { foloBot.downloadFile(filePath) }.getOrElse {
+                logger.error { it }
+                null
+            }
+        }
 
     private fun downloadPhotoAsStream(filePath: String?) =
-        filePath?.let { runCatching { foloBot.downloadFileAsStream(filePath)  }.getOrNull() }
+        filePath?.let {
+            runCatching { foloBot.downloadFileAsStream(filePath) }.getOrElse {
+                logger.error { it }
+                null
+            }
+        }
 
 }
