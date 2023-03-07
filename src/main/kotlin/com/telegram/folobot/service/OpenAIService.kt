@@ -126,7 +126,11 @@ class OpenAIService(
             .takeLast(5)
             .mapNotNull { stackMessage ->
                 buildPrompt(message)?.let {
-                    ChatMessage(if (userService.isSelf(stackMessage.from)) ChatRole.Assistant else ChatRole.User, it)
+                    ChatMessage(
+                        role = if (userService.isSelf(stackMessage.from)) ChatRole.Assistant else ChatRole.User,
+                        content = it,
+                        name = stackMessage.from.getName()
+                    )
                 }
             }
     }
