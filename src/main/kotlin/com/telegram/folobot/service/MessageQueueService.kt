@@ -4,7 +4,6 @@ import com.telegram.folobot.FoloId.MESSAGE_QUEUE_ID
 import com.telegram.folobot.FoloId.POC_ID
 import com.telegram.folobot.extensions.getChatIdentity
 import com.telegram.folobot.extensions.isLikesToDelete
-import com.telegram.folobot.extensions.isNotForward
 import com.telegram.folobot.extensions.isNotUserJoin
 import com.telegram.folobot.model.dto.MessageQueueDto
 import mu.KLogging
@@ -23,7 +22,7 @@ class MessageQueueService(
     val messageStack: MutableList<MessageQueueDto> = mutableListOf()
 
     fun addToQueue(message: Message) {
-        if (message.isNotForward() && message.isNotUserJoin()) {
+        if (message.isNotUserJoin()) {
             messageQueue.add(
                 MessageQueueDto(
                     LocalDateTime.now(),
@@ -36,6 +35,9 @@ class MessageQueueService(
             )
         }
     }
+
+    fun checkFirstInMediaGroup(mediaGroup: String?) =
+        mediaGroup == null || messageStack.plus(messageQueue).count { it.message.mediaGroupId == mediaGroup } == 1
 
     fun sendAndAddToQueue(text: String, update: Update, parseMode: String = ParseMode.HTML, reply: Boolean) {
         messageService.sendMessage(text, update, parseMode, reply)?.let {

@@ -3,6 +3,7 @@ package com.telegram.folobot.service.handlers
 import com.telegram.folobot.config.BotCredentialsConfig
 import com.telegram.folobot.extensions.*
 import com.telegram.folobot.model.ActionsEnum
+import com.telegram.folobot.service.MessageQueueService
 import com.telegram.folobot.service.UserService
 import mu.KLogging
 import org.springframework.stereotype.Service
@@ -20,7 +21,8 @@ class ActionHandler(
     private val userJoinHandler: UserJoinHandler,
     private val registryHandler: RegistryHandler,
     private val smallTalkHandler: SmallTalkHandler,
-    private val userService: UserService
+    private val userService: UserService,
+    private val messageQueueService: MessageQueueService
 ) : KLogging() {
 
     fun handle(update: Update): BotApiMethod<*>? {
@@ -29,7 +31,9 @@ class ActionHandler(
             registryHandler.handle(update)
 
             //Действие в зависимости от содержимого update
-            return onAction(getAction(update), update)
+            return if (messageQueueService.checkFirstInMediaGroup(update.message?.mediaGroupId))
+                onAction(getAction(update), update)
+            else null
         }
         return null
     }
