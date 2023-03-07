@@ -102,6 +102,8 @@ class ActionHandler(
                         this.text.lowercase().contains("привет"))
 
     fun Message.isSmallTalk() =
-        userService.isSelf(this.replyToMessage?.from) || this.isFromFoloSwarm() || this.isAboutBot()
+        userService.isSelf(this.replyToMessage?.from) ||
+                this.isFromFoloSwarm() ||
+                (this.isNotForward() && this.isAboutBot())
 
 }
