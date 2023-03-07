@@ -129,7 +129,7 @@ class OpenAIService(
                     ChatMessage(
                         role = if (userService.isSelf(stackMessage.from)) ChatRole.Assistant else ChatRole.User,
                         content = it,
-                        name = stackMessage.from.getName()
+//                        name = stackMessage.from.getName()
                     )
                 }
             }
