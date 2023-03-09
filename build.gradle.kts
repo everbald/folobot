@@ -43,7 +43,7 @@ dependencies {
     implementation("io.ktor:ktor-client-apache:2.2.4")
 
     // telegram api
-    implementation("org.telegram:telegrambots:6.4.0")
+    implementation("org.telegram:telegrambots:6.5.0")
 
     // open api
     implementation("com.aallam.openai:openai-client:3.0.0")

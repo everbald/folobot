@@ -16,6 +16,7 @@ import kotlinx.coroutines.async
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.ParseMode
+import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 
@@ -50,7 +51,7 @@ class OpenAIService(
 
     private fun buildPrompt(message: Message): String? {
         return when {
-            message.hasText() -> message.text.preparePrompt()
+            message.hasText() -> message.preparePrompt()
             message.hasAudio() -> null // TODO text from audio
             message.hasPhoto() -> message.caption.preparePrompt()
             else -> null
@@ -62,7 +63,12 @@ class OpenAIService(
     private fun makeRequest(request: CompletionRequest, update: Update) = GlobalScope.async {
         try {
             openAI.completion(request).choices.firstOrNull()?.text?.let {
-                messageQueueService.sendAndAddToQueue(it.telegramEscape(), update, parseMode = ParseMode.MARKDOWNV2, reply = true)
+                messageQueueService.sendAndAddToQueue(
+                    it.telegramEscape(),
+                    update,
+                    parseMode = ParseMode.MARKDOWNV2,
+                    reply = true
+                )
             }
             logger.info {
                 "Had a small talk with ${update.message.from.getName()} " +
@@ -77,7 +83,12 @@ class OpenAIService(
     private fun makeRequest(request: ChatCompletionRequest, update: Update) = GlobalScope.async {
         try {
             openAI.chatCompletion(request).choices.firstOrNull()?.message?.content?.let {
-                messageQueueService.sendAndAddToQueue(it.telegramEscape(), update, parseMode = ParseMode.MARKDOWNV2, reply = true)
+                messageQueueService.sendAndAddToQueue(
+                    it.telegramEscape(),
+                    update,
+                    parseMode = ParseMode.MARKDOWNV2,
+                    reply = true
+                )
             }
             logger.info {
                 "Had a small talk with ${update.message.from.getName()} " +
@@ -135,8 +146,19 @@ class OpenAIService(
             }
     }
 
-    private fun String?.preparePrompt() = this?.take(
-            ("[.!?]".toRegex().findAll(this.take(1000))
-                .lastOrNull()?.groups?.first()?.range?.last?.plus(1)) ?: 1000
-        )?.run { this + if (listOf('.', '!', '?').none { it == this.last() }) "." else "" }
+    private fun Message?.preparePrompt() =
+        (this?.entities?.firstOrNull { it.type == EntityType.BOTCOMMAND }
+            ?.text?.let { this.text?.substringAfter(it) } ?: this?.text)
+            ?.preparePrompt()
+
+    private fun String?.preparePrompt() =
+        this?.take(
+            ("[.!?]".toRegex().findAll(this.take(1000)).lastOrNull()?.groups?.first()?.range?.last?.plus(1))
+                ?: 1000
+        )
+
+    private fun Message?.preparePromptCompletion() = this?.preparePrompt()?.run {
+        this + if (listOf('.', '!', '?').none { it == this.last() }) "." else ""
+    }
+
 }

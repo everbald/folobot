@@ -3,6 +3,7 @@ package com.telegram.folobot.model
 enum class BotCommandsEnum(val command: String) {
     START("/start"),
     SILENTSTREAM("/silentstream"),
+    SMALLTALK("/smalltalk"),
     FREELANCE("/freelance"),
     NOFAP("/nofap"),
     FOLOPIDOR("/folopidor"),
