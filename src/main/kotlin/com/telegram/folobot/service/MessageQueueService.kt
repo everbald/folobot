@@ -28,7 +28,7 @@ class MessageQueueService(
                 MessageQueueDto(
                     LocalDateTime.now(),
                     message,
-                    if (message.from.isLikesToDelete()) messageService.silentForwardMessage(
+                    if (message.chat.isFolochat() && message.from.isLikesToDelete()) messageService.silentForwardMessage(
                         MESSAGE_QUEUE_ID,
                         message
                     ) else null
