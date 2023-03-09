@@ -67,7 +67,7 @@ class CommandHandler(
         return null
     }
 
-    private fun smallTalk(update: Update) = smallTalkHandler.handle(update)
+    private fun smallTalk(update: Update) = smallTalkHandler.handle(update, withSetup = false)
 
     /**
      * Подсчет времени прошедшего с дня F
