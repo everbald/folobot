@@ -3,6 +3,7 @@ package com.telegram.folobot.service
 import com.telegram.folobot.FoloId.MESSAGE_QUEUE_ID
 import com.telegram.folobot.FoloId.POC_ID
 import com.telegram.folobot.extensions.getChatIdentity
+import com.telegram.folobot.extensions.isFolochat
 import com.telegram.folobot.extensions.isLikesToDelete
 import com.telegram.folobot.extensions.isNotUserJoin
 import com.telegram.folobot.model.dto.MessageQueueDto
@@ -52,7 +53,7 @@ class MessageQueueService(
         messageQueue.clear()
         messageStack.removeIf { it.recievedAt < LocalDateTime.now().minusDays(1) || it.restored }
 
-        messageStack.filterNot { !it.message.isUserMessage }
+        messageStack.filter { it.message.chat.isFolochat() }
             .forEach { queueMessage ->
             queueMessage.backupMessage?.let {
                 if (messageService.checkIfMessageDeleted(queueMessage.message)) {
