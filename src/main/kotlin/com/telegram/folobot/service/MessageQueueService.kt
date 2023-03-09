@@ -51,27 +51,30 @@ class MessageQueueService(
     fun restoreMessages() {
         messageStack.addAll(messageQueue)
         messageQueue.clear()
-        messageStack.removeIf { it.recievedAt < LocalDateTime.now().minusDays(1) || it.restored }
+        messageStack.removeIf { it.recievedAt < LocalDateTime.now().minusDays(1) }
 
-        messageStack.filter { it.message.chat.isFolochat() }
+        messageStack.filter { it.message.chat.isFolochat() && !it.restored }
             .forEach { queueMessage ->
-            queueMessage.backupMessage?.let {
-                if (messageService.checkIfMessageDeleted(queueMessage.message)) {
-                    messageService.forwardMessage(queueMessage.message.chatId, it)
-                    messageService.deleteMessage(MESSAGE_QUEUE_ID, it.messageId)
-                    queueMessage.restored = true
-                    logger.info {
-                        "Restored message from ${userService.getFoloUserName(queueMessage.message.from)} " +
-                                "in chat ${getChatIdentity(queueMessage.message.chatId)}"
+                queueMessage.backupMessage?.let {
+                    if (messageService.checkIfMessageDeleted(queueMessage.message)) {
+                        messageService.forwardMessage(queueMessage.message.chatId, it)
+                        messageService.deleteMessage(MESSAGE_QUEUE_ID, it.messageId)
+                        queueMessage.restored = true
+                        logger.info {
+                            "Restored message from ${userService.getFoloUserName(queueMessage.message.from)} " +
+                                    "in chat ${getChatIdentity(queueMessage.message.chatId)}"
+                        }
                     }
                 }
             }
-        }
     }
 
     fun getStack(message: Message): List<Message> {
-        val fullStack = messageStack.plus(messageQueue).associateBy { it.message.messageId }
-        val stack = flattenStack(message.messageId, fullStack)
+        val stack = if (!message.isUserMessage) {
+            flattenStack(message.messageId, getFullQueueForChat(message.chatId).associateBy { it.message.messageId })
+        } else {
+            getFullQueueForChat(message.chatId).sortedBy { it.recievedAt }.takeLast(5).map { it.message }
+        }
         return stack.ifEmpty { flattenMessage(message) }
     }
 
@@ -96,4 +99,8 @@ class MessageQueueService(
         }
         return messages
     }
+
+    private fun getFullQueueForChat(chatId: Long) =
+        messageStack.plus(messageQueue).filter { it.message.chatId == chatId }
+
 }
