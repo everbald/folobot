@@ -52,7 +52,7 @@ class ActionHandler(
             // Личное сообщение
             message.isUserMessage -> ActionsEnum.SMALLTALK //ActionsEnum.USERMESSAGE
             // Ответ на обращение
-            message.isGreetMe() -> ActionsEnum.SMALLTALK //ActionsEnum.REPLY
+            message.isGreetMe() -> ActionsEnum.REPLY
             // Беседа
             message.isSmallTalk() -> ActionsEnum.SMALLTALK
             // Пользователь зашел в чат
@@ -96,14 +96,8 @@ class ActionHandler(
                         this.entities.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text
                             ?.contains(botCredentials.botUsername) == true)
 
-    fun Message.isGreetMe() =
-        this.isNotForward() && this.hasText() &&
-                (this.text.lowercase().contains("гурманыч") &&
-                        this.text.lowercase().contains("привет"))
+    fun Message.isGreetMe() = this.isNotForward() && this.isAboutBot() &&
+            this.text?.contains("привет", ignoreCase = true) == true
 
-    fun Message.isSmallTalk() =
-        userService.isSelf(this.replyToMessage?.from) ||
-                this.isFromFoloSwarm() ||
-                (this.isNotForward() && this.isAboutBot())
-
+    fun Message.isSmallTalk() = userService.isSelf(this.replyToMessage?.from) || this.isFromFoloSwarm()
 }

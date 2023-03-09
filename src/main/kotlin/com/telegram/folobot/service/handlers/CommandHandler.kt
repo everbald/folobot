@@ -28,7 +28,8 @@ class CommandHandler(
     private val messageService: MessageService,
     private val userService: UserService,
     private val textService: TextService,
-    private val foloIndexChartService: FoloIndexChartService
+    private val foloIndexChartService: FoloIndexChartService,
+    private val smallTalkHandler: SmallTalkHandler
 ) : KLogging() {
 
     /**
@@ -50,7 +51,7 @@ class CommandHandler(
 
             BotCommandsEnum.SILENTSTREAM -> messageService.sendSticker(messageService.randomSticker, update)
                 .also { logger.info { "Sent sticker to ${getChatIdentity(update.message.chatId)}" } }
-
+            BotCommandsEnum.SMALLTALK -> return smallTalk(update)
             BotCommandsEnum.FREELANCE -> return frelanceTimer(update)
             BotCommandsEnum.NOFAP -> return nofapTimer(update)
             BotCommandsEnum.FOLOPIDOR -> return foloPidor(update)
@@ -65,6 +66,8 @@ class CommandHandler(
         }
         return null
     }
+
+    private fun smallTalk(update: Update) = smallTalkHandler.handle(update)
 
     /**
      * Подсчет времени прошедшего с дня F
