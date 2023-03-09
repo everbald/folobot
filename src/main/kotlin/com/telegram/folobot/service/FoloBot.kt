@@ -14,7 +14,7 @@ class FoloBot(
     private val userService: UserService,
     private val fileService: FileService,
     private val botCredentials: BotCredentialsConfig
-) : TelegramWebhookBot() {
+) : TelegramWebhookBot(botCredentials.botToken) {
     /**
      * Инициализация бота в обработчиках
      */
@@ -22,10 +22,6 @@ class FoloBot(
         messageService.foloBot = this
         userService.foloBot = this
         fileService.foloBot = this
-    }
-
-    override fun getBotToken(): String? {
-        return botCredentials.botToken
     }
 
     override fun getBotUsername(): String? {
