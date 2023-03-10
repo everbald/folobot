@@ -15,7 +15,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 @Component
 class MessageService(
-    private val userService: UserService
+    private val userService: UserService,
 ) : KLogging() {
     lateinit var foloBot: FoloBot
 

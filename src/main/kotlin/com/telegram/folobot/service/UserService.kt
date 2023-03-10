@@ -11,8 +11,9 @@ import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 @Component
-class UserService(private val foloUserService: FoloUserService) : KLogging() {
-
+class UserService(
+    private val foloUserService: FoloUserService,
+) : KLogging() {
     lateinit var foloBot: FoloBot
 
     /**

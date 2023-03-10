@@ -51,9 +51,9 @@ class OpenAIService(
 
     private fun buildPrompt(message: Message): String? {
         return when {
-            message.hasText() -> message.text.preparePrompt()
+            message.hasText() -> message.text.preparePromptCompletion()
             message.hasAudio() -> null // TODO text from audio
-            message.hasPhoto() -> message.caption.preparePrompt()
+            message.hasPhoto() -> message.caption.preparePromptCompletion()
             else -> null
         }
 
@@ -151,7 +151,7 @@ class OpenAIService(
     private fun Message?.preparePrompt() =
         (this?.entities?.firstOrNull { it.type == EntityType.BOTCOMMAND }
             ?.text?.let { this.text?.substringAfter(it) } ?: this?.text)
-            ?.preparePrompt()
+            ?.preparePromptCompletion()
 
     private fun String?.preparePrompt() =
         this?.take(
@@ -159,7 +159,7 @@ class OpenAIService(
                 ?: 1000
         )
 
-    private fun Message?.preparePromptCompletion() = this?.preparePrompt()?.run {
+    private fun String?.preparePromptCompletion() = this?.preparePrompt()?.run {
         this + if (listOf('.', '!', '?').none { it == this.last() }) "." else ""
     }
 
