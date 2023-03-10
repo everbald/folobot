@@ -231,7 +231,7 @@ class MessageService(
             false
         } else {
             logger.info {
-                "found deleted message from ${userService.getFoloUserName(message.from)} " +
+                "Found deleted message from ${userService.getFoloUserName(message.from)} " +
                         "in chat ${getChatIdentity(message.chatId)}"
             }
             true
