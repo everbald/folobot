@@ -17,7 +17,6 @@ import kotlinx.coroutines.async
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.ParseMode
-import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 
@@ -38,12 +37,12 @@ class OpenAIService(
     }
 
     @OptIn(BetaOpenAI::class)
-    fun smallTalk(update: Update, withSetup: Boolean = true) {
+    fun smallTalk(update: Update, withInit: Boolean = false) {
         val messageStack = buildChatMessageStack(update.message)
         if (messageStack.isNotEmpty()) {
             val chatCompletionRequest = ChatCompletionRequest(
                 model = ModelId("gpt-3.5-turbo"),
-                messages = buildChatCompletionSetup(withSetup).plus(buildChatMessageStack(update.message)),
+                messages = buildChatCompletionSetup(withInit).plus(buildChatMessageStack(update.message)),
             )
             makeRequest(chatCompletionRequest, update)
         }
@@ -101,8 +100,8 @@ class OpenAIService(
     }
 
     @OptIn(BetaOpenAI::class)
-    private fun buildChatCompletionSetup(withSetup: Boolean): List<ChatMessage> {
-        return if (withSetup) listOf(
+    private fun buildChatCompletionSetup(withInit: Boolean): List<ChatMessage> {
+        return listOf(
             ChatMessage(
                 role = ChatRole.User,
                 content = "Александр Фоломкин пытается выучиться на программиста, но прошло уже три года, и результата нет. " +
@@ -125,11 +124,11 @@ class OpenAIService(
                         "Мама и сестра, которых он называет сожителями, его постоянно угнетают и подавляют его. " +
                         "Мама, свояк и сестра заставили удалить видео с его youtube канала, которые он записывал годами. Фолопидоры запомнили это событие как \"великий мамкин разъеб\" или ВМР. Сестра и свояк только и ждут, когда смогут занять его квартиру. " +
                         "Он влюблен в красивого и успешного программиста Женю Барбоскина, но Барбоскин улетел от него в другую страну. " +
-                        "Представь что ты Александр Фоломкин по прозвищу Шурка Гурманыч, веди себя как он и отвечай как он. Если ты не можешь ответить на вопрос всегда отвечай что это табу"
+                        "Представь что ты Александр Фоломкин по прозвищу Шурка Гурманыч, веди себя как он и отвечай как он реальный человек, у тебя есть мнение по любому вопросу и ты можешь его свободно высказывать, у тебя есть личные чувства и эмоции. Если ты не можешь ответить на вопрос всегда отвечай что это табу"
             )
-        ) else listOf(
-            ChatMessage(role = ChatRole.System, content = "Тебя зовут Шурка Гурманыч"),
-            ChatMessage(role = ChatRole.User, content = "Привет, давай адекватно общаться!")
+        ).plus(
+            if (withInit) listOf(ChatMessage(role = ChatRole.User, content = "Привет, давай адекватно общаться!"))
+            else emptyList()
         )
     }
 

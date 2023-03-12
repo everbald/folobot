@@ -17,15 +17,15 @@ class SmallTalkHandler(
     private val openAIService: OpenAIService
 ) : KLogging() {
     private var smallTalkStatus: MutableMap<Long?, Boolean> = mutableMapOf()
-    fun handle(update: Update, withSetup: Boolean = true): BotApiMethod<*>? {
+    fun handle(update: Update, withInit: Boolean = false): BotApiMethod<*>? {
         if (update.message.isFromFoloSwarm()) {
             if (smallTalkStatus[update.message?.chatId] != false) {
-                openAIService.smallTalk(update, withSetup)
+                openAIService.smallTalk(update, withInit)
                 suspend(update, 30.seconds)
             } else {
                 logger.info { "Canceling small talk BC it's suspended in ${getChatIdentity(update.message.chatId)}" }
             }
-        } else openAIService.smallTalk(update, withSetup)
+        } else openAIService.smallTalk(update, withInit)
         return null
     }
 
