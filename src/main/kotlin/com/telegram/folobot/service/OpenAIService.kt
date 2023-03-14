@@ -5,6 +5,7 @@ import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.completion.CompletionRequest
+import com.aallam.openai.api.exception.OpenAIHttpException
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.telegram.folobot.extensions.getChatIdentity
@@ -42,19 +43,17 @@ class OpenAIService(
         if (messageStack.isNotEmpty()) {
             val chatCompletionRequest = ChatCompletionRequest(
                 model = ModelId("gpt-3.5-turbo"),
-                messages = buildChatCompletionSetup(withInit).plus(buildChatMessageStack(update.message)),
+                messages = buildChatCompletionSetup(withInit).plus(messageStack),
             )
             makeRequest(chatCompletionRequest, update)
-        }
+        } else logger.info { "Cancelling small talk BC message stack does not contain any relevant messages" }
     }
 
 
     private fun buildPrompt(message: Message): String? {
         return when {
-            message.hasText() -> message.preparePrompt()
             message.hasAudio() -> null // TODO text from audio
-            message.hasPhoto() -> message.preparePrompt()
-            else -> null
+            else -> message.preparePrompt()
         }
 
     }
@@ -96,6 +95,8 @@ class OpenAIService(
             }
         } catch (ex: SocketTimeoutException) {
             logger.warn { "Request to OpenAI API finished with socket timeout" }
+        } catch (ex: OpenAIHttpException) {
+            logger.error(ex) { "Request to OpenAI API finished with error" }
         }
     }
 
@@ -141,16 +142,18 @@ class OpenAIService(
                     ChatMessage(
                         role = if (userService.isSelf(stackMessage.from)) ChatRole.Assistant else ChatRole.User,
                         content = it,
-//                        name = stackMessage.from.getName()
+                        name = stackMessage.from.id.toString()
                     )
                 }
             }
     }
 
-    private fun Message?.preparePrompt(): String {
-        val prefix = if (!userService.isSelf(this?.from) && !this.isAboutBot()) "Гурманыч, " else ""
-        val request = if (this?.hasPhoto() != true) this?.text?.preparePrompt() else this.caption?.preparePrompt()
-        return prefix + request
+    private fun Message?.preparePrompt(): String? {
+        val request = this?.text?.preparePrompt() ?: this?.caption?.preparePrompt()
+        return request?.let {
+            val prefix = if (!userService.isSelf(this?.from) && !this.isAboutBot()) "Гурманыч, " else ""
+            it + prefix
+        }
     }
 
     private fun String?.preparePrompt() =
