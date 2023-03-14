@@ -74,7 +74,7 @@ class CommandHandler(
      *
      * @param update [Update]
      */
-    private fun frelanceTimer(update: Update): BotApiMethod<*> {
+    fun frelanceTimer(update: Update): BotApiMethod<*> {
         return messageService.buildMessage(
             """
                 18 ноября 2019 года я уволился с завода по своему желанию.
@@ -88,7 +88,7 @@ class CommandHandler(
     /**
      * Подсчет времени прошедшего с последнего фапа. Фо обновляет таймер
      */
-    private fun nofapTimer(update: Update): BotApiMethod<*> {
+    fun nofapTimer(update: Update): BotApiMethod<*> {
         val noFapDate: LocalDate
         var noFapCount = 0
         // Фо устанавливает дату
@@ -223,7 +223,7 @@ class CommandHandler(
      * @param update [Update]
      * @return [BotApiMethod]
      */
-    private fun foloSlackers(update: Update): BotApiMethod<*> {
+    fun foloSlackers(update: Update): BotApiMethod<*> {
         return if (!update.message.isUserMessage) {
             messageService.buildMessage(
                 foloPidorService.getSlackers(update.message.chatId).withIndex().joinToString(
@@ -242,7 +242,7 @@ class CommandHandler(
         }.also { logger.info { "Replied to ${getChatIdentity(it.chatId)} with ${it.text}" } }
     }
 
-    private fun foloUnderdogs(update: Update): BotApiMethod<*> {
+    fun foloUnderdogs(update: Update): BotApiMethod<*> {
         return if (!update.message.isUserMessage) {
             val foloUnderdogs = foloPidorService.getUnderdogs(update.message.chatId)
             if (foloUnderdogs.isNotEmpty()) {
@@ -279,7 +279,7 @@ class CommandHandler(
      *
      * @param update [Update]
      */
-    private fun alphaTimer(update: Update): BotApiMethod<*> {
+    fun alphaTimer(update: Update): BotApiMethod<*> {
         val alfaBirthday = LocalDate.of(1983, 8, 9)
         val alphaBirthdayThisYear = alfaBirthday.withYear(LocalDate.now().year)
         val nextAlphaBirthday =
@@ -317,7 +317,7 @@ class CommandHandler(
      *
      * @param update [Update]
      */
-    private fun coinBalance(update: Update): BotApiMethod<*> {
+    fun coinBalance(update: Update): BotApiMethod<*> {
         val balance = foloCoinService.getById(update.message.from.id).coins
         return if (balance > 0) {
             messageService.buildMessage(
