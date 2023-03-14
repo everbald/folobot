@@ -7,6 +7,7 @@ import com.telegram.folobot.Utils.Companion.getPeriodText
 import com.telegram.folobot.extensions.getChatIdentity
 import com.telegram.folobot.extensions.getPremiumPrefix
 import com.telegram.folobot.extensions.isFo
+import com.telegram.folobot.extensions.isFolochat
 import com.telegram.folobot.model.BotCommandsEnum
 import com.telegram.folobot.model.NumTypeEnum
 import com.telegram.folobot.service.*
@@ -350,14 +351,16 @@ class CommandHandler(
     }
 
     fun foloIndexDinamics(update: Update): BotApiMethod<*>? {
-        val endDate = LocalDate.now().minusDays(1)
-        val chart = foloIndexChartService.buildChart(
-            update.message.chatId,
-            endDate.minusMonths(1),
-            endDate
-        )
-        messageService.sendPhoto(chart, update.message.chatId,"#динамикафолоиндекса")
-            .also { logger.info { "Replied to ${getChatIdentity(update.message.chatId)} with IndexChart" } }
+        if (update.message.chat.isFolochat()) {
+            val endDate = LocalDate.now().minusDays(1)
+            val chart = foloIndexChartService.buildChart(
+                update.message.chatId,
+                endDate.minusMonths(1),
+                endDate
+            )
+            messageService.sendPhoto(chart, update.message.chatId, "#динамикафолоиндекса")
+                .also { logger.info { "Replied to ${getChatIdentity(update.message.chatId)} with IndexChart" } }
+        } else messageService.sendMessage("Фолоиндекс только для фолочата!", update)
         return null
     }
 }
