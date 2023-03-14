@@ -42,19 +42,17 @@ class OpenAIService(
         if (messageStack.isNotEmpty()) {
             val chatCompletionRequest = ChatCompletionRequest(
                 model = ModelId("gpt-3.5-turbo"),
-                messages = buildChatCompletionSetup(withInit).plus(buildChatMessageStack(update.message)),
+                messages = buildChatCompletionSetup(withInit).plus(messageStack),
             )
             makeRequest(chatCompletionRequest, update)
-        }
+        } else logger.info { "Cancelling small talk BC message stack does not contain any relevant messages" }
     }
 
 
     private fun buildPrompt(message: Message): String? {
         return when {
-            message.hasText() -> message.preparePrompt()
             message.hasAudio() -> null // TODO text from audio
-            message.hasPhoto() -> message.preparePrompt()
-            else -> null
+            else -> message.preparePrompt()
         }
 
     }
@@ -147,10 +145,12 @@ class OpenAIService(
             }
     }
 
-    private fun Message?.preparePrompt(): String {
-        val prefix = if (!userService.isSelf(this?.from) && !this.isAboutBot()) "Гурманыч, " else ""
-        val request = if (this?.hasPhoto() != true) this?.text?.preparePrompt() else this.caption?.preparePrompt()
-        return prefix + request
+    private fun Message?.preparePrompt(): String? {
+        val request = this?.text?.preparePrompt() ?: this?.caption?.preparePrompt()
+        return request?.let {
+            val prefix = if (!userService.isSelf(this?.from) && !this.isAboutBot()) "Гурманыч, " else ""
+            it + prefix
+        }
     }
 
     private fun String?.preparePrompt() =
