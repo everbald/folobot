@@ -16,7 +16,10 @@ import org.telegram.telegrambots.meta.api.objects.Update
 class UserJoinHandler(
     private val messageService: MessageService,
     private val userService: UserService
-) : KLogging() {
+) : Handler, KLogging() {
+    override fun handle(update: Update): BotApiMethod<*>? {
+        return null
+    }
 
     /**
      * Пользователь зашел в чат

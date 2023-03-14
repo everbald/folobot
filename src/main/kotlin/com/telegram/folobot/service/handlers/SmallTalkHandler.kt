@@ -15,8 +15,10 @@ import kotlin.time.Duration.Companion.seconds
 @Component
 class SmallTalkHandler(
     private val openAIService: OpenAIService
-) : KLogging() {
+) : Handler, KLogging() {
     private var smallTalkStatus: MutableMap<Long?, Boolean> = mutableMapOf()
+    override fun handle(update: Update): BotApiMethod<*>? = handle(update, false)
+
     fun handle(update: Update, withInit: Boolean = false): BotApiMethod<*>? {
         if (update.message.isFromFoloSwarm()) {
             if (smallTalkStatus[update.message?.chatId] != false) {
