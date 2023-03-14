@@ -25,7 +25,6 @@ class ActionHandler(
     private val messageQueueService: MessageQueueService,
     private val chatCommandHandler: ChatCommandHandler
 ) : Handler, KLogging() {
-
     override fun handle(update: Update): BotApiMethod<*>? {
         if (update.hasMessage()) {
             //Выполнение независящих от контекста действий

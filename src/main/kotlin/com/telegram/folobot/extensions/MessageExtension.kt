@@ -20,13 +20,13 @@ fun Message?.isAboutFo() =
                 "фоло", "фолик", "алекс", "гуру", "саш", "санчоус", "шурк", "гурманыч", "вайтифас", "просвещения",
                 "цветочкин", "расческин", "folo"
             ).any {
-                this?.text?.contains(it, ignoreCase = true) == true ||
-                        this?.caption?.contains(it, ignoreCase = true) == true
+                this?.text?.contains(it, true) == true ||
+                        this?.caption?.contains(it, true) == true
             }
 
 
 fun Message?.isAboutBot() = listOf("гурманыч", "шурка").any {
-    this?.text?.contains(it, ignoreCase = true) == true ||
-            this?.caption?.contains(it, ignoreCase = true) == true
+    this?.text?.contains(it, true) == true ||
+            this?.caption?.contains(it, true) == true
 }
 
