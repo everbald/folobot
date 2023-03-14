@@ -14,14 +14,14 @@ import kotlin.random.Random
 class UserMessageHandler(
     private val messageService: MessageService,
     private val textService: TextService
-) : KLogging() {
+) : Handler, KLogging() {
     /**
      * Ответ на личное сообщение
      *
      * @param update [Update]
      * @return [BotApiMethod]
      */
-    fun handle(update: Update): BotApiMethod<*>? {
+    override fun handle(update: Update): BotApiMethod<*>? {
         if (update.message.from.isAndrew() &&
             Random(System.nanoTime()).nextInt(100) < 7
         ) {

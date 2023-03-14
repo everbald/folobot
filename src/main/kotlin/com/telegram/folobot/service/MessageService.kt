@@ -110,7 +110,7 @@ class MessageService(
         }
     }
 
-    fun forwardMessage(chatId: Long, message: Message?) {
+    fun forwardMessage(chatId: Long, message: Message?): Boolean {
         message?.let {
             try {
                 foloBot.execute(
@@ -121,10 +121,13 @@ class MessageService(
                         .fromChatId(it.chatId.toString())
                         .build()
                 )
+                return true
             } catch (e: TelegramApiException) {
                 logger.error { e }
+                return false
             }
         }
+        return true
     }
 
     fun silentForwardMessage(chatId: Long, message: Message?): Message? {

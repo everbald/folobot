@@ -9,6 +9,7 @@ import com.telegram.folobot.extensions.isNotUserJoin
 import com.telegram.folobot.service.*
 import mu.KLogging
 import org.springframework.stereotype.Component
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @Component
@@ -19,9 +20,9 @@ class RegistryHandler(
     private val foloIndexService: FoloIndexService,
     private val foloCoinService: FoloCoinService,
     private val messageQueueService: MessageQueueService
-) : KLogging() {
+) : Handler, KLogging() {
 
-    fun handle(update: Update) {
+    override fun handle(update: Update): BotApiMethod<*>? {
         //Добавление фолопользователя в бд
         saveFoloUser(update)
 
@@ -33,6 +34,8 @@ class RegistryHandler(
 
         //Добавить в очередь
         addToMessageQueue(update)
+
+        return null
     }
 
     /**

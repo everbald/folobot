@@ -22,10 +22,11 @@ class ActionHandler(
     private val registryHandler: RegistryHandler,
     private val smallTalkHandler: SmallTalkHandler,
     private val userService: UserService,
-    private val messageQueueService: MessageQueueService
-) : KLogging() {
+    private val messageQueueService: MessageQueueService,
+    private val chatCommandHandler: ChatCommandHandler
+) : Handler, KLogging() {
 
-    fun handle(update: Update): BotApiMethod<*>? {
+    override fun handle(update: Update): BotApiMethod<*>? {
         if (update.hasMessage()) {
             //Выполнение независящих от контекста действий
             registryHandler.handle(update)
@@ -49,6 +50,8 @@ class ActionHandler(
         return when {
             // Команда
             message.isMyCommand() -> ActionsEnum.COMMAND
+            // Команда в чате
+            chatCommandHandler.isChatCommand(message) -> ActionsEnum.CHATCOMMAND
             // Личное сообщение
             message.isUserMessage -> ActionsEnum.SMALLTALK //ActionsEnum.USERMESSAGE
             // Ответ на обращение
@@ -79,6 +82,7 @@ class ActionHandler(
         if (action != ActionsEnum.UNDEFINED) {
             return when (action) {
                 ActionsEnum.COMMAND -> commandHandler.handle(update)
+                ActionsEnum.CHATCOMMAND -> chatCommandHandler.handle(update)
                 ActionsEnum.USERMESSAGE -> userMessageHandler.handle(update)
                 ActionsEnum.REPLY -> replyHandler.handle(update)
                 ActionsEnum.USERNEW -> userJoinHandler.handleJoin(update)

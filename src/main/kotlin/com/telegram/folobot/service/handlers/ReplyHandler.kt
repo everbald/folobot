@@ -14,14 +14,14 @@ import org.telegram.telegrambots.meta.api.objects.Update
 class ReplyHandler(
     private val userService: UserService,
     private val messageService: MessageService
-) : KLogging() {
+) : Handler, KLogging() {
     /**
      * Ответ на обращение
      *
      * @param update [Update]
      * @return [BotApiMethod]
      */
-    fun handle(update: Update): BotApiMethod<*>? {
+    override fun handle(update: Update): BotApiMethod<*>? {
         // Сообщение в чат
         return if (update.message.from.isAndrew()) {
             messageService

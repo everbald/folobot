@@ -30,7 +30,7 @@ class CommandHandler(
     private val textService: TextService,
     private val foloIndexChartService: FoloIndexChartService,
     private val smallTalkHandler: SmallTalkHandler
-) : KLogging() {
+) : Handler, KLogging() {
 
     /**
      * Выполнение команды
@@ -38,7 +38,7 @@ class CommandHandler(
      * @param update [Update]
      * @return [BotApiMethod]
      */
-    fun handle(update: Update): BotApiMethod<*>? {
+    override fun handle(update: Update): BotApiMethod<*>? {
         when (
             BotCommandsEnum.fromCommand(
                 update.message?.entities?.firstOrNull { it.type == "bot_command" }?.text?.substringBefore("@")
@@ -135,7 +135,7 @@ class CommandHandler(
      * @param update [Update]
      * @return [BotApiMethod]
      */
-    private fun foloPidor(update: Update): BotApiMethod<*>? {
+    fun foloPidor(update: Update): BotApiMethod<*>? {
         val chatId = update.message.chatId
         if (!update.message.isUserMessage) {
             //Определяем дату и победителя предыдущего запуска
@@ -194,7 +194,7 @@ class CommandHandler(
      * @param update [Update]
      * @return [BotApiMethod]
      */
-    private fun foloPidorTop(update: Update): BotApiMethod<*> {
+    fun foloPidorTop(update: Update): BotApiMethod<*> {
         return if (!update.message.isUserMessage) {
             val top = StringJoiner("\n").add("Топ 10 *фолопидоров*:\n")
             val foloPidors = foloPidorService.getTop(update.message.chatId)
