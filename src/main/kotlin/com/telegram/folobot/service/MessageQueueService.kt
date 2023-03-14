@@ -57,12 +57,13 @@ class MessageQueueService(
             .forEach { queueMessage ->
                 queueMessage.backupMessage?.let {
                     if (messageService.checkIfMessageDeleted(queueMessage.message)) {
-                        messageService.forwardMessage(queueMessage.message.chatId, it)
-                        messageService.deleteMessage(MESSAGE_QUEUE_ID, it.messageId)
-                        queueMessage.restored = true
-                        logger.info {
-                            "Restored message from ${userService.getFoloUserName(queueMessage.message.from)} " +
-                                    "in chat ${getChatIdentity(queueMessage.message.chatId)}"
+                        if (messageService.forwardMessage(queueMessage.message.chatId, it)) {
+                            messageService.deleteMessage(MESSAGE_QUEUE_ID, it.messageId)
+                            queueMessage.restored = true
+                            logger.info {
+                                "Restored message from ${userService.getFoloUserName(queueMessage.message.from)} " +
+                                        "in chat ${getChatIdentity(queueMessage.message.chatId)}"
+                            }
                         }
                     }
                 }
