@@ -5,6 +5,7 @@ import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.completion.CompletionRequest
+import com.aallam.openai.api.exception.OpenAIHttpException
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.telegram.folobot.extensions.getChatIdentity
@@ -94,6 +95,8 @@ class OpenAIService(
             }
         } catch (ex: SocketTimeoutException) {
             logger.warn { "Request to OpenAI API finished with socket timeout" }
+        } catch (ex: OpenAIHttpException) {
+            logger.error(ex) { "Request to OpenAI API finished with error" }
         }
     }
 
@@ -139,7 +142,7 @@ class OpenAIService(
                     ChatMessage(
                         role = if (userService.isSelf(stackMessage.from)) ChatRole.Assistant else ChatRole.User,
                         content = it,
-//                        name = stackMessage.from.getName()
+                        name = stackMessage.from.id.toString()
                     )
                 }
             }
