@@ -1,11 +1,14 @@
 package com.telegram.folobot.service
 
 import com.aallam.openai.api.BetaOpenAI
+import com.aallam.openai.api.audio.TranscriptionRequest
+import com.aallam.openai.api.audio.TranslationRequest
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.completion.CompletionRequest
 import com.aallam.openai.api.exception.OpenAIHttpException
+import com.aallam.openai.api.file.FileSource
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.telegram.folobot.extensions.getChatIdentity
@@ -16,16 +19,21 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import mu.KLogging
+import okio.source
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import java.io.File
 
 @Service
 class OpenAIService(
     private val openAI: OpenAI,
     private val userService: UserService,
     private val messageQueueService: MessageQueueService,
+    private val messageService: MessageService,
+    private val fileService: FileService,
+    private val oggConverter: OggConverter
 ) : KLogging() {
     fun smallTalkCompletion(update: Update) {
         val completionRequest = CompletionRequest(
@@ -49,6 +57,25 @@ class OpenAIService(
         } else logger.info { "Cancelling small talk BC message stack does not contain any relevant messages" }
     }
 
+    @OptIn(BetaOpenAI::class)
+    fun voiceTranscription(update: Update) {
+        val source = fileService.downloadFile(update)
+        val target = File.createTempFile("wololo", ".mp3")
+        oggConverter.convertOggToMp3(source!!.absolutePath, target.absolutePath)
+//        val fileStream = fileService.downloadFileAsStream(update)
+//        val bufferedStream = BufferedInputStream(fileStream)
+//        val aisOgg = AudioSystem.getAudioInputStream(bufferedStream)
+//        val os = ByteArrayOutputStream()
+//        val aloe = AudioSystem.write(aisOgg, AudioFileFormat.Type.WAVE, os)
+        target?.let {
+            val request = TranscriptionRequest(
+                audio = FileSource(name = it.name, source = it.source()),
+                model = ModelId("whisper-1"),
+//                language = "russian"
+            )
+            makeRequest(request, update)
+        }
+    }
 
     private fun buildPrompt(message: Message): String? {
         return when {
@@ -91,6 +118,39 @@ class OpenAIService(
             }
             logger.info {
                 "Had a small talk with ${update.message.from.getName()} " +
+                        "in chat ${getChatIdentity(update.message.chatId)}"
+            }
+        } catch (ex: SocketTimeoutException) {
+            logger.warn { "Request to OpenAI API finished with socket timeout" }
+        } catch (ex: OpenAIHttpException) {
+            logger.error(ex) { "Request to OpenAI API finished with error" }
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class, BetaOpenAI::class)
+    private fun makeRequest(request: TranscriptionRequest, update: Update) = GlobalScope.async {
+        try {
+            val trasncription = openAI.transcription(request).text
+            val translation = openAI.chatCompletion(
+                ChatCompletionRequest(
+                    model = ModelId("gpt-3.5-turbo"),
+                    messages = listOf(
+                        ChatMessage(
+                            role = ChatRole.User, content = "Переведи на русский: $trasncription"
+                        )
+                    )
+                )
+            ).choices.firstOrNull()?.message?.content
+            translation?.let {
+                messageService.sendMessage(
+                    translation.telegramEscape(),
+                    update,
+                    parseMode = ParseMode.MARKDOWNV2,
+                    reply = true
+                )
+            }
+            logger.info {
+                "Transcribed voice for ${update.message.from.getName()} " +
                         "in chat ${getChatIdentity(update.message.chatId)}"
             }
         } catch (ex: SocketTimeoutException) {

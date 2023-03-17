@@ -42,3 +42,6 @@ bot:
 
 openai:
   token: ${OPENAI_TOKEN}
+
+ffmpeg:
+  path: 'ffmpeg/ffmpeg.exe'

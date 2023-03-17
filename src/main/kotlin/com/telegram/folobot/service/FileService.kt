@@ -4,6 +4,7 @@ import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.GetFile
 import org.telegram.telegrambots.meta.api.objects.Update
+import java.io.File
 import java.io.InputStream
 
 
@@ -11,28 +12,44 @@ import java.io.InputStream
 class FileService() : KLogging() {
     lateinit var foloBot: FoloBot
 
-    fun downloadPhoto(update: Update): InputStream? {
+    fun downloadFileAsStream(update: Update): InputStream? {
         val filePath = getFilePath(update)
-        return downloadPhotoAsStream(filePath)
+        return downloadFileAsStream(filePath)
     }
 
-    fun downloadPhoto(filePath: String): InputStream? {
-        return downloadPhotoAsStream(filePath)
+    fun downloadFile(update: Update): File? {
+        val filePath = getFilePath(update)
+        return downloadFile(filePath)
     }
 
     fun getFilePath(update: Update): String? {
-        val photo = getPhoto(update)
-        return photo?.filePath ?: runCatching {
-            photo?.fileId?.let { foloBot.execute(GetFile.builder().fileId(it).build()).filePath }
-        }.getOrElse {
-            logger.error { it }
-            null
+        return when {
+            update.message.hasPhoto() -> {
+                val photo = getPhoto(update)
+                photo?.filePath ?: runCatching {
+                    photo?.fileId?.let { foloBot.execute(GetFile.builder().fileId(it).build()).filePath }
+                }.getOrElse {
+                    logger.error { it }
+                    null
+                }
+            }
+            update.message.hasVoice() -> {
+                update.message?.voice?.fileId?.let {
+                    runCatching {
+                        foloBot.execute(GetFile.builder().fileId(it).build()).filePath
+                    }
+                }?.getOrElse {
+                    logger.error { it }
+                    null
+                }
+            }
+            else -> null
         }
     }
 
     private fun getPhoto(update: Update) = update.message?.photo?.maxByOrNull { it.fileSize }
 
-    private fun downloadPhotoByFilePath(filePath: String?) =
+    fun downloadFile(filePath: String?) =
         filePath?.let {
             runCatching { foloBot.downloadFile(filePath) }.getOrElse {
                 logger.error { it }
@@ -40,7 +57,7 @@ class FileService() : KLogging() {
             }
         }
 
-    private fun downloadPhotoAsStream(filePath: String?) =
+    private fun downloadFileAsStream(filePath: String?) =
         filePath?.let {
             runCatching { foloBot.downloadFileAsStream(filePath) }.getOrElse {
                 logger.error { it }
