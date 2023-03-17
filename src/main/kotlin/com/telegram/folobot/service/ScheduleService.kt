@@ -20,6 +20,6 @@ class ScheduleService(
 
     fun restoreMessages() = taskService.restoreMessages()
 
-    @Scheduled(cron = "0 * * ? * *")
+    @Scheduled(cron = "0 */10 * ? * *")
     private fun deleteTempFiles() = taskService.deleteTempFiles()
 }

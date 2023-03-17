@@ -11,11 +11,13 @@ server:
       charset: UTF-8
       force: true
 
-#logging:
+logging:
+  level:
+    net.bramp.ffmpeg: WARN
+#    tomcat: OFF
 #  group:
 #    tomcat: org.apache.catalina, org.apache.coyote, org.apache.tomcat
-#  level:
-#    tomcat: OFF
+
 
 spring:
   main:

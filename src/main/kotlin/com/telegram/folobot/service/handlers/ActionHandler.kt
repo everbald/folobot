@@ -53,7 +53,7 @@ class ActionHandler(
             // Команда в чате
             chatCommandHandler.isChatCommand(message) -> ActionsEnum.CHATCOMMAND
             // Конвертация в аудио
-            message.hasVoice() -> ActionsEnum.TRANSCRIPTION
+            message.isTranscribe() -> ActionsEnum.TRANSCRIPTION
             // Личное сообщение
             message.isUserMessage -> ActionsEnum.SMALLTALK //ActionsEnum.USERMESSAGE
             // Ответ на обращение
@@ -107,4 +107,6 @@ class ActionHandler(
             this.text?.contains("привет", ignoreCase = true) == true
 
     fun Message.isSmallTalk() = userService.isSelf(this.replyToMessage?.from) || this.isFromFoloSwarm()
+
+    fun Message.isTranscribe() = this.hasVoice() || this.hasVideoNote()
 }
