@@ -62,6 +62,9 @@ dependencies {
 
     // charts
     implementation("jfree:jfreechart:1.0.13")
+
+    // converter
+    implementation("net.bramp.ffmpeg:ffmpeg:0.7.0")
 }
 
 allOpen {

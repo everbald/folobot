@@ -23,7 +23,8 @@ class ActionHandler(
     private val smallTalkHandler: SmallTalkHandler,
     private val userService: UserService,
     private val messageQueueService: MessageQueueService,
-    private val chatCommandHandler: ChatCommandHandler
+    private val chatCommandHandler: ChatCommandHandler,
+    private val transcriptionHandler: TranscriptionHandler
 ) : Handler, KLogging() {
     override fun handle(update: Update): BotApiMethod<*>? {
         if (update.hasMessage()) {
@@ -51,6 +52,8 @@ class ActionHandler(
             message.isMyCommand() -> ActionsEnum.COMMAND
             // Команда в чате
             chatCommandHandler.isChatCommand(message) -> ActionsEnum.CHATCOMMAND
+            // Конвертация в аудио
+            message.hasVoice() -> ActionsEnum.TRANSCRIPTION
             // Личное сообщение
             message.isUserMessage -> ActionsEnum.SMALLTALK //ActionsEnum.USERMESSAGE
             // Ответ на обращение
@@ -82,6 +85,7 @@ class ActionHandler(
             return when (action) {
                 ActionsEnum.COMMAND -> commandHandler.handle(update)
                 ActionsEnum.CHATCOMMAND -> chatCommandHandler.handle(update)
+                ActionsEnum.TRANSCRIPTION -> transcriptionHandler.handle(update)
                 ActionsEnum.USERMESSAGE -> userMessageHandler.handle(update)
                 ActionsEnum.REPLY -> replyHandler.handle(update)
                 ActionsEnum.USERNEW -> userJoinHandler.handleJoin(update)
