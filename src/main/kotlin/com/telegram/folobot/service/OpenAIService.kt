@@ -33,7 +33,7 @@ class OpenAIService(
     private val messageQueueService: MessageQueueService,
     private val messageService: MessageService,
     private val fileService: FileService,
-    private val oggConverter: OggConverter
+//    private val oggConverter: OggConverter
 ) : KLogging() {
     fun smallTalkCompletion(update: Update) {
         val completionRequest = CompletionRequest(
@@ -61,7 +61,7 @@ class OpenAIService(
     fun voiceTranscription(update: Update) {
         val source = fileService.downloadFile(update)
         val target = File.createTempFile("wololo", ".mp3")
-        oggConverter.convertOggToMp3(source!!.absolutePath, target.absolutePath)
+//        oggConverter.convertOggToMp3(source!!.absolutePath, target.absolutePath)
 //        val fileStream = fileService.downloadFileAsStream(update)
 //        val bufferedStream = BufferedInputStream(fileStream)
 //        val aisOgg = AudioSystem.getAudioInputStream(bufferedStream)
