@@ -15,7 +15,8 @@ class TaskService(
     private val userService: UserService,
     private val foloIndexService: FoloIndexService,
     private val foloCoinService: FoloCoinService,
-    private val messageQueueService: MessageQueueService
+    private val messageQueueService: MessageQueueService,
+    private val tempFileService: TempFileService
 ) : KLogging() {
     fun dayStats(chatId: Long) {
         messageService.sendMessage(
@@ -37,11 +38,10 @@ class TaskService(
         if (LocalDate.now().dayOfWeek == DayOfWeek.SUNDAY) foloIndexService.monthlyIndex(chatId)
     }
 
-    fun foloCoin() {
-        foloCoinService.issueCoins()
-    }
+    fun foloCoin() = foloCoinService.issueCoins()
 
-    fun restoreMessages() {
-        messageQueueService.restoreMessages()
-    }
+//    @Async
+    fun restoreMessages() = messageQueueService.restoreMessages()
+//    @Async
+    fun deleteTempFiles() = tempFileService.deleteTempFiles()
 }

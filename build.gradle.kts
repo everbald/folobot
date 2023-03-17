@@ -37,7 +37,7 @@ dependencies {
 
     // db
     implementation("org.postgresql:postgresql")
-    runtimeOnly("org.liquibase:liquibase-core:4.19.0")
+    runtimeOnly("org.liquibase:liquibase-core:4.20.0")
 
     // HTTP client engine
     implementation("io.ktor:ktor-client-apache:2.2.4")
@@ -46,13 +46,13 @@ dependencies {
     implementation("org.telegram:telegrambots:6.5.0")
 
     // open api
-    implementation("com.aallam.openai:openai-client:3.1.0")
+    implementation("com.aallam.openai:openai-client:3.1.1")
 
     // serialisation
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     // logging
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
     // testing
     implementation("org.junit.jupiter:junit-jupiter:5.9.2")
