@@ -17,9 +17,9 @@ class FileService() : KLogging() {
         return downloadFileAsStream(filePath)
     }
 
-    fun downloadFile(update: Update): File? {
+    fun downloadFile(update: Update, file: File) {
         val filePath = getFilePath(update)
-        return downloadFile(filePath)
+        downloadFile(filePath, file)
     }
 
     fun getFilePath(update: Update): String? {
@@ -49,9 +49,9 @@ class FileService() : KLogging() {
 
     private fun getPhoto(update: Update) = update.message?.photo?.maxByOrNull { it.fileSize }
 
-    fun downloadFile(filePath: String?) =
+    fun downloadFile(filePath: String?, file: File) =
         filePath?.let {
-            runCatching { foloBot.downloadFile(filePath) }.getOrElse {
+            runCatching { foloBot.downloadFile(filePath, file) }.getOrElse {
                 logger.error { it }
                 null
             }

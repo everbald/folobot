@@ -33,45 +33,45 @@ class ChatCommandHandler(
                     message.isFoloIndexDinamics())
 
     private fun Message.isSmallTalk() = this.isAboutBot() &&
-            this.text?.contains("адекватно", true) == true &&
-            this.text?.contains("общ", true) == true
+            (this.text?.contains("адекватно", true) == true &&
+            this.text?.contains("общ", true) == true)
 
     private fun Message.isFreelance() = this.isAboutBot() &&
-            (this.text?.contains("завод", true) == true &&
+            ((this.text?.contains("завод", true) == true &&
                     this.text?.contains("увол", true) == true) ||
             this.text?.contains("фриланс", true) == true ||
             ((this.text?.contains("входишь", true) == true ||
                     this.text?.contains("вхождение", true) == true) &&
                     (this.text?.contains("IT", true) == true) ||
-                    (this.text?.contains("айти", true) == true))
+                    (this.text?.contains("айти", true) == true)))
 
     private fun Message.isFolopidor() = this.isAboutBot() &&
-            this.text?.contains("фолопидор", true) == true &&
+            (this.text?.contains("фолопидор", true) == true &&
             (this.text?.contains("дня", true) == true ||
-                    this.text?.contains("сегодня", true) == true)
+                    this.text?.contains("сегодня", true) == true))
 
     private fun Message.isNoFap() = this.isAboutBot() &&
-            this.text?.contains("но фап", true) == true ||
-            this.text?.contains("дрочишь", true) == true
+            (this.text?.contains("но фап", true) == true ||
+            this.text?.contains("дрочишь", true) == true)
 
     private fun Message.isFolopidorTop() = this.isAboutBot() &&
-            this.text?.contains("фолопидор", true) == true &&
-            this.text?.contains("топ", true) == true
+            (this.text?.contains("фолопидор", true) == true &&
+            this.text?.contains("топ", true) == true)
 
     private fun Message.isCoinBalance() = this.isAboutBot() &&
-            (this.text?.contains("баланс", true) == true &&
+            ((this.text?.contains("баланс", true) == true &&
                     this.text?.contains("кошелька", true) == true) ||
             (this.text?.contains("сколько", true) == true &&
                     this.text?.contains("фолокойнов", true) == true) ||
             (this.text?.contains("баланс", true) == true &&
-                    this.text?.contains("фолокойнов", true) == true)
+                    this.text?.contains("фолокойнов", true) == true))
 
     private fun Message.isFoloMillionaire() = this.isAboutBot() &&
-            this.text?.contains("фоломиллионер", true) == true ||
+            (this.text?.contains("фоломиллионер", true) == true ||
             (this.text?.contains("богатый", true) == true &&
-                    this.text?.contains("фолопидор", true) == true)
+                    this.text?.contains("фолопидор", true) == true))
 
     private fun Message.isFoloIndexDinamics() = this.isAboutBot() &&
-            this.text?.contains("фолоиндекс", true) == true &&
-            this.text?.contains("динамик", true) == true
+            (this.text?.contains("фолоиндекс", true) == true &&
+            this.text?.contains("динамик", true) == true)
 }

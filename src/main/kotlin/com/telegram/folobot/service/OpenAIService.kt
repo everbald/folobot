@@ -2,7 +2,6 @@ package com.telegram.folobot.service
 
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.audio.TranscriptionRequest
-import com.aallam.openai.api.audio.TranslationRequest
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
@@ -59,22 +58,16 @@ class OpenAIService(
 
     @OptIn(BetaOpenAI::class)
     fun voiceTranscription(update: Update) {
-        val source = fileService.downloadFile(update)
-        val target = File.createTempFile("wololo", ".mp3")
-        oggConverter.convertOggToMp3(source!!.absolutePath, target.absolutePath)
-//        val fileStream = fileService.downloadFileAsStream(update)
-//        val bufferedStream = BufferedInputStream(fileStream)
-//        val aisOgg = AudioSystem.getAudioInputStream(bufferedStream)
-//        val os = ByteArrayOutputStream()
-//        val aloe = AudioSystem.write(aisOgg, AudioFileFormat.Type.WAVE, os)
-        target?.let {
-            val request = TranscriptionRequest(
-                audio = FileSource(name = it.name, source = it.source()),
-                model = ModelId("whisper-1"),
-//                language = "russian"
-            )
-            makeRequest(request, update)
-        }
+        val source = File.createTempFile("source", ".ogg")
+        val target = File.createTempFile("target", ".mp3")
+        fileService.downloadFile(update, source)
+        oggConverter.convertOggToMp3(source.absolutePath, target.absolutePath)
+        val request = TranscriptionRequest(
+            audio = FileSource(name = target.name, source = target.source()),
+            model = ModelId("whisper-1"),
+            prompt = "фолофан фолопидор фолостайл фоложурнал"
+        )
+        makeRequest(request, update)
     }
 
     private fun buildPrompt(message: Message): String? {
@@ -131,24 +124,12 @@ class OpenAIService(
     private fun makeRequest(request: TranscriptionRequest, update: Update) = GlobalScope.async {
         try {
             val trasncription = openAI.transcription(request).text
-            val translation = openAI.chatCompletion(
-                ChatCompletionRequest(
-                    model = ModelId("gpt-3.5-turbo"),
-                    messages = listOf(
-                        ChatMessage(
-                            role = ChatRole.User, content = "Переведи на русский: $trasncription"
-                        )
-                    )
-                )
-            ).choices.firstOrNull()?.message?.content
-            translation?.let {
-                messageService.sendMessage(
-                    translation.telegramEscape(),
-                    update,
-                    parseMode = ParseMode.MARKDOWNV2,
-                    reply = true
-                )
-            }
+            messageService.sendMessage(
+                trasncription.telegramEscape(),
+                update,
+                parseMode = ParseMode.MARKDOWNV2,
+                reply = true
+            )
             logger.info {
                 "Transcribed voice for ${update.message.from.getName()} " +
                         "in chat ${getChatIdentity(update.message.chatId)}"

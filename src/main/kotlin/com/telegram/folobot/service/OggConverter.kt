@@ -4,29 +4,12 @@ import net.bramp.ffmpeg.FFmpeg
 import net.bramp.ffmpeg.FFmpegExecutor
 import net.bramp.ffmpeg.builder.FFmpegBuilder
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
-import java.io.File
-import java.io.IOException
-import kotlin.io.path.outputStream
 
 @Component
 class OggConverter(@Value("\${ffmpeg.path}") ffmpegPath: String) {
-    private val ffmpeg: FFmpeg
+    private val ffmpeg: FFmpeg = FFmpeg(ffmpegPath)
 
-    init {
-//        val file: File = createTempFile()
-//        ClassPathResource(ffmpegPath).inputStream.use { input ->
-//            file.outputStream().use { output ->
-//                input.copyTo(output)
-//            }
-//        }
-        ffmpeg = FFmpeg(ffmpegPath);
-//        val ffmpegFile = ClassPathResource(ffmpegPath).file
-//        ffmpeg = FFmpeg(ffmpegFile.path)
-    }
-
-    @Throws(IOException::class)
     fun convertOggToMp3(inputPath: String?, targetPath: String?) {
         val builder = FFmpegBuilder()
             .setInput(inputPath)
