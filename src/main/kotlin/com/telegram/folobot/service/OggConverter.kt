@@ -8,14 +8,22 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
 import java.io.File
 import java.io.IOException
+import kotlin.io.path.outputStream
 
 @Component
 class OggConverter(@Value("\${ffmpeg.path}") ffmpegPath: String) {
     private val ffmpeg: FFmpeg
 
     init {
-        val ffmpegFile = ClassPathResource(ffmpegPath).file
-        ffmpeg = FFmpeg(ffmpegFile.path)
+//        val file: File = createTempFile()
+//        ClassPathResource(ffmpegPath).inputStream.use { input ->
+//            file.outputStream().use { output ->
+//                input.copyTo(output)
+//            }
+//        }
+        ffmpeg = FFmpeg(ffmpegPath);
+//        val ffmpegFile = ClassPathResource(ffmpegPath).file
+//        ffmpeg = FFmpeg(ffmpegFile.path)
     }
 
     @Throws(IOException::class)
