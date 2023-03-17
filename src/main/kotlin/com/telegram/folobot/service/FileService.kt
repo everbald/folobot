@@ -4,6 +4,7 @@ import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.GetFile
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.io.File
 import java.io.InputStream
 
@@ -23,27 +24,26 @@ class FileService() : KLogging() {
     }
 
     fun getFilePath(update: Update): String? {
-        return when {
-            update.message.hasPhoto() -> {
-                val photo = getPhoto(update)
-                photo?.filePath ?: runCatching {
-                    photo?.fileId?.let { foloBot.execute(GetFile.builder().fileId(it).build()).filePath }
-                }.getOrElse {
-                    logger.error { it }
-                    null
+        return try {
+            when {
+                update.message.hasPhoto() -> {
+                    val photo = getPhoto(update)
+                    photo?.filePath ?: photo?.fileId
+                        ?.let { foloBot.execute(GetFile.builder().fileId(it).build()).filePath }
                 }
-            }
-            update.message.hasVoice() -> {
-                update.message?.voice?.fileId?.let {
-                    runCatching {
-                        foloBot.execute(GetFile.builder().fileId(it).build()).filePath
-                    }
-                }?.getOrElse {
-                    logger.error { it }
-                    null
+                update.message.hasVoice() -> {
+                    update.message?.voice?.fileId
+                        ?.let { foloBot.execute(GetFile.builder().fileId(it).build()).filePath }
                 }
+                update.message.hasVideoNote() -> {
+                    update.message?.videoNote?.fileId
+                        ?.let {foloBot.execute(GetFile.builder().fileId(it).build()).filePath }
+                }
+                else -> null
             }
-            else -> null
+        } catch (ex: TelegramApiException) {
+            logger.error { ex }
+            null
         }
     }
 

@@ -57,17 +57,31 @@ class OpenAIService(
     }
 
     @OptIn(BetaOpenAI::class)
-    fun voiceTranscription(update: Update) {
-        val source = File.createTempFile("source", ".ogg")
-        val target = File.createTempFile("target", ".mp3")
-        fileService.downloadFile(update, source)
-        oggConverter.convertOggToMp3(source.absolutePath, target.absolutePath)
-        val request = TranscriptionRequest(
-            audio = FileSource(name = target.name, source = target.source()),
-            model = ModelId("whisper-1"),
-            prompt = "фолофан фолопидор фолостайл фоложурнал"
-        )
-        makeRequest(request, update)
+    fun transcription(update: Update) {
+        val fileSource: FileSource? = when {
+            update.message.hasVoice() -> {
+                val source = File.createTempFile("source", ".ogg")
+                val target = File.createTempFile("target", ".mp3")
+                fileService.downloadFile(update, source)
+                oggConverter.convertOggToMp3(source.absolutePath, target.absolutePath)
+                FileSource(name = target.name, source = target.source())
+            }
+            update.message.hasVideoNote() -> {
+                val target = fileService.downloadFileAsStream(update)
+                target?.let {
+                    FileSource(name = "file.mp4", source = it.source())
+                }
+            }
+            else -> null
+        }
+        fileSource?.let {
+            val request = TranscriptionRequest(
+                audio = fileSource,
+                model = ModelId("whisper-1"),
+                prompt = "фолофан фолопидор фолостайл фоложурнал"
+            )
+            makeRequest(request, update)
+        }
     }
 
     private fun buildPrompt(message: Message): String? {
@@ -131,7 +145,7 @@ class OpenAIService(
                 reply = true
             )
             logger.info {
-                "Transcribed voice for ${update.message.from.getName()} " +
+                "Transcribed file for ${update.message.from.getName()} " +
                         "in chat ${getChatIdentity(update.message.chatId)}"
             }
         } catch (ex: SocketTimeoutException) {

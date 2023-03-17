@@ -14,7 +14,7 @@ class TempFileService() : KLogging() {
         deletePathList().forEach {
             try {
                 Files.deleteIfExists(Path.of(it))
-                logger.info { "Deleted temp file $it" }
+                logger.debug { "Deleted temp file $it" }
             } catch (e: FileSystemException) {
                 logger.debug(e.message)
             } catch (e: IOException) {
