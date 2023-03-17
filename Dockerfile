@@ -4,5 +4,6 @@ RUN apk add font-vollkorn
 WORKDIR /app
 COPY /build/libs/folobot-*.jar folobot.jar
 COPY /build/resources/main/ffmpeg/ffmpeg ffmpeg/ffmpeg
+RUN chmod +x ffmpeg/ffmpeg
 ENTRYPOINT ["java","-jar","folobot.jar"]
 
