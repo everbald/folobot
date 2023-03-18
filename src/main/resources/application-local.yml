@@ -40,7 +40,6 @@ spring:
 bot:
   username: ShurkaGurmanychBot
   token: 5306754558:AAGLFdpVE-VQJ3-Ym0uvLq5fbAU9q98cg-I
-  path: https://7b27-2a02-2168-a97e-3700-71b9-a8b3-ab61-4222.eu.ngrok.io
 
 openai:
   token: ${OPENAI_TOKEN}

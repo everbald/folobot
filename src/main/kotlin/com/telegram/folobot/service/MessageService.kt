@@ -19,7 +19,7 @@ class MessageService(
 ) : KLogging() {
     lateinit var foloBot: FoloBot
 
-    fun buildMessage(text: String, update: Update, parseMode: String = ParseMode.MARKDOWN): SendMessage {
+    private fun buildMessage(text: String, update: Update, parseMode: String = ParseMode.MARKDOWN): SendMessage {
         return SendMessage
             .builder()
             .parseMode(parseMode)
@@ -28,7 +28,7 @@ class MessageService(
             .build()
     }
 
-    fun buildMessage(
+    private fun buildMessage(
         text: String,
         update: Update,
         parseMode: String = ParseMode.MARKDOWN,
@@ -39,8 +39,8 @@ class MessageService(
         return sendMessage
     }
 
-    fun sendMessage(text: String, chatId: Long, parseMode: String = ParseMode.MARKDOWN) {
-        try {
+    fun sendMessage(text: String, chatId: Long, parseMode: String = ParseMode.MARKDOWN): Message? {
+        return try {
             foloBot.execute(
                 SendMessage
                     .builder()
@@ -51,29 +51,30 @@ class MessageService(
             )
         } catch (e: TelegramApiException) {
             logger.error { e }
+            null
         }
     }
 
     fun sendMessage(text: String, update: Update, parseMode: String = ParseMode.MARKDOWN): Message? {
-        try {
+        return try {
             return foloBot.execute(buildMessage(text, update, parseMode))
         } catch (e: TelegramApiException) {
             logger.error { e }
+            null
         }
-        return null
     }
 
     fun sendMessage(text: String, update: Update, parseMode: String = ParseMode.MARKDOWN, reply: Boolean): Message? {
-        if (!reply) {
-            return sendMessage(text, update, parseMode)
+        return if (!reply) {
+            sendMessage(text, update, parseMode)
         } else {
             try {
-                return foloBot.execute(buildMessage(text, update, parseMode, reply))
+                foloBot.execute(buildMessage(text, update, parseMode, reply))
             } catch (e: TelegramApiException) {
                 logger.error { e }
+                null
             }
         }
-        return null
     }
 
     private fun buildSticker(stickerId: String, update: Update): SendSticker? {
@@ -85,18 +86,17 @@ class MessageService(
             .build()
     }
 
-    fun sendSticker(stickerId: String?, update: Update) {
-        stickerId?.let {
-            try {
-                foloBot.execute(buildSticker(it, update))
-            } catch (e: TelegramApiException) {
-                logger.error { e }
-            }
+    fun sendSticker(stickerId: String, update: Update): Message? {
+        return try {
+            foloBot.execute(buildSticker(stickerId, update))
+        } catch (e: TelegramApiException) {
+            logger.error { e }
+            null
         }
     }
 
-    fun forwardMessage(chatId: Long, update: Update) {
-        try {
+    fun forwardMessage(chatId: Long, update: Update): Message? {
+        return try {
             foloBot.execute(
                 ForwardMessage
                     .builder()
@@ -107,6 +107,7 @@ class MessageService(
             )
         } catch (e: TelegramApiException) {
             logger.error { e }
+            null
         }
     }
 
@@ -171,54 +172,68 @@ class MessageService(
     }
 
 
-    fun sendPhoto(photo: InputFile, chatId: Long, text: String, parseMode: String = ParseMode.MARKDOWN) {
-        try {
-            foloBot.execute(
-                buildPhoto(photo, chatId, text, parseMode)
-            )
+    fun sendPhoto(photo: InputFile, chatId: Long, text: String, parseMode: String = ParseMode.MARKDOWN): Message? {
+        return try {
+            return foloBot.execute(buildPhoto(photo, chatId, text, parseMode))
         } catch (e: TelegramApiException) {
             logger.error { e }
+            null
         }
     }
 
-    fun sendPhoto(photoPath: String, chatId: Long, text: String, parseMode: String = ParseMode.MARKDOWN) {
-        try {
-            foloBot.execute(
-                buildPhoto(photoPath, chatId, text, parseMode)
-            )
+    fun sendPhoto(photoPath: String, chatId: Long, text: String, parseMode: String = ParseMode.MARKDOWN): Message? {
+        return try {
+            foloBot.execute(buildPhoto(photoPath, chatId, text, parseMode))
         } catch (e: Exception) {
             logger.error { e }
+            null
         }
     }
 
-    fun sendVoice(voiceId: String, text: String? = null, chatId: Long, parseMode: String = ParseMode.MARKDOWN) {
-        val voice = SendVoice
-            .builder()
+    private fun buildVoice(
+        voiceId: String,
+        text: String? = null,
+        chatId: Long,
+        parseMode: String = ParseMode.MARKDOWN
+    ): SendVoice {
+        val voice = SendVoice.builder()
             .parseMode(parseMode)
             .chatId(chatId.toString())
             .voice(InputFile(voiceId))
         text?.let { voice.caption(text) }
-        try {
-            foloBot.execute(voice.build())
+        return voice.build()
+    }
+
+    fun sendVoice(
+        voiceId: String,
+        text: String? = null,
+        chatId: Long,
+        parseMode: String = ParseMode.MARKDOWN
+    ): Message? {
+        return try {
+            return foloBot.execute(buildVoice(voiceId, text, chatId, parseMode))
         } catch (e: TelegramApiException) {
             logger.error { e }
+            null
         }
     }
 
 
-    fun deleteMessage(update: Update) {
-        try {
+    fun deleteMessage(update: Update): Boolean {
+        return try {
             foloBot.execute(DeleteMessage(update.message.chatId.toString(), update.message.messageId))
         } catch (e: TelegramApiException) {
             logger.error { e }
+            false
         }
     }
 
-    fun deleteMessage(chatId: Long, messageId: Int) {
-        try {
-            foloBot.execute(DeleteMessage(chatId.toString(), messageId))
+    fun deleteMessage(chatId: Long, messageId: Int): Boolean {
+        return try {
+            return foloBot.execute(DeleteMessage(chatId.toString(), messageId))
         } catch (e: TelegramApiException) {
             logger.error { e }
+            false
         }
     }
 

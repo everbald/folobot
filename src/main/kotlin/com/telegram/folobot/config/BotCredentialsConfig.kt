@@ -10,7 +10,4 @@ class BotCredentialsConfig {
 
     @Value("\${bot.token}")
     val botToken: String = ""
-
-    @Value("\${bot.path}")
-    val botPath: String = ""
 }

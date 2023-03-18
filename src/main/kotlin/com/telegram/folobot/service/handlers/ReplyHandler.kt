@@ -1,6 +1,6 @@
 package com.telegram.folobot.service.handlers
 
-import com.telegram.folobot.extensions.getChatIdentity
+import com.telegram.folobot.extensions.addToLog
 import com.telegram.folobot.extensions.getPremiumPrefix
 import com.telegram.folobot.extensions.isAndrew
 import com.telegram.folobot.service.MessageService
@@ -21,17 +21,19 @@ class ReplyHandler(
      * @param update [Update]
      * @return [BotApiMethod]
      */
-    override fun handle(update: Update): BotApiMethod<*>? {
+    override fun handle(update: Update) {
         // Сообщение в чат
-        return if (update.message.from.isAndrew()) {
+        if (update.message.from.isAndrew()) {
             messageService
-                .buildMessage("Привет, моя сладкая бориспольская булочка!", update, reply = true)
+                .sendMessage("Привет, моя сладкая бориспольская булочка!", update, reply = true)
         } else {
             messageService
-                .buildMessage(
+                .sendMessage(
                     "Привет, уважаемый ${update.message.from.getPremiumPrefix()}" +
                             "фолофил ${userService.getFoloUserName(update.message.from)}!", update, reply = true
                 )
-        }.also { logger.info { "Replied to ${getChatIdentity(it.chatId)} with ${it.text}" } }
+        }.also { logger.addToLog(it) }
     }
+
+
 }

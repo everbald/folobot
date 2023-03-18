@@ -1,6 +1,5 @@
 package com.telegram.folobot.config
 
-import com.aallam.openai.api.ExperimentalOpenAI
 import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.logging.LogLevel
 import com.aallam.openai.api.logging.Logger
@@ -12,7 +11,6 @@ import kotlin.time.Duration.Companion.minutes
 
 @Configuration
 class OpenAIClientConfig(private val openAICredentialsConfig: OpenAICredentialsConfig) {
-    @OptIn(ExperimentalOpenAI::class)
     @Bean
     fun openAI(): OpenAI {
         return OpenAI(
