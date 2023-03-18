@@ -5,7 +5,6 @@ import com.telegram.folobot.extensions.isFromFoloSwarm
 import com.telegram.folobot.service.OpenAIService
 import mu.KLogging
 import org.springframework.stereotype.Component
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.util.*
 import kotlin.concurrent.schedule
@@ -17,9 +16,9 @@ class SmallTalkHandler(
     private val openAIService: OpenAIService
 ) : Handler, KLogging() {
     private var smallTalkStatus: MutableMap<Long?, Boolean> = mutableMapOf()
-    override fun handle(update: Update): BotApiMethod<*>? = handle(update, false)
+    override fun handle(update: Update) = handle(update, false)
 
-    fun handle(update: Update, withInit: Boolean = false): BotApiMethod<*>? {
+    fun handle(update: Update, withInit: Boolean = false) {
         if (update.message.isFromFoloSwarm()) {
             if (smallTalkStatus[update.message?.chatId] != false) {
                 openAIService.smallTalk(update, withInit)
@@ -28,7 +27,6 @@ class SmallTalkHandler(
                 logger.info { "Canceling small talk BC it's suspended in ${getChatIdentity(update.message.chatId)}" }
             }
         } else openAIService.smallTalk(update, withInit)
-        return null
     }
 
     private fun suspend(update: Update, duration: Duration) {

@@ -26,17 +26,15 @@ class ActionHandler(
     private val chatCommandHandler: ChatCommandHandler,
     private val transcriptionHandler: TranscriptionHandler
 ) : Handler, KLogging() {
-    override fun handle(update: Update): BotApiMethod<*>? {
+    override fun handle(update: Update) {
         if (update.hasMessage()) {
             //Выполнение независящих от контекста действий
             registryHandler.handle(update)
 
             //Действие в зависимости от содержимого update
-            return if (messageQueueService.checkFirstInMediaGroup(update.message?.mediaGroupId))
+            if (messageQueueService.checkFirstInMediaGroup(update.message?.mediaGroupId))
                 onAction(getAction(update), update)
-            else null
         }
-        return null
     }
 
     /**
@@ -80,9 +78,9 @@ class ActionHandler(
      * @param update пробрасывается из onUpdateReceived
      * @return [BotApiMethod]
      */
-    private fun onAction(action: ActionsEnum, update: Update): BotApiMethod<*>? {
+    private fun onAction(action: ActionsEnum, update: Update) {
         if (action != ActionsEnum.UNDEFINED) {
-            return when (action) {
+            when (action) {
                 ActionsEnum.COMMAND -> commandHandler.handle(update)
                 ActionsEnum.CHATCOMMAND -> chatCommandHandler.handle(update)
                 ActionsEnum.TRANSCRIPTION -> transcriptionHandler.handle(update)
@@ -91,10 +89,9 @@ class ActionHandler(
                 ActionsEnum.USERNEW -> userJoinHandler.handleJoin(update)
                 ActionsEnum.USERLEFT -> userJoinHandler.handleLeft(update)
                 ActionsEnum.SMALLTALK -> smallTalkHandler.handle(update)
-                else -> null
+                else -> {}
             }
         }
-        return null
     }
 
     fun Message.isMyCommand() =
