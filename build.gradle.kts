@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "com.telegram"
-version = "4.1.0"
+version = "5.0.0"
 description = "folobot"
 
 repositories {
