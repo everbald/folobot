@@ -17,9 +17,7 @@ class UserJoinHandler(
     private val messageService: MessageService,
     private val userService: UserService
 ) : Handler, KLogging() {
-    override fun handle(update: Update): BotApiMethod<*>? {
-        return null
-    }
+    override fun handle(update: Update) {}
 
     /**
      * Пользователь зашел в чат
@@ -27,11 +25,11 @@ class UserJoinHandler(
      * @param update [Update]
      * @return [BotApiMethod]
      */
-    fun handleJoin(update: Update): BotApiMethod<*>? {
+    fun handleJoin(update: Update) {
         val user = update.message.newChatMembers[0]
         if (user.isAndrew()) {
-            return messageService
-                .buildMessage("Наконец то ты вернулся, мой сладкий пирожочек Андрюша!", update, reply = true)
+            messageService
+                .sendMessage("Наконец то ты вернулся, мой сладкий пирожочек Андрюша!", update, reply = true)
         } else if (user.isVitalik()) {
             messageService.sendMessage("Как же я горю сейчас", update)
             messageService.sendMessage("Слово мужчини", update)
@@ -41,8 +39,8 @@ class UserJoinHandler(
             messageService.sendMessage("Я читаю текст, вы слушаете текст", update)
         } else {
             if (update.message.chat.isFolochat()) {
-                return messageService
-                    .buildMessage(
+                messageService
+                    .sendMessage(
                         "Добро пожаловать в замечательный высокоинтеллектуальный фолочат, "
                                 + userService.getFoloUserName(user) + "!", update, reply = true
                     )
@@ -55,7 +53,6 @@ class UserJoinHandler(
             }
         }
         logger.info { "Greeted user ${user.getName()} in chat ${getChatIdentity(update.message.chatId)}" }
-        return null
     }
 
     /**
@@ -64,13 +61,13 @@ class UserJoinHandler(
      * @param update [Update]
      * @return [BotApiMethod]
      */
-    fun handleLeft(update: Update): BotApiMethod<*> {
+    fun handleLeft(update: Update) {
         val user = update.message.leftChatMember
-        return if (user.isAndrew()) {
-            messageService.buildMessage("Сладкая бориспольская булочка покинула чат", update)
+        if (user.isAndrew()) {
+            messageService.sendMessage("Сладкая бориспольская булочка покинула чат", update)
         } else {
             messageService
-                .buildMessage("Куда же ты, " + userService.getFoloUserName(user) + "! Не уходи!", update)
+                .sendMessage("Куда же ты, " + userService.getFoloUserName(user) + "! Не уходи!", update)
         }.also { logger.info { "Said goodbye to ${user.getName()} in chat ${getChatIdentity(update.message.chatId)}" } }
     }
 }

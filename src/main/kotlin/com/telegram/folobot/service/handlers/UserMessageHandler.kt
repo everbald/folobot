@@ -21,7 +21,7 @@ class UserMessageHandler(
      * @param update [Update]
      * @return [BotApiMethod]
      */
-    override fun handle(update: Update): BotApiMethod<*>? {
+    override fun handle(update: Update) {
         if (update.message.from.isAndrew() &&
             Random(System.nanoTime()).nextInt(100) < 7
         ) {
@@ -31,6 +31,5 @@ class UserMessageHandler(
                     .also { logger.info { "Replied to Andrew with ${it?.text}" } }
             )
         }
-        return null
     }
 }
