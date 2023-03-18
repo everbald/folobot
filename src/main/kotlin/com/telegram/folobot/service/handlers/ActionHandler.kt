@@ -51,7 +51,7 @@ class ActionHandler(
             // Команда
             message.isMyCommand() -> ActionsEnum.COMMAND
             // Команда в чате
-            chatCommandHandler.isChatCommand(message) -> ActionsEnum.CHATCOMMAND
+            message.isChatCommand() -> ActionsEnum.CHATCOMMAND
             // Конвертация в аудио
             message.isTranscribe() -> ActionsEnum.TRANSCRIPTION
             // Личное сообщение
@@ -102,6 +102,8 @@ class ActionHandler(
                 (this.chat.isUserChat ||
                         this.entities.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text
                             ?.contains(botCredentials.botUsername) == true)
+
+    fun Message.isChatCommand() = chatCommandHandler.isChatCommand(this)
 
     fun Message.isGreetMe() = this.isNotForward() && this.isAboutBot() &&
             this.text?.contains("привет", ignoreCase = true) == true
