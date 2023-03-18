@@ -1,7 +1,7 @@
 package com.telegram.folobot.extensions
 
-import com.telegram.folobot.FoloId.FOLOMKIN_ID
-import com.telegram.folobot.FoloId.FOLO_SWARM
+import com.telegram.folobot.utils.FoloId.FOLOMKIN_ID
+import com.telegram.folobot.utils.FoloId.FOLO_SWARM
 import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Message
 
@@ -29,4 +29,7 @@ fun Message?.isAboutBot() = listOf("гурманыч", "шурка").any {
     this?.text?.contains(it, true) == true ||
             this?.caption?.contains(it, true) == true
 }
+
+fun Message?.getBotCommand() =
+    this?.entities?.firstOrNull { it.type == "bot_command" }?.text?.substringBefore("@")
 

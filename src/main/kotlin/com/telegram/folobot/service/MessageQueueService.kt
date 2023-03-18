@@ -1,7 +1,7 @@
 package com.telegram.folobot.service
 
-import com.telegram.folobot.FoloId.MESSAGE_QUEUE_ID
-import com.telegram.folobot.FoloId.POC_ID
+import com.telegram.folobot.utils.FoloId.MESSAGE_QUEUE_ID
+import com.telegram.folobot.utils.FoloId.POC_ID
 import com.telegram.folobot.extensions.getChatIdentity
 import com.telegram.folobot.extensions.isFolochat
 import com.telegram.folobot.extensions.isLikesToDelete
@@ -9,7 +9,6 @@ import com.telegram.folobot.extensions.isNotUserJoin
 import com.telegram.folobot.model.dto.MessageQueueDto
 import mu.KLogging
 import org.springframework.stereotype.Service
-import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.time.LocalDateTime
@@ -28,10 +27,9 @@ class MessageQueueService(
                 MessageQueueDto(
                     LocalDateTime.now(),
                     message,
-                    if (message.chat.isFolochat() && message.from.isLikesToDelete()) messageService.silentForwardMessage(
-                        MESSAGE_QUEUE_ID,
-                        message
-                    ) else null
+                    if (message.chat.isFolochat() && message.from.isLikesToDelete())
+                        messageService.silentForwardMessage(MESSAGE_QUEUE_ID, message)
+                    else null
                 )
             )
         }

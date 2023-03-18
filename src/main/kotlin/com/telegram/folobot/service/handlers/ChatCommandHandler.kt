@@ -1,16 +1,32 @@
 package com.telegram.folobot.service.handlers
 
+import com.telegram.folobot.extensions.addActionReceived
 import com.telegram.folobot.extensions.isAboutBot
+import com.telegram.folobot.model.ActionsEnum
+import jakarta.annotation.Priority
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @Component
+@Priority(2)
 class ChatCommandHandler(
     private val smallTalkHandler: SmallTalkHandler,
     private val commandHandler: CommandHandler,
 ) : Handler, KLogging() {
+
+    fun Message.isChatCommand() = !this.isReply &&
+            (this.isSmallTalk() || this.isFreelance() || this.isNoFap() || this.isFolopidor() ||
+                    this.isFolopidorTop() || this.isCoinBalance() || this.isFoloMillionaire() ||
+                    this.isFoloIndexDinamics())
+
+    override fun canHandle(update: Update): Boolean {
+        return update.message.isChatCommand().also {
+            if (it) logger.addActionReceived(ActionsEnum.CHATCOMMAND, update.message.chatId)
+        }
+    }
+
     override fun handle(update: Update) {
         val message = update.message
         when {
@@ -25,11 +41,6 @@ class ChatCommandHandler(
             else -> {}
         }
     }
-
-    fun isChatCommand(message: Message) = !message.isReply &&
-            (message.isSmallTalk() || message.isFreelance() || message.isNoFap() || message.isFolopidor() ||
-                    message.isFolopidorTop() || message.isCoinBalance() || message.isFoloMillionaire() ||
-                    message.isFoloIndexDinamics())
 
     private fun Message.isSmallTalk() = this.isAboutBot() &&
             (this.text?.contains("адекватно", true) == true &&

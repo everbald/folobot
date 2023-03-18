@@ -11,8 +11,10 @@ import com.aallam.openai.api.file.FileSource
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.telegram.folobot.extensions.getChatIdentity
+import com.telegram.folobot.extensions.getName
 import com.telegram.folobot.extensions.isAboutBot
 import com.telegram.folobot.extensions.telegramEscape
+import com.telegram.folobot.utils.OggConverter
 import io.ktor.client.network.sockets.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -206,7 +208,7 @@ class OpenAIService(
         val request = this?.text?.preparePrompt() ?: this?.caption?.preparePrompt()
         return request?.let {
             val prefix = if (!userService.isSelf(this?.from) && !this.isAboutBot()) "Гурманыч, " else ""
-            it + prefix
+            prefix + it
         }
     }
 

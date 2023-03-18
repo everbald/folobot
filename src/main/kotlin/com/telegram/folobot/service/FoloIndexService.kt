@@ -1,6 +1,6 @@
 package com.telegram.folobot.service
 
-import com.telegram.folobot.Utils
+import com.telegram.folobot.utils.Utils
 import com.telegram.folobot.extensions.getChatIdentity
 import com.telegram.folobot.extensions.isAboutFo
 import com.telegram.folobot.extensions.isFo

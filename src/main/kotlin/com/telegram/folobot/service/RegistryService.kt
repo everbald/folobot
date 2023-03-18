@@ -1,36 +1,30 @@
-package com.telegram.folobot.service.handlers
+package com.telegram.folobot.service
 
-import com.telegram.folobot.FoloId.ANDREWSLEGACY_ID
-import com.telegram.folobot.FoloId.FO_LEGACY_ID
-import com.telegram.folobot.FoloId.POC_ID
-import com.telegram.folobot.extensions.isAndrew
-import com.telegram.folobot.extensions.isFo
-import com.telegram.folobot.extensions.isNotUserJoin
-import com.telegram.folobot.service.*
+import com.telegram.folobot.utils.FoloId.ANDREWSLEGACY_ID
+import com.telegram.folobot.utils.FoloId.FO_LEGACY_ID
+import com.telegram.folobot.utils.FoloId.POC_ID
+import com.telegram.folobot.extensions.*
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @Component
-class RegistryHandler(
+class RegistryService(
     private val foloUserService: FoloUserService,
     private val foloPidorService: FoloPidorService,
     private val messageService: MessageService,
     private val foloIndexService: FoloIndexService,
     private val foloCoinService: FoloCoinService,
     private val messageQueueService: MessageQueueService
-) : Handler, KLogging() {
+) : KLogging() {
 
-    override fun handle(update: Update) {
+    fun register(update: Update) {
         //Добавление фолопользователя в бд
         saveFoloUser(update)
-
         //Пересылка личных сообщений в спецчат
         forwardPrivate(update)
-
         //Добавление очков активности
         addActivityPoints(update)
-
         //Добавить в очередь
         addToMessageQueue(update)
     }
@@ -62,16 +56,14 @@ class RegistryHandler(
      */
     private fun forwardPrivate(update: Update) {
         if (update.hasMessage() && update.message.isNotUserJoin()) {
-            if (update.message.isUserMessage) {
-                messageService.forwardMessage(POC_ID, update)
-                logger.info { "Forwarded message to POC" }
-            } else if (update.message.from.isFo()) {
-                messageService.forwardMessage(FO_LEGACY_ID, update)
-                logger.info { "Forwarded message to Fo's legacy" }
-            } else if (update.message.from.isAndrew()) {
-                messageService.forwardMessage(ANDREWSLEGACY_ID, update)
-                logger.info { "Forwarded message to Andrews legacy" }
-            }
+            when {
+                update.message.isUserMessage -> POC_ID
+                update.message.from.isFo() -> FO_LEGACY_ID
+                update.message.from.isAndrew() -> ANDREWSLEGACY_ID
+                else -> null
+            }?.let {
+                messageService.forwardMessage(it, update)
+            }.also { logger.addMessageForward(it) }
         }
     }
 
@@ -80,7 +72,5 @@ class RegistryHandler(
         foloCoinService.addCoinPoints(update)
     }
 
-    private fun addToMessageQueue(update: Update) {
-        messageQueueService.addToQueue(update.message)
-    }
+    private fun addToMessageQueue(update: Update) = messageQueueService.addToQueue(update.message)
 }

@@ -1,5 +1,6 @@
 package com.telegram.folobot.service
 
+import com.telegram.folobot.FoloBot
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.GetFile
@@ -10,8 +11,10 @@ import java.io.InputStream
 
 
 @Component
-class FileService() : KLogging() {
-    lateinit var foloBot: FoloBot
+class FileService(
+    private var foloBot: FoloBot
+) : KLogging() {
+
 
     fun downloadFileAsStream(update: Update): InputStream? {
         val filePath = getFilePath(update)

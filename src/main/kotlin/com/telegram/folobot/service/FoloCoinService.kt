@@ -1,6 +1,6 @@
 package com.telegram.folobot.service
 
-import com.telegram.folobot.FoloId.FOLOMKIN_ID
+import com.telegram.folobot.utils.FoloId.FOLOMKIN_ID
 import com.telegram.folobot.extensions.isAboutFo
 import com.telegram.folobot.extensions.isFolochat
 import com.telegram.folobot.extensions.isFromFoloSwarm

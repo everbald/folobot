@@ -1,4 +1,4 @@
-package com.telegram.folobot
+package com.telegram.folobot.utils
 
 import com.telegram.folobot.model.NumTypeEnum
 import java.text.ChoiceFormat

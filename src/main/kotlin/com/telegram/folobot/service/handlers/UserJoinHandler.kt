@@ -1,23 +1,33 @@
 package com.telegram.folobot.service.handlers
 
-import com.telegram.folobot.extensions.getChatIdentity
-import com.telegram.folobot.extensions.isAndrew
-import com.telegram.folobot.extensions.isFolochat
-import com.telegram.folobot.extensions.isVitalik
+import com.telegram.folobot.extensions.*
+import com.telegram.folobot.model.ActionsEnum
 import com.telegram.folobot.service.MessageService
 import com.telegram.folobot.service.UserService
-import com.telegram.folobot.service.getName
+import jakarta.annotation.Priority
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @Component
+@Priority(6)
 class UserJoinHandler(
     private val messageService: MessageService,
     private val userService: UserService
 ) : Handler, KLogging() {
-    override fun handle(update: Update) {}
+    override fun canHandle(update: Update): Boolean {
+        return (update.message.isUserJoin() || update.message.isUserLeft()).also {
+            if (it) logger.addActionReceived(ActionsEnum.USERNEW, update.message.chatId)
+        }
+    }
+
+    override fun handle(update: Update) {
+        when {
+            update.message.isUserJoin() -> handleJoin(update)
+            update.message.isUserLeft() -> handleLeft(update)
+        }
+    }
 
     /**
      * Пользователь зашел в чат

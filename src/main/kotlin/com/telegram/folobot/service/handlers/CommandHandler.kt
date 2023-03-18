@@ -1,16 +1,21 @@
 package com.telegram.folobot.service.handlers
 
 import com.ibm.icu.text.RuleBasedNumberFormat
-import com.telegram.folobot.FoloId.ANDREW_ID
-import com.telegram.folobot.Utils.Companion.getNumText
-import com.telegram.folobot.Utils.Companion.getPeriodText
+import com.telegram.folobot.config.BotCredentialsConfig
+import com.telegram.folobot.utils.FoloId.ANDREW_ID
+import com.telegram.folobot.utils.Utils.Companion.getNumText
+import com.telegram.folobot.utils.Utils.Companion.getPeriodText
 import com.telegram.folobot.extensions.*
+import com.telegram.folobot.model.ActionsEnum
 import com.telegram.folobot.model.BotCommandsEnum
 import com.telegram.folobot.model.NumTypeEnum
 import com.telegram.folobot.service.*
+import jakarta.annotation.Priority
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
+import org.telegram.telegrambots.meta.api.objects.EntityType
+import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.time.LocalDate
 import java.time.Period
@@ -19,6 +24,7 @@ import java.time.format.FormatStyle
 import java.util.*
 
 @Component
+@Priority(1)
 class CommandHandler(
     private val foloVarService: FoloVarService,
     private val foloPidorService: FoloPidorService,
@@ -27,19 +33,25 @@ class CommandHandler(
     private val userService: UserService,
     private val textService: TextService,
     private val foloIndexChartService: FoloIndexChartService,
-    private val smallTalkHandler: SmallTalkHandler
+    private val smallTalkHandler: SmallTalkHandler,
+    private val botCredentials: BotCredentialsConfig
 ) : Handler, KLogging() {
+    fun Message.isMyCommand() =
+        this.isCommand && this.isNotForward() &&
+                (this.chat.isUserChat ||
+                        this.entities.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text
+                            ?.contains(botCredentials.botUsername) == true)
 
-    /**
-     * Выполнение команды
-     *
-     * @param update [Update]
-     * @return [BotApiMethod]
-     */
+    override fun canHandle(update: Update): Boolean {
+        return update.message.isMyCommand().also {
+            if (it) logger.addActionReceived(ActionsEnum.COMMAND, update.message.chatId)
+        }
+    }
+
     override fun handle(update: Update) {
         when (
             BotCommandsEnum.fromCommand(
-                update.message?.entities?.firstOrNull { it.type == "bot_command" }?.text?.substringBefore("@")
+                update.message.getBotCommand()
             ).also {
                 logger.info { "Received command ${it ?: "UNDEFINED"} in chat ${getChatIdentity(update.message.chatId)}" }
             }
@@ -49,6 +61,7 @@ class CommandHandler(
 
             BotCommandsEnum.SILENTSTREAM -> messageService.sendSticker(messageService.randomSticker, update)
                 .also { logger.info { "Sent sticker to ${getChatIdentity(update.message.chatId)}" } }
+
             BotCommandsEnum.SMALLTALK -> smallTalk(update)
             BotCommandsEnum.FREELANCE -> frelanceTimer(update)
             BotCommandsEnum.NOFAP -> nofapTimer(update)
@@ -79,7 +92,7 @@ class CommandHandler(
                 *${getPeriodText(Period.between(LocalDate.of(2019, 11, 18), LocalDate.now()))}*!
             """.trimIndent(),
             update
-        ).also { logger.addToLog(it) }
+        ).also { logger.addMessage(it) }
     }
 
     /**
@@ -123,7 +136,7 @@ class CommandHandler(
                         "* твёрдо и уверенно держу \"Но Фап\".",
                 update
             )
-        }.also { logger.addToLog(it) }
+        }.also { logger.addMessage(it) }
     }
 
     /**
@@ -161,7 +174,7 @@ class CommandHandler(
                     textService.getPunch(
                         userService.getFoloUserNameLinked(foloPidor, chatId)
                     ), update
-                ).also { logger.addToLog(it) }
+                ).also { logger.addMessage(it) }
 
             } else {
                 messageService.sendMessage(
@@ -172,7 +185,7 @@ class CommandHandler(
                             ) +
                             "*. Пойду лучше лампово попержу в диван",
                     update
-                ).also { logger.addToLog(it) }
+                ).also { logger.addMessage(it) }
             }
         } else {
             messageService.sendMessage(
@@ -180,7 +193,7 @@ class CommandHandler(
                         userService.getFoloUserName(update.message.from),
                 update = update,
                 reply = true
-            ).also { logger.addToLog(it) }
+            ).also { logger.addMessage(it) }
         }
     }
 
@@ -210,7 +223,7 @@ class CommandHandler(
             messageService.sendMessage(top.toString(), update)
         } else {
             messageService.sendMessage("Андрей - почетный фолопидор на все времена!", update)
-        }.also { logger.addToLog(it) }
+        }.also { logger.addMessage(it) }
     }
 
     /**
@@ -235,7 +248,7 @@ class CommandHandler(
             )
         } else {
             messageService.sendMessage("Предавайтесь фоломании хотя бы 10 минут в день!", update)
-        }.also { logger.addToLog(it) }
+        }.also { logger.addMessage(it) }
     }
 
     fun foloUnderdogs(update: Update) {
@@ -267,7 +280,7 @@ class CommandHandler(
                 update,
                 reply = true
             )
-        }.also { logger.addToLog(it) }
+        }.also { logger.addMessage(it) }
     }
 
     /**
@@ -305,7 +318,7 @@ class CommandHandler(
                         "* через *${getPeriodText(Period.between(LocalDate.now(), nextAlphaBirthday))}*",
                 update
             )
-        }.also { logger.addToLog(it) }
+        }.also { logger.addMessage(it) }
     }
 
     /**
@@ -327,7 +340,7 @@ class CommandHandler(
                         userService.getFoloUserNameLinked(update.message.from),
                 update
             )
-        }.also { logger.addToLog(it) }
+        }.also { logger.addMessage(it) }
     }
 
     fun foloMillionaire(update: Update) {
@@ -342,7 +355,7 @@ class CommandHandler(
                 }
             ),
             update
-        ).also { logger.addToLog(it) }
+        ).also { logger.addMessage(it) }
     }
 
     fun foloIndexDinamics(update: Update) {
@@ -357,6 +370,6 @@ class CommandHandler(
                 .also { logger.info { "Replied to ${getChatIdentity(update.message.chatId)} with IndexChart" } }
         } else {
             messageService.sendMessage("Фолоиндекс только для фолочата!", update)
-        }.also { logger.addToLog(it) }
+        }.also { logger.addMessage(it) }
     }
 }
