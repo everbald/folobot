@@ -1,6 +1,7 @@
 package com.telegram.folobot.service
 
-import com.telegram.folobot.FoloId.MESSAGE_QUEUE_ID
+import com.telegram.folobot.FoloBot
+import com.telegram.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import com.telegram.folobot.extensions.getChatIdentity
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -16,9 +17,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 @Component
 class MessageService(
     private val userService: UserService,
+    private val foloBot: FoloBot
 ) : KLogging() {
-    lateinit var foloBot: FoloBot
-
     private fun buildMessage(text: String, update: Update, parseMode: String = ParseMode.MARKDOWN): SendMessage {
         return SendMessage
             .builder()

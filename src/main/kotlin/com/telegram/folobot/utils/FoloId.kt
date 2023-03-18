@@ -1,4 +1,4 @@
-package com.telegram.folobot
+package com.telegram.folobot.utils
 
 object FoloId {
         const val TECH_GROUP_ID = 777000L

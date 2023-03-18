@@ -1,9 +1,10 @@
 package com.telegram.folobot.service
 
-import com.telegram.folobot.Utils
+import com.telegram.folobot.utils.Utils
 import com.telegram.folobot.extensions.getChatIdentity
 import com.telegram.folobot.model.NumTypeEnum
 import mu.KLogging
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -40,8 +41,8 @@ class TaskService(
 
     fun foloCoin() = foloCoinService.issueCoins()
 
-//    @Async
+    @Async
     fun restoreMessages() = messageQueueService.restoreMessages()
-//    @Async
+    @Async
     fun deleteTempFiles() = tempFileService.deleteTempFiles()
 }

@@ -1,5 +1,7 @@
 package com.telegram.folobot.service
 
+import com.telegram.folobot.FoloBot
+import com.telegram.folobot.extensions.getName
 import com.telegram.folobot.model.dto.FoloPidorDto
 import com.telegram.folobot.model.dto.FoloUserDto
 import mu.KLogging
@@ -13,9 +15,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 @Component
 class UserService(
     private val foloUserService: FoloUserService,
+    private val foloBot: FoloBot
 ) : KLogging() {
-    lateinit var foloBot: FoloBot
-
     /**
      * Получение имени пользователя
      *
@@ -27,7 +28,7 @@ class UserService(
         // По тэгу
         var userName: String = foloUser.tag
         // Получение динамически
-        if (userName.isEmpty()) userName = user.getName() ?: ""
+        if (userName.isEmpty()) userName = user.getName()
         // По сохраненному имени
         if (userName.isEmpty()) userName = foloUser.name
         // Если не удалось определить
@@ -128,10 +129,3 @@ class UserService(
             ?.let { !(it.status == MemberStatus.LEFT || it.status == MemberStatus.KICKED) } ?: false
     }
 }
-
-/**
- * Получение имени пользователя
- * @return Имя пользователя
- */
-fun User.getName(): String? = "${ this.firstName }${ this.lastName?.let { " $it" } ?: "" }" ?: this.userName
-

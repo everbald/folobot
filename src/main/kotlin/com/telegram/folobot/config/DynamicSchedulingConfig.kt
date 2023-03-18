@@ -16,7 +16,7 @@ import java.util.concurrent.Executors
 
 @Configuration
 @EnableScheduling
-@EnableAsync
+@EnableAsync(proxyTargetClass=true)
 class DynamicSchedulingConfig(
     private val scheduleService: ScheduleService
 ) : SchedulingConfigurer, KLogging() {

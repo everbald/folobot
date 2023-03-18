@@ -1,11 +1,11 @@
 package com.telegram.folobot.extensions
 
-import com.telegram.folobot.FoloId.ADEQUATE_COMMUNICATION
-import com.telegram.folobot.FoloId.ANDREWSLEGACY_ID
-import com.telegram.folobot.FoloId.FOLO_CHAT_ID
-import com.telegram.folobot.FoloId.FOLO_TEST_CHAT_ID
-import com.telegram.folobot.FoloId.FO_LEGACY_ID
-import com.telegram.folobot.FoloId.POC_ID
+import com.telegram.folobot.utils.FoloId.ADEQUATE_COMMUNICATION
+import com.telegram.folobot.utils.FoloId.ANDREWSLEGACY_ID
+import com.telegram.folobot.utils.FoloId.FOLO_CHAT_ID
+import com.telegram.folobot.utils.FoloId.FOLO_TEST_CHAT_ID
+import com.telegram.folobot.utils.FoloId.FO_LEGACY_ID
+import com.telegram.folobot.utils.FoloId.POC_ID
 import org.telegram.telegrambots.meta.api.objects.Chat
 
 fun Chat?.isFolochat() = this?.id == FOLO_CHAT_ID

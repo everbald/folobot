@@ -1,4 +1,4 @@
-package com.telegram.folobot.service
+package com.telegram.folobot.utils
 
 import net.bramp.ffmpeg.FFmpeg
 import net.bramp.ffmpeg.FFmpegExecutor
