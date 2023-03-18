@@ -40,7 +40,7 @@ class MessageQueueService(
     fun checkFirstInMediaGroup(mediaGroup: String?) =
         mediaGroup == null || messageStack.plus(messageQueue).count { it.message.mediaGroupId == mediaGroup } == 1
 
-    fun sendAndAddToQueue(text: String, update: Update, parseMode: String = ParseMode.HTML, reply: Boolean) {
+    fun sendAndAddToQueue(text: String, update: Update, parseMode: String, reply: Boolean) {
         messageService.sendMessage(text, update, parseMode, reply)?.let {
             messageQueue.add(MessageQueueDto(LocalDateTime.now(), it))
             if (update.message.isUserMessage) messageService.forwardMessage(POC_ID, it)

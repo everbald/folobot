@@ -30,7 +30,6 @@ class OpenAIService(
     private val openAI: OpenAI,
     private val userService: UserService,
     private val messageQueueService: MessageQueueService,
-    private val messageService: MessageService,
     private val fileService: FileService,
     private val oggConverter: OggConverter
 ) : KLogging() {
@@ -138,7 +137,7 @@ class OpenAIService(
     private fun makeRequest(request: TranscriptionRequest, update: Update) = GlobalScope.async {
         try {
             val trasncription = openAI.transcription(request).text
-            messageService.sendMessage(
+            messageQueueService.sendAndAddToQueue(
                 trasncription.telegramEscape(),
                 update,
                 parseMode = ParseMode.MARKDOWNV2,
