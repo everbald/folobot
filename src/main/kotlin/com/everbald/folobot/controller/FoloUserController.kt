@@ -1,6 +1,6 @@
 package com.everbald.folobot.controller
 
-import com.everbald.folobot.model.ControllerCommandsEnum
+import com.everbald.folobot.model.ControllerCommand
 import com.everbald.folobot.model.dto.FoloUserDto
 import com.everbald.folobot.service.FoloUserService
 import org.springframework.stereotype.Controller
@@ -39,12 +39,12 @@ class FoloUserController(private val foloUserService: FoloUserService) {
         model: MutableMap<String, Any>
     ): String {
         if (!Objects.isNull(userId)) {
-            when (ControllerCommandsEnum.valueOf(action.uppercase())) {
-                ControllerCommandsEnum.ADD ->
+            when (ControllerCommand.valueOf(action.uppercase())) {
+                ControllerCommand.ADD ->
                     if (!foloUserService.existsById(userId)) {
                         foloUserService.save(FoloUserDto(userId, mainId, anchor, tag))
                     }
-                ControllerCommandsEnum.UPDATE ->
+                ControllerCommand.UPDATE ->
                     if (foloUserService.existsById(userId)) {
                         foloUserService.save(
                             foloUserService.findById(userId)
@@ -53,7 +53,7 @@ class FoloUserController(private val foloUserService: FoloUserService) {
                             .setTag(tag)
                         )
                     }
-                ControllerCommandsEnum.DELETE -> foloUserService.delete(FoloUserDto(userId))
+                ControllerCommand.DELETE -> foloUserService.delete(FoloUserDto(userId))
                 else -> {}
             }
         }

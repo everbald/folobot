@@ -8,15 +8,19 @@ import com.everbald.folobot.model.dto.FoloCoinDto
 import com.everbald.folobot.model.dto.toEntity
 import com.everbald.folobot.persistence.entity.toDto
 import com.everbald.folobot.persistence.repos.FoloCoinRepo
+import com.everbald.folobot.utils.FoloId.FOLO_CHAT_ID
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.objects.Update
+import java.time.LocalDate
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 @Service
 class FoloCoinService(
     private val foloCoinRepo: FoloCoinRepo,
-    private val userService: UserService
+    private val userService: UserService,
+    private val foloIndexService: FoloIndexService
 ) : KLogging() {
     private val THRESHOLD_MULTIPLIER = 10
 
@@ -58,5 +62,10 @@ class FoloCoinService(
         } else {
             logger.trace { "Threshold limit reached" }
         }
+    }
+
+    fun getPrice(): Double {
+        val yesterdayIndex = foloIndexService.getById(FOLO_CHAT_ID, LocalDate.now().minusDays(1)).index ?: 100.0
+        return ((300 / 100 * yesterdayIndex) * 100).roundToInt().toDouble() / 100
     }
 }

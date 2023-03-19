@@ -1,6 +1,6 @@
 package com.everbald.folobot.extensions
 
-import com.everbald.folobot.model.ActionsEnum
+import com.everbald.folobot.model.Action
 import mu.KLogger
 import org.telegram.telegrambots.meta.api.objects.Message
 
@@ -10,5 +10,5 @@ fun KLogger.addMessage(message: Message?) =
 fun KLogger.addMessageForward(message: Message?) =
     message?.let { this.info { "Forwarded message to ${getChatIdentity(it.chatId)}" } }
 
-fun KLogger.addActionReceived(action: ActionsEnum, chatId: Long) =
+fun KLogger.addActionReceived(action: Action, chatId: Long) =
     this.info { "Received request with action $action in chat ${getChatIdentity(chatId)}" }

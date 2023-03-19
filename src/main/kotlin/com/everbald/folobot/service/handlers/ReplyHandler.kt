@@ -1,7 +1,7 @@
 package com.everbald.folobot.service.handlers
 
 import com.everbald.folobot.extensions.*
-import com.everbald.folobot.model.ActionsEnum
+import com.everbald.folobot.model.Action
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.UserService
 import jakarta.annotation.Priority
@@ -20,8 +20,8 @@ class ReplyHandler(
             this.text?.contains("привет", ignoreCase = true) == true
 
     override fun canHandle(update: Update): Boolean {
-        return update.message.isGreetMe().also {
-            if (it) logger.addActionReceived(ActionsEnum.REPLY, update.message.chatId)
+        return (update.hasMessage() && update.message.isGreetMe()).also {
+            if (it) logger.addActionReceived(Action.REPLY, update.message.chatId)
         }
     }
 

@@ -3,15 +3,20 @@ package com.everbald.folobot.service
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import com.everbald.folobot.extensions.getChatIdentity
+import com.everbald.folobot.extensions.getMessageReplyMarkup
+import com.everbald.folobot.extensions.getMessageText
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.ForwardMessage
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.methods.send.*
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 @Component
@@ -23,7 +28,7 @@ class MessageService(
         return SendMessage
             .builder()
             .parseMode(parseMode)
-            .chatId(update.message.chatId.toString())
+            .chatId(update.message?.chatId ?: update.callbackQuery.message.chatId)
             .text(text)
             .build()
     }
@@ -37,6 +42,21 @@ class MessageService(
         val sendMessage: SendMessage = buildMessage(text, update, parseMode)
         if (reply) sendMessage.replyToMessageId = update.message.messageId
         return sendMessage
+    }
+
+    private fun buildMessage(
+        text: String,
+        update: Update,
+        replyMarkup: ReplyKeyboard,
+        parseMode: String = ParseMode.MARKDOWN,
+    ): SendMessage {
+        return SendMessage
+            .builder()
+            .parseMode(parseMode)
+            .chatId(update.message.chatId.toString())
+            .text(text)
+            .replyMarkup(replyMarkup)
+            .build()
     }
 
     fun sendMessage(text: String, chatId: Long, parseMode: String = ParseMode.MARKDOWN): Message? {
@@ -64,6 +84,20 @@ class MessageService(
         }
     }
 
+    fun sendMessage(
+        text: String,
+        update: Update,
+        replyMarkup: ReplyKeyboard,
+        parseMode: String = ParseMode.MARKDOWN
+    ): Message? {
+        return try {
+            return foloBot.execute(buildMessage(text, update, replyMarkup, parseMode))
+        } catch (e: TelegramApiException) {
+            logger.error { e }
+            null
+        }
+    }
+
     fun sendMessage(text: String, update: Update, parseMode: String = ParseMode.MARKDOWN, reply: Boolean): Message? {
         return if (!reply) {
             sendMessage(text, update, parseMode)
@@ -74,6 +108,37 @@ class MessageService(
                 logger.error { e }
                 null
             }
+        }
+    }
+
+    fun buildEditMessageText(
+        text: String,
+        update: Update,
+        replyMarkup: InlineKeyboardMarkup,
+        parseMode: String = ParseMode.MARKDOWN
+    ): EditMessageText {
+        return EditMessageText
+            .builder()
+            .messageId(update.message?.messageId ?: update.callbackQuery?.message?.messageId)
+            .chatId(update.message?.chatId ?: update.callbackQuery?.message?.chatId)
+            .parseMode(parseMode)
+            .text(text)
+            .replyMarkup(replyMarkup)
+            .build()
+    }
+
+    fun editMessageText(
+        text: String,
+        update: Update,
+        replyMarkup: InlineKeyboardMarkup,
+        parseMode: String = ParseMode.MARKDOWN
+    ) {
+        try {
+            if (update.getMessageText() != text || update.getMessageReplyMarkup() != replyMarkup)
+                foloBot.execute(buildEditMessageText(text, update, replyMarkup, parseMode))
+            else logger.info { "Cancelling message edit cause no changes detected" }
+        } catch (e: TelegramApiException) {
+            logger.error { e }
         }
     }
 

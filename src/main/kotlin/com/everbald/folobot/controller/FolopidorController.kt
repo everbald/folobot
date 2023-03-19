@@ -1,6 +1,6 @@
 package com.everbald.folobot.controller
 
-import com.everbald.folobot.model.ControllerCommandsEnum
+import com.everbald.folobot.model.ControllerCommand
 import com.everbald.folobot.model.dto.FoloPidorDto
 import com.everbald.folobot.service.FoloPidorService
 import com.everbald.folobot.service.FoloUserService
@@ -53,13 +53,13 @@ class FolopidorController(
         @RequestParam action: String,
         model: MutableMap<String, Any>
     ): String {
-        when (ControllerCommandsEnum.valueOf(action.uppercase())) {
-            ControllerCommandsEnum.ADD -> if (foloUserService.existsById(userId!!) &&
+        when (ControllerCommand.valueOf(action.uppercase())) {
+            ControllerCommand.ADD -> if (foloUserService.existsById(userId!!) &&
                 !foloPidorService.existsById(chatId, userId)
             ) {
                 foloPidorService.save(FoloPidorDto(chatId, userId))
             }
-            ControllerCommandsEnum.UPDATE -> if (foloPidorService.existsById(chatId, userId!!)) {
+            ControllerCommand.UPDATE -> if (foloPidorService.existsById(chatId, userId!!)) {
                 val foloPidor = foloPidorService.findById(chatId, userId)
                 foloPidor.score = score!!
                 foloPidor.lastWinDate = LocalDate.parse(lastWinDate)
@@ -67,8 +67,8 @@ class FolopidorController(
                 foloPidor.messagesPerDay = messagesPerDay!!
                 foloPidorService.save(foloPidor)
             }
-            ControllerCommandsEnum.DELETE -> foloPidorService.delete(FoloPidorDto(chatId, userId!!))
-            ControllerCommandsEnum.FILTER -> {
+            ControllerCommand.DELETE -> foloPidorService.delete(FoloPidorDto(chatId, userId!!))
+            ControllerCommand.FILTER -> {
                 model["folopidors"] =
                     if (!Objects.isNull(chatId)) foloPidorService.findByIdChatId(chatId)
                     else foloPidorService.findAll()

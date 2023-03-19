@@ -2,7 +2,7 @@ package com.everbald.folobot.service
 
 import com.everbald.folobot.utils.Utils
 import com.everbald.folobot.extensions.getChatIdentity
-import com.everbald.folobot.model.NumTypeEnum
+import com.everbald.folobot.model.NumType
 import mu.KLogging
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
@@ -27,7 +27,7 @@ class TaskService(
                 transform = {
                     "\u2004*${it.index + 1}*.\u2004${
                         userService.getFoloUserName(it.value, chatId)
-                    } — ${Utils.getNumText(it.value.messagesPerDay, NumTypeEnum.MESSAGE)}"
+                    } — ${Utils.getNumText(it.value.messagesPerDay, NumType.MESSAGE)}"
                 }
             ),
             chatId

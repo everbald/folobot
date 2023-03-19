@@ -2,7 +2,7 @@ package com.everbald.folobot.service.handlers
 
 import com.everbald.folobot.extensions.addActionReceived
 import com.everbald.folobot.extensions.isAboutBot
-import com.everbald.folobot.model.ActionsEnum
+import com.everbald.folobot.model.Action
 import jakarta.annotation.Priority
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -18,12 +18,11 @@ class ChatCommandHandler(
 
     fun Message.isChatCommand() = !this.isReply &&
             (this.isSmallTalk() || this.isFreelance() || this.isNoFap() || this.isFolopidor() ||
-                    this.isFolopidorTop() || this.isCoinBalance() || this.isFoloMillionaire() ||
-                    this.isFoloIndexDinamics())
+                    this.isFolopidorTop() || this.isCoin() || this.isFoloIndexDinamics())
 
     override fun canHandle(update: Update): Boolean {
-        return update.message.isChatCommand().also {
-            if (it) logger.addActionReceived(ActionsEnum.CHATCOMMAND, update.message.chatId)
+        return (update.hasMessage() && update.message.isChatCommand()).also {
+            if (it) logger.addActionReceived(Action.CHATCOMMAND, update.message.chatId)
         }
     }
 
@@ -35,8 +34,7 @@ class ChatCommandHandler(
             message.isNoFap() -> commandHandler.nofapTimer(update)
             message.isFolopidor() -> commandHandler.foloPidor(update)
             message.isFolopidorTop() -> commandHandler.foloPidorTop(update)
-            message.isCoinBalance() -> commandHandler.coinBalance(update)
-            message.isFoloMillionaire() -> commandHandler.foloMillionaire(update)
+            message.isCoin() -> commandHandler.foloCoin(update)
             message.isFoloIndexDinamics() -> commandHandler.foloIndexDinamics(update)
             else -> {}
         }
@@ -68,18 +66,8 @@ class ChatCommandHandler(
             (this.text?.contains("фолопидор", true) == true &&
                     this.text?.contains("топ", true) == true)
 
-    private fun Message.isCoinBalance() = this.isAboutBot() &&
-            ((this.text?.contains("баланс", true) == true &&
-                    this.text?.contains("кошелька", true) == true) ||
-                    (this.text?.contains("сколько", true) == true &&
-                            this.text?.contains("фолокойнов", true) == true) ||
-                    (this.text?.contains("баланс", true) == true &&
-                            this.text?.contains("фолокойнов", true) == true))
-
-    private fun Message.isFoloMillionaire() = this.isAboutBot() &&
-            (this.text?.contains("фоломиллионер", true) == true ||
-                    (this.text?.contains("богатый", true) == true &&
-                            this.text?.contains("фолопидор", true) == true))
+    private fun Message.isCoin() = this.isAboutBot() &&
+            this.text?.contains("фолобирж", true ) == true
 
     private fun Message.isFoloIndexDinamics() = this.isAboutBot() &&
             (this.text?.contains("фолоиндекс", true) == true &&

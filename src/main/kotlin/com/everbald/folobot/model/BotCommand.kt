@@ -1,6 +1,6 @@
 package com.everbald.folobot.model
 
-enum class BotCommandsEnum(val command: String) {
+enum class BotCommand(val command: String) {
     START("/start"),
     SILENTSTREAM("/silentstream"),
     SMALLTALK("/smalltalk"),
@@ -12,11 +12,10 @@ enum class BotCommandsEnum(val command: String) {
     FOLOUNDERDOGS("/folounderdogs"),
     FOLOPIDORALPHA("/folopidoralpha"),
     FOLOCOIN("/folocoin"),
-    FOLOMILLIONAIRE("/folomillionaire"),
     FOLOINDEXDYNAMICS("/foloindexdynamics");
 
     companion object {
-        private val map = BotCommandsEnum.values().associateBy(BotCommandsEnum::command)
+        private val map = BotCommand.values().associateBy(BotCommand::command)
         fun fromCommand(command: String?) = map[command]
     }
 }

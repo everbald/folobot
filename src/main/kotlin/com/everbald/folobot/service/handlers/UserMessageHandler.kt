@@ -2,7 +2,7 @@ package com.everbald.folobot.service.handlers
 
 import com.everbald.folobot.extensions.addActionReceived
 import com.everbald.folobot.extensions.isAndrew
-import com.everbald.folobot.model.ActionsEnum
+import com.everbald.folobot.model.Action
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.TextService
 import com.everbald.folobot.utils.FoloId.POC_ID
@@ -19,9 +19,9 @@ class UserMessageHandler(
     private val textService: TextService
 ) : Handler, KLogging() {
     override fun canHandle(update: Update): Boolean {
-        return (update.message.from.isAndrew() &&
-                Random(System.nanoTime()).nextInt(100) < 7).also {
-            if (it) logger.addActionReceived(ActionsEnum.USERMESSAGE, update.message.chatId)
+        return (update.hasMessage() && (update.message.from.isAndrew() &&
+                Random(System.nanoTime()).nextInt(100) < 7)).also {
+            if (it) logger.addActionReceived(Action.USERMESSAGE, update.message.chatId)
         }
     }
 

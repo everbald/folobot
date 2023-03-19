@@ -18,14 +18,10 @@ class UpdateReceivedListener(
     @EventListener
     fun handleUpdateReceived(updateReceivedEvent: UpdateReceivedEvent) {
         val update = updateReceivedEvent.update
-        if (update.hasMessage()) {
-            //Выполнение независящих от контекста действий
-            registryService.register(update)
-
-            //Действие в зависимости от содержимого update
-            if (messageQueueService.checkFirstInMediaGroup(update.message?.mediaGroupId))
-                onAction(update)
-        }
+        //Выполнение независящих от контекста действий
+        registryService.register(update)
+        //Действие в зависимости от содержимого update
+        onAction(update)
     }
 
     private fun onAction(update: Update) = handlers.firstOrNull { it.canHandle(update) }?.handle(update)

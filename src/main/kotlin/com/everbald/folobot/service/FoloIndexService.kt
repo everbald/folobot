@@ -4,7 +4,7 @@ import com.everbald.folobot.utils.Utils
 import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.isAboutFo
 import com.everbald.folobot.extensions.isFo
-import com.everbald.folobot.model.NumTypeEnum
+import com.everbald.folobot.model.NumType
 import com.everbald.folobot.model.dto.FoloIndexDto
 import com.everbald.folobot.model.dto.toEntity
 import com.everbald.folobot.persistence.entity.FoloIndexId
@@ -89,10 +89,10 @@ class FoloIndexService(
 
         if (indexChange > 0) {
             photoPath = PATH + indexUp.random()
-            indexText = "растет на ${Utils.getNumText(indexChange.absoluteValue, NumTypeEnum.POINT)}"
+            indexText = "растет на ${Utils.getNumText(indexChange.absoluteValue, NumType.POINT)}"
         } else if (indexChange < 0) {
             photoPath = PATH + indexDown.random()
-            indexText = "падает на ${Utils.getNumText(indexChange.absoluteValue, NumTypeEnum.POINT)}"
+            indexText = "падает на ${Utils.getNumText(indexChange.absoluteValue, NumType.POINT)}"
         } else {
             photoPath = PATH + indexNeutral.random()
             indexText = "не изменился"

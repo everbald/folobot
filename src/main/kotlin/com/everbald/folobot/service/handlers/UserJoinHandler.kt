@@ -1,7 +1,7 @@
 package com.everbald.folobot.service.handlers
 
 import com.everbald.folobot.extensions.*
-import com.everbald.folobot.model.ActionsEnum
+import com.everbald.folobot.model.Action
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.UserService
 import jakarta.annotation.Priority
@@ -17,8 +17,8 @@ class UserJoinHandler(
     private val userService: UserService
 ) : Handler, KLogging() {
     override fun canHandle(update: Update): Boolean {
-        return (update.message.isUserJoin() || update.message.isUserLeft()).also {
-            if (it) logger.addActionReceived(ActionsEnum.USERNEW, update.message.chatId)
+        return (update.hasMessage() && (update.message.isUserJoin() || update.message.isUserLeft())).also {
+            if (it) logger.addActionReceived(Action.USERNEW, update.message.chatId)
         }
     }
 

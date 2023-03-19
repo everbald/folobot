@@ -1,15 +1,15 @@
 package com.everbald.folobot.service.handlers
 
-import com.ibm.icu.text.RuleBasedNumberFormat
 import com.everbald.folobot.config.BotCredentialsConfig
+import com.everbald.folobot.extensions.*
+import com.everbald.folobot.model.Action
+import com.everbald.folobot.model.BotCommand
+import com.everbald.folobot.model.NumType
+import com.everbald.folobot.service.*
 import com.everbald.folobot.utils.FoloId.ANDREW_ID
 import com.everbald.folobot.utils.Utils.Companion.getNumText
 import com.everbald.folobot.utils.Utils.Companion.getPeriodText
-import com.everbald.folobot.extensions.*
-import com.everbald.folobot.model.ActionsEnum
-import com.everbald.folobot.model.BotCommandsEnum
-import com.everbald.folobot.model.NumTypeEnum
-import com.everbald.folobot.service.*
+import com.ibm.icu.text.RuleBasedNumberFormat
 import jakarta.annotation.Priority
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -28,13 +28,13 @@ import java.util.*
 class CommandHandler(
     private val foloVarService: FoloVarService,
     private val foloPidorService: FoloPidorService,
-    private val foloCoinService: FoloCoinService,
     private val messageService: MessageService,
     private val userService: UserService,
     private val textService: TextService,
     private val foloIndexChartService: FoloIndexChartService,
     private val smallTalkHandler: SmallTalkHandler,
-    private val botCredentials: BotCredentialsConfig
+    private val botCredentials: BotCredentialsConfig,
+    private val inlineKeyboardService: InlineKeyboardService
 ) : Handler, KLogging() {
     fun Message.isMyCommand() =
         this.isCommand && this.isNotForward() &&
@@ -43,36 +43,33 @@ class CommandHandler(
                             ?.contains(botCredentials.botUsername) == true)
 
     override fun canHandle(update: Update): Boolean {
-        return update.message.isMyCommand().also {
-            if (it) logger.addActionReceived(ActionsEnum.COMMAND, update.message.chatId)
+        return (update.hasMessage() && update.message.isMyCommand()).also {
+            if (it) logger.addActionReceived(Action.COMMAND, update.message.chatId)
         }
     }
 
     override fun handle(update: Update) {
         when (
-            BotCommandsEnum.fromCommand(
-                update.message.getBotCommand()
-            ).also {
+            BotCommand.fromCommand(update.message.getBotCommand()).also {
                 logger.info { "Received command ${it ?: "UNDEFINED"} in chat ${getChatIdentity(update.message.chatId)}" }
             }
         ) {
-            BotCommandsEnum.START -> messageService.sendSticker(messageService.randomSticker, update)
+            BotCommand.START -> messageService.sendSticker(messageService.randomSticker, update)
                 .also { logger.info { "Sent sticker to ${getChatIdentity(update.message.chatId)}" } }
 
-            BotCommandsEnum.SILENTSTREAM -> messageService.sendSticker(messageService.randomSticker, update)
+            BotCommand.SILENTSTREAM -> messageService.sendSticker(messageService.randomSticker, update)
                 .also { logger.info { "Sent sticker to ${getChatIdentity(update.message.chatId)}" } }
 
-            BotCommandsEnum.SMALLTALK -> smallTalk(update)
-            BotCommandsEnum.FREELANCE -> frelanceTimer(update)
-            BotCommandsEnum.NOFAP -> nofapTimer(update)
-            BotCommandsEnum.FOLOPIDOR -> foloPidor(update)
-            BotCommandsEnum.FOLOPIDORTOP -> foloPidorTop(update)
-            BotCommandsEnum.FOLOSLACKERS -> foloSlackers(update)
-            BotCommandsEnum.FOLOUNDERDOGS -> foloUnderdogs(update)
-            BotCommandsEnum.FOLOPIDORALPHA -> alphaTimer(update)
-            BotCommandsEnum.FOLOCOIN -> coinBalance(update)
-            BotCommandsEnum.FOLOMILLIONAIRE -> foloMillionaire(update)
-            BotCommandsEnum.FOLOINDEXDYNAMICS -> foloIndexDinamics(update)
+            BotCommand.SMALLTALK -> smallTalk(update)
+            BotCommand.FREELANCE -> frelanceTimer(update)
+            BotCommand.NOFAP -> nofapTimer(update)
+            BotCommand.FOLOPIDOR -> foloPidor(update)
+            BotCommand.FOLOPIDORTOP -> foloPidorTop(update)
+            BotCommand.FOLOSLACKERS -> foloSlackers(update)
+            BotCommand.FOLOUNDERDOGS -> foloUnderdogs(update)
+            BotCommand.FOLOPIDORALPHA -> alphaTimer(update)
+            BotCommand.FOLOCOIN -> foloCoin(update)
+            BotCommand.FOLOINDEXDYNAMICS -> foloIndexDinamics(update)
             else -> {}
         }
     }
@@ -217,7 +214,7 @@ class CommandHandler(
                 val foloPidor = foloPidors[i]
                 top.add(
                     place + userService.getFoloUserName(foloPidor, update.message.chatId) + " — _" +
-                            getNumText(foloPidor.score, NumTypeEnum.COUNT) + "_"
+                            getNumText(foloPidor.score, NumType.COUNT) + "_"
                 )
             }
             messageService.sendMessage(top.toString(), update)
@@ -241,7 +238,7 @@ class CommandHandler(
                     transform = {
                         "\u2004*${it.index + 1}*.\u2004${
                             userService.getFoloUserName(it.value, update.message.chatId)
-                        } — бездельничает _${getNumText(it.value.getPassiveDays(), NumTypeEnum.DAY)}_"
+                        } — бездельничает _${getNumText(it.value.getPassiveDays(), NumType.DAY)}_"
                     }
                 ),
                 update
@@ -303,7 +300,7 @@ class CommandHandler(
                         "*${
                             getNumText(
                                 Period.between(alfaBirthday, nextAlphaBirthday).years,
-                                NumTypeEnum.YEARISH
+                                NumType.YEARISH
                             )
                         }*!",
                 update
@@ -321,42 +318,12 @@ class CommandHandler(
         }.also { logger.addMessage(it) }
     }
 
-    /**
-     * Баланс фолокойнов
-     *
-     * @param update [Update]
-     */
-    fun coinBalance(update: Update) {
-        val balance = foloCoinService.getById(update.message.from.id).coins
-        if (balance > 0) {
-            messageService.sendMessage(
-                "На твоем счете *${getNumText(balance, NumTypeEnum.COIN)}*, уважаемый фолопидор " +
-                        userService.getFoloUserNameLinked(update.message.from),
-                update
-            )
-        } else {
-            messageService.sendMessage(
-                "На твоем счете нет фолокойнов, уважаемый ${update.message.from.getPremiumPrefix()}фолопидор " +
-                        userService.getFoloUserNameLinked(update.message.from),
-                update
-            )
-        }.also { logger.addMessage(it) }
-    }
-
-    fun foloMillionaire(update: Update) {
+    fun foloCoin(update: Update) =
         messageService.sendMessage(
-            foloCoinService.getTop().withIndex().joinToString(
-                separator = "\n",
-                prefix = "*10 богатейших фолопидоров мира, чье состояние исчисляется в фолокойнах " +
-                        "— ${LocalDate.now().year}. Рейтинг Forbes*:\n",
-                transform = {
-                    "\u2004*${it.index + 1}*.\u2004${userService.getFoloUserName(it.value.userId)} — " +
-                            "*₣${it.value.coins}*"
-                }
-            ),
-            update
-        ).also { logger.addMessage(it) }
-    }
+            "Добро пожаловать на фолобиржу!",
+            update,
+            inlineKeyboardService.getfoloCoinKeyboard()
+        )
 
     fun foloIndexDinamics(update: Update) {
         if (update.message.chat.isFolochat()) {

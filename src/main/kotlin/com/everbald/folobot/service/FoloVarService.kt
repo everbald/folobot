@@ -1,6 +1,6 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.model.VarTypeEnum
+import com.everbald.folobot.model.VarType
 import com.everbald.folobot.persistence.entity.FoloVarEntity
 import com.everbald.folobot.persistence.entity.FoloVarId
 import com.everbald.folobot.persistence.repos.FoloVarRepo
@@ -22,7 +22,7 @@ class FoloVarService(private val foloVarRepo: FoloVarRepo) {
      */
     fun getLastFolopidorDate(chatId: Long): LocalDate {
         return LocalDate.parse(
-            foloVarRepo.findVarById(FoloVarId(chatId, VarTypeEnum.LAST_FOLOPIDOR_DATE.name))?.value
+            foloVarRepo.findVarById(FoloVarId(chatId, VarType.LAST_FOLOPIDOR_DATE.name))?.value
                 ?: "2020-01-01"
         )
     }
@@ -34,7 +34,7 @@ class FoloVarService(private val foloVarRepo: FoloVarRepo) {
      * @param value [LocalDate] Дата
      */
     fun setLastFolopidorDate(chatId: Long, value: LocalDate) {
-        foloVarRepo.save(FoloVarEntity(FoloVarId(chatId, VarTypeEnum.LAST_FOLOPIDOR_DATE.name), value.toString()))
+        foloVarRepo.save(FoloVarEntity(FoloVarId(chatId, VarType.LAST_FOLOPIDOR_DATE.name), value.toString()))
     }
 
     /**
@@ -44,7 +44,7 @@ class FoloVarService(private val foloVarRepo: FoloVarRepo) {
      * @return [Long] userid
      */
     fun getLastFolopidorWinner(chatId: Long): Long {
-        return foloVarRepo.findVarById(FoloVarId(chatId, VarTypeEnum.LAST_FOLOPIDOR_USERID.name))?.value?.toLong()
+        return foloVarRepo.findVarById(FoloVarId(chatId, VarType.LAST_FOLOPIDOR_USERID.name))?.value?.toLong()
             ?: INITIAL_USERID
     }
 
@@ -55,7 +55,7 @@ class FoloVarService(private val foloVarRepo: FoloVarRepo) {
      * @param userId  [Long] Id пользователя
      */
     fun setLastFolopidorWinner(chatId: Long, userId: Long) {
-        foloVarRepo.save(FoloVarEntity(FoloVarId(chatId, VarTypeEnum.LAST_FOLOPIDOR_USERID.name), userId.toString()))
+        foloVarRepo.save(FoloVarEntity(FoloVarId(chatId, VarType.LAST_FOLOPIDOR_USERID.name), userId.toString()))
     }
 
     /**
@@ -64,7 +64,7 @@ class FoloVarService(private val foloVarRepo: FoloVarRepo) {
      */
     fun getLastFapDate(): LocalDate {
         return LocalDate.parse(
-            foloVarRepo.findVarById(FoloVarId(COMMON_CHATID, VarTypeEnum.LAST_FAP_DATE.name))?.value
+            foloVarRepo.findVarById(FoloVarId(COMMON_CHATID, VarType.LAST_FAP_DATE.name))?.value
                 ?: "2020-01-01"
         )
     }
@@ -75,7 +75,7 @@ class FoloVarService(private val foloVarRepo: FoloVarRepo) {
      * @param fapDate [LocalDate] Дата
      */
     fun setLastFapDate(fapDate: LocalDate) {
-        foloVarRepo.save(FoloVarEntity(FoloVarId(COMMON_CHATID, VarTypeEnum.LAST_FAP_DATE.name), fapDate.toString()))
+        foloVarRepo.save(FoloVarEntity(FoloVarId(COMMON_CHATID, VarType.LAST_FAP_DATE.name), fapDate.toString()))
     }
 
     /**
@@ -86,7 +86,7 @@ class FoloVarService(private val foloVarRepo: FoloVarRepo) {
      */
     fun getNoFapCount(chatId: Long): Int {
         val noFapCount =
-            (foloVarRepo.findVarById(FoloVarId(chatId, VarTypeEnum.LAST_FAP_COUNT.name))?.value?.toInt() ?: 0) + 1
+            (foloVarRepo.findVarById(FoloVarId(chatId, VarType.LAST_FAP_COUNT.name))?.value?.toInt() ?: 0) + 1
         setNoFapCount(chatId, noFapCount)
         return noFapCount
     }
@@ -98,14 +98,14 @@ class FoloVarService(private val foloVarRepo: FoloVarRepo) {
      * @param value  [Integer] Счетчик
      */
     fun setNoFapCount(chatId: Long, value: Int) {
-        foloVarRepo.save(FoloVarEntity(FoloVarId(chatId, VarTypeEnum.LAST_FAP_COUNT.name), value.toString()))
+        foloVarRepo.save(FoloVarEntity(FoloVarId(chatId, VarType.LAST_FAP_COUNT.name), value.toString()))
     }
 
     /**
      *  Фолопидор предыдущего года
      */
     fun getLastYearFolopidor(chatId: Long): Long {
-        return foloVarRepo.findVarById(FoloVarId(chatId, VarTypeEnum.LAST_YEAR_FOLOPIDOR_USERID.name))?.value?.toLong()
+        return foloVarRepo.findVarById(FoloVarId(chatId, VarType.LAST_YEAR_FOLOPIDOR_USERID.name))?.value?.toLong()
             ?: INITIAL_USERID
     }
 
@@ -115,7 +115,7 @@ class FoloVarService(private val foloVarRepo: FoloVarRepo) {
     fun setLastYearFolopidor(chatId: Long, userId: Long) {
         foloVarRepo.save(
             FoloVarEntity(
-                FoloVarId(chatId, VarTypeEnum.LAST_YEAR_FOLOPIDOR_USERID.name),
+                FoloVarId(chatId, VarType.LAST_YEAR_FOLOPIDOR_USERID.name),
                 userId.toString()
             )
         )

@@ -1,7 +1,7 @@
 package com.everbald.folobot.service.handlers
 
 import com.everbald.folobot.extensions.addActionReceived
-import com.everbald.folobot.model.ActionsEnum
+import com.everbald.folobot.model.Action
 import com.everbald.folobot.service.OpenAIService
 import jakarta.annotation.Priority
 import mu.KLogging
@@ -17,8 +17,8 @@ class TranscriptionHandler(
     fun Message.isTranscribe() = this.hasVoice() || this.hasVideoNote()
 
     override fun canHandle(update: Update): Boolean {
-        return update.message.isTranscribe().also {
-            if (it) logger.addActionReceived(ActionsEnum.TRANSCRIPTION, update.message.chatId)
+        return (update.hasMessage() && update.message.isTranscribe()).also {
+            if (it) logger.addActionReceived(Action.TRANSCRIPTION, update.message.chatId)
         }
     }
 

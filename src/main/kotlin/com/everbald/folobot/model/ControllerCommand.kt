@@ -1,5 +1,5 @@
 package com.everbald.folobot.model
 
-enum class ControllerCommandsEnum {
+enum class ControllerCommand {
     ADD, UPDATE, DELETE, FILTER
 }

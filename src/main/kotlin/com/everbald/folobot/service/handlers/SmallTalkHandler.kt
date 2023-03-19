@@ -3,7 +3,7 @@ package com.everbald.folobot.service.handlers
 import com.everbald.folobot.extensions.addActionReceived
 import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.isFromFoloSwarm
-import com.everbald.folobot.model.ActionsEnum
+import com.everbald.folobot.model.Action
 import com.everbald.folobot.service.OpenAIService
 import com.everbald.folobot.service.UserService
 import jakarta.annotation.Priority
@@ -27,8 +27,8 @@ class SmallTalkHandler(
     fun Message.isSmallTalk() = userService.isSelf(this.replyToMessage?.from) || this.isFromFoloSwarm()
 
     override fun canHandle(update: Update): Boolean {
-        return update.message.isSmallTalk().also {
-            if (it) logger.addActionReceived(ActionsEnum.SMALLTALK, update.message.chatId)
+        return (update.hasMessage() && update.message.isSmallTalk()).also {
+            if (it) logger.addActionReceived(Action.SMALLTALK, update.message.chatId)
         }
     }
 

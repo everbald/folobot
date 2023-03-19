@@ -17,16 +17,17 @@ class RegistryService(
     private val foloCoinService: FoloCoinService,
     private val messageQueueService: MessageQueueService
 ) : KLogging() {
-
     fun register(update: Update) {
-        //Добавление фолопользователя в бд
-        saveFoloUser(update)
-        //Пересылка личных сообщений в спецчат
-        forwardPrivate(update)
-        //Добавление очков активности
-        addActivityPoints(update)
-        //Добавить в очередь
-        addToMessageQueue(update)
+        if (update.hasMessage()) {
+            //Добавление фолопользователя в бд
+            saveFoloUser(update)
+            //Пересылка личных сообщений в спецчат
+            forwardPrivate(update)
+            //Добавление очков активности
+            addActivityPoints(update)
+            //Добавить в очередь
+            addToMessageQueue(update)
+        }
     }
 
     /**

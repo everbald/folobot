@@ -6,6 +6,6 @@ import org.telegram.telegrambots.meta.TelegramBotsApi
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 
 @Configuration
-class TelegramBotsApiConfig(private val foloBot: FoloBot) {
+class TelegramBotsApiConfig(foloBot: FoloBot) {
     init { TelegramBotsApi(DefaultBotSession::class.java).registerBot(foloBot) }
 }
