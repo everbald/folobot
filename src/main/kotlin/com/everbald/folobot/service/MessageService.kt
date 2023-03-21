@@ -1,16 +1,16 @@
 package com.everbald.folobot.service
 
 import com.everbald.folobot.FoloBot
-import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import com.everbald.folobot.extensions.getChatIdentity
-import com.everbald.folobot.extensions.getMessageCaption
-import com.everbald.folobot.extensions.getMessageReplyMarkup
-import com.everbald.folobot.extensions.getMessageText
+import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.ForwardMessage
 import org.telegram.telegrambots.meta.api.methods.ParseMode
-import org.telegram.telegrambots.meta.api.methods.send.*
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto
+import org.telegram.telegrambots.meta.api.methods.send.SendSticker
+import org.telegram.telegrambots.meta.api.methods.send.SendVoice
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCaption
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
@@ -97,11 +97,9 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN
     ) {
         try {
-            if (update.getMessageText() != text || update.getMessageReplyMarkup() != replyMarkup)
-                foloBot.execute(buildEditMessageText(text, update, replyMarkup, parseMode))
-            else logger.info { "Cancelling message edit cause no changes detected" }
+            foloBot.execute(buildEditMessageText(text, update, replyMarkup, parseMode))
         } catch (e: TelegramApiException) {
-            logger.error { e }
+            logger.debug { e }
         }
     }
 
@@ -128,11 +126,9 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN
     ) {
         try {
-            if (update.getMessageCaption() != text || update.getMessageReplyMarkup() != replyMarkup)
-                foloBot.execute(buildEditMessageCaption(text, update, replyMarkup, parseMode))
-            else logger.info { "Cancelling message edit cause no changes detected" }
+            foloBot.execute(buildEditMessageCaption(text, update, replyMarkup, parseMode))
         } catch (e: TelegramApiException) {
-            logger.error { e }
+            logger.debug { e }
         }
     }
 
@@ -212,7 +208,7 @@ class MessageService(
         photo: InputFile,
         chatId: Long,
         text: String? = null,
-        replyMarkup: InlineKeyboardMarkup? = null,
+        replyMarkup: ReplyKeyboard? = null,
         parseMode: String = ParseMode.MARKDOWN
     ): SendPhoto {
         val sendPhoto = SendPhoto
@@ -229,7 +225,7 @@ class MessageService(
         photoPath: String,
         chatId: Long,
         text: String? = null,
-        replyMarkup: InlineKeyboardMarkup? = null,
+        replyMarkup: ReplyKeyboard? = null,
         parseMode: String = ParseMode.MARKDOWN
     ): SendPhoto {
         return buildPhoto(
@@ -248,7 +244,7 @@ class MessageService(
         photo: InputFile,
         chatId: Long,
         text: String? = null,
-        replyMarkup: InlineKeyboardMarkup? = null,
+        replyMarkup: ReplyKeyboard? = null,
         parseMode: String = ParseMode.MARKDOWN
     ): Message? {
         return try {
@@ -263,7 +259,7 @@ class MessageService(
         photoPath: String,
         chatId: Long,
         text: String? = null,
-        replyMarkup: InlineKeyboardMarkup? = null,
+        replyMarkup: ReplyKeyboard? = null,
         parseMode: String = ParseMode.MARKDOWN
     ): Message? {
         return try {
