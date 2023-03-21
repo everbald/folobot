@@ -78,7 +78,7 @@ class CallbackHandler(
 
     fun buyCoin(update: Update) {
         messageService.editMessageCaption(
-            "Старт продаж ₣ ожидается в течении недели ",
+            "Старт продаж ₣ ожидается в течении недели",
             update,
             inlineKeyboardService.getFoloCoinKeyboard()
         ).also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with coin invoice" } }

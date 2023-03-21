@@ -30,7 +30,6 @@ class InlineKeyboardService() : KLogging() {
                 InlineKeyboardButton.builder()
                     .text(CallbackCommand.BUYCOIN.description)
                     .callbackData(CallbackCommand.BUYCOIN.command)
-                    .pay(true)
                     .build()
             )
         )
