@@ -26,39 +26,21 @@ class MessageService(
     private val userService: UserService,
     private val foloBot: FoloBot
 ) : KLogging() {
-    private fun buildMessage(text: String, update: Update, parseMode: String = ParseMode.MARKDOWN): SendMessage {
-        return SendMessage
+    private fun buildMessage(
+        text: String,
+        update: Update,
+        replyMarkup: ReplyKeyboard? = null,
+        reply: Boolean = false,
+        parseMode: String = ParseMode.MARKDOWN
+    ): SendMessage {
+        val sendMessage = SendMessage
             .builder()
             .parseMode(parseMode)
             .chatId(update.message?.chatId ?: update.callbackQuery.message.chatId)
             .text(text)
-            .build()
-    }
-
-    private fun buildMessage(
-        text: String,
-        update: Update,
-        parseMode: String = ParseMode.MARKDOWN,
-        reply: Boolean
-    ): SendMessage {
-        val sendMessage: SendMessage = buildMessage(text, update, parseMode)
-        if (reply) sendMessage.replyToMessageId = update.message.messageId
-        return sendMessage
-    }
-
-    private fun buildMessage(
-        text: String,
-        update: Update,
-        replyMarkup: ReplyKeyboard,
-        parseMode: String = ParseMode.MARKDOWN,
-    ): SendMessage {
-        return SendMessage
-            .builder()
-            .parseMode(parseMode)
-            .chatId(update.message.chatId.toString())
-            .text(text)
-            .replyMarkup(replyMarkup)
-            .build()
+        if (reply) sendMessage.replyToMessageId(update.message.messageId)
+        replyMarkup?.let { sendMessage.replyMarkup(replyMarkup) }
+        return sendMessage.build()
     }
 
     fun sendMessage(text: String, chatId: Long, parseMode: String = ParseMode.MARKDOWN): Message? {
@@ -77,39 +59,18 @@ class MessageService(
         }
     }
 
-    fun sendMessage(text: String, update: Update, parseMode: String = ParseMode.MARKDOWN): Message? {
-        return try {
-            return foloBot.execute(buildMessage(text, update, parseMode))
-        } catch (e: TelegramApiException) {
-            logger.error { e }
-            null
-        }
-    }
-
     fun sendMessage(
         text: String,
         update: Update,
-        replyMarkup: ReplyKeyboard,
+        replyMarkup: ReplyKeyboard? = null,
+        reply: Boolean = false,
         parseMode: String = ParseMode.MARKDOWN
     ): Message? {
         return try {
-            return foloBot.execute(buildMessage(text, update, replyMarkup, parseMode))
+            return foloBot.execute(buildMessage(text, update, replyMarkup, reply, parseMode))
         } catch (e: TelegramApiException) {
             logger.error { e }
             null
-        }
-    }
-
-    fun sendMessage(text: String, update: Update, parseMode: String = ParseMode.MARKDOWN, reply: Boolean): Message? {
-        return if (!reply) {
-            sendMessage(text, update, parseMode)
-        } else {
-            try {
-                foloBot.execute(buildMessage(text, update, parseMode, reply))
-            } catch (e: TelegramApiException) {
-                logger.error { e }
-                null
-            }
         }
     }
 

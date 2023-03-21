@@ -168,9 +168,7 @@ class CommandHandler(
                 //Поздравляем
                 messageService.sendMessage(textService.setup, update)
                 messageService.sendMessage(
-                    textService.getPunch(
-                        userService.getFoloUserNameLinked(foloPidor, chatId)
-                    ), update
+                    textService.getPunch(userService.getFoloUserNameLinked(foloPidor, chatId)), update
                 ).also { logger.addMessage(it) }
 
             } else {
