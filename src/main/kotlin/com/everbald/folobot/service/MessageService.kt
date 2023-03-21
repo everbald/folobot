@@ -3,6 +3,7 @@ package com.everbald.folobot.service
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import com.everbald.folobot.extensions.getChatIdentity
+import com.everbald.folobot.extensions.getMessageCaption
 import com.everbald.folobot.extensions.getMessageReplyMarkup
 import com.everbald.folobot.extensions.getMessageText
 import mu.KLogging
@@ -11,6 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.ForwardMessage
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.methods.send.*
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCaption
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Message
@@ -142,6 +144,37 @@ class MessageService(
         }
     }
 
+    fun buildEditMessageCaption(
+        text: String,
+        update: Update,
+        replyMarkup: InlineKeyboardMarkup,
+        parseMode: String = ParseMode.MARKDOWN
+    ): EditMessageCaption {
+        return EditMessageCaption
+            .builder()
+            .messageId(update.message?.messageId ?: update.callbackQuery?.message?.messageId)
+            .chatId(update.message?.chatId ?: update.callbackQuery?.message?.chatId)
+            .parseMode(parseMode)
+            .caption(text)
+            .replyMarkup(replyMarkup)
+            .build()
+    }
+
+    fun editMessageCaption(
+        text: String,
+        update: Update,
+        replyMarkup: InlineKeyboardMarkup,
+        parseMode: String = ParseMode.MARKDOWN
+    ) {
+        try {
+            if (update.getMessageCaption() != text || update.getMessageReplyMarkup() != replyMarkup)
+                foloBot.execute(buildEditMessageCaption(text, update, replyMarkup, parseMode))
+            else logger.info { "Cancelling message edit cause no changes detected" }
+        } catch (e: TelegramApiException) {
+            logger.error { e }
+        }
+    }
+
     private fun buildSticker(stickerId: String, update: Update): SendSticker? {
         return SendSticker
             .builder()
@@ -214,17 +247,30 @@ class MessageService(
         }
     }
 
-    fun buildPhoto(photo: InputFile, chatId: Long, text: String, parseMode: String = ParseMode.MARKDOWN): SendPhoto {
-        return SendPhoto
+    fun buildPhoto(
+        photo: InputFile,
+        chatId: Long,
+        text: String? = null,
+        replyMarkup: InlineKeyboardMarkup? = null,
+        parseMode: String = ParseMode.MARKDOWN
+    ): SendPhoto {
+        val sendPhoto = SendPhoto
             .builder()
             .parseMode(parseMode)
             .chatId(chatId.toString())
             .photo(photo)
-            .caption(text)
-            .build()
+        text?.let { sendPhoto.caption(text) }
+        replyMarkup?.let { sendPhoto.replyMarkup(replyMarkup) }
+        return sendPhoto.build()
     }
 
-    fun buildPhoto(photoPath: String, chatId: Long, text: String, parseMode: String = ParseMode.MARKDOWN): SendPhoto {
+    fun buildPhoto(
+        photoPath: String,
+        chatId: Long,
+        text: String? = null,
+        replyMarkup: InlineKeyboardMarkup? = null,
+        parseMode: String = ParseMode.MARKDOWN
+    ): SendPhoto {
         return buildPhoto(
             InputFile(
                 this::class.java.getResourceAsStream(photoPath),
@@ -232,23 +278,35 @@ class MessageService(
             ),
             chatId,
             text,
+            replyMarkup,
             parseMode
         )
     }
 
-
-    fun sendPhoto(photo: InputFile, chatId: Long, text: String, parseMode: String = ParseMode.MARKDOWN): Message? {
+    fun sendPhoto(
+        photo: InputFile,
+        chatId: Long,
+        text: String? = null,
+        replyMarkup: InlineKeyboardMarkup? = null,
+        parseMode: String = ParseMode.MARKDOWN
+    ): Message? {
         return try {
-            return foloBot.execute(buildPhoto(photo, chatId, text, parseMode))
+            return foloBot.execute(buildPhoto(photo, chatId, text, replyMarkup, parseMode))
         } catch (e: TelegramApiException) {
             logger.error { e }
             null
         }
     }
 
-    fun sendPhoto(photoPath: String, chatId: Long, text: String, parseMode: String = ParseMode.MARKDOWN): Message? {
+    fun sendPhoto(
+        photoPath: String,
+        chatId: Long,
+        text: String? = null,
+        replyMarkup: InlineKeyboardMarkup? = null,
+        parseMode: String = ParseMode.MARKDOWN
+    ): Message? {
         return try {
-            foloBot.execute(buildPhoto(photoPath, chatId, text, parseMode))
+            foloBot.execute(buildPhoto(photoPath, chatId, text, replyMarkup, parseMode))
         } catch (e: Exception) {
             logger.error { e }
             null

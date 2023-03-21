@@ -45,21 +45,21 @@ class CallbackCommandHandler(
             "На твоем счете нет фолокойнов, уважаемый ${update.callbackQuery.from.getPremiumPrefix()}фолопидор " +
                     userService.getFoloUserNameLinked(update.callbackQuery.from)
         }
-        messageService.editMessageText(text, update, inlineKeyboardService.getfoloCoinKeyboard())
+        messageService.editMessageCaption(text, update, inlineKeyboardService.getFoloCoinKeyboard())
             .also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with coin balance" } }
     }
 
     fun coinPrice(update: Update) {
         val price = foloCoinService.getPrice()
-        messageService.editMessageText(
+        messageService.editMessageCaption(
             "Стоимость фолокойна на сегодня составляет *${price.format()}*₽",
             update,
-            inlineKeyboardService.getfoloCoinKeyboard()
+            inlineKeyboardService.getFoloCoinKeyboard()
         ).also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with coin price" } }
     }
 
     fun foloMillionaire(update: Update) {
-        messageService.editMessageText(
+        messageService.editMessageCaption(
             foloCoinService.getTop().withIndex().joinToString(
                 separator = "\n",
                 prefix = "*10 богатейших фолопидоров мира, чье состояние исчисляется в фолокойнах " +
@@ -70,15 +70,15 @@ class CallbackCommandHandler(
                 }
             ),
             update,
-            inlineKeyboardService.getfoloCoinKeyboard()
+            inlineKeyboardService.getFoloCoinKeyboard()
         ).also { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with folomillionaire chart" }
     }
 
     fun buyCoin(update: Update) {
-        messageService.editMessageText(
+        messageService.editMessageCaption(
             "Старт продаж ₣ ожидается в течении недели ",
             update,
-            inlineKeyboardService.getfoloCoinKeyboard()
+            inlineKeyboardService.getFoloCoinKeyboard()
         ).also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with coin invoice" } }
     }
 }
