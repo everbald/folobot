@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 @Component
 class InlineKeyboardService() : KLogging() {
-    fun getfoloCoinKeyboard(): InlineKeyboardMarkup = InlineKeyboardMarkup.builder()
+    fun getFoloCoinKeyboard(): InlineKeyboardMarkup = InlineKeyboardMarkup.builder()
         .keyboardRow(
             listOf(
                 InlineKeyboardButton.builder()
