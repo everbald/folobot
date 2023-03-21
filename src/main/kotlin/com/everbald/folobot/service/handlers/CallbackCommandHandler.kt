@@ -52,7 +52,7 @@ class CallbackCommandHandler(
     fun coinPrice(update: Update) {
         val price = foloCoinService.getPrice()
         messageService.editMessageText(
-            "Стоимость фолокойна на сегодня составляет $price₽",
+            "Стоимость фолокойна на сегодня составляет *${price.format()}*₽",
             update,
             inlineKeyboardService.getfoloCoinKeyboard()
         ).also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with coin price" } }
