@@ -311,7 +311,7 @@ class CommandHandler(
 
     fun foloCoin(update: Update) =
         messageService.sendPhoto(
-            "/static/images/foloStock.jpg",
+            "/static/images/foloStock.png",
             update.message.chatId,
             "Добро пожаловать на фолобиржу!",
             inlineKeyboardService.getFoloCoinKeyboard()
