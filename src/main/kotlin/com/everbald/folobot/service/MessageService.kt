@@ -208,7 +208,7 @@ class MessageService(
         photo: InputFile,
         chatId: Long,
         text: String? = null,
-        replyMarkup: InlineKeyboardMarkup? = null,
+        replyMarkup: ReplyKeyboard? = null,
         parseMode: String = ParseMode.MARKDOWN
     ): SendPhoto {
         val sendPhoto = SendPhoto
@@ -225,7 +225,7 @@ class MessageService(
         photoPath: String,
         chatId: Long,
         text: String? = null,
-        replyMarkup: InlineKeyboardMarkup? = null,
+        replyMarkup: ReplyKeyboard? = null,
         parseMode: String = ParseMode.MARKDOWN
     ): SendPhoto {
         return buildPhoto(
@@ -244,7 +244,7 @@ class MessageService(
         photo: InputFile,
         chatId: Long,
         text: String? = null,
-        replyMarkup: InlineKeyboardMarkup? = null,
+        replyMarkup: ReplyKeyboard? = null,
         parseMode: String = ParseMode.MARKDOWN
     ): Message? {
         return try {
@@ -259,7 +259,7 @@ class MessageService(
         photoPath: String,
         chatId: Long,
         text: String? = null,
-        replyMarkup: InlineKeyboardMarkup? = null,
+        replyMarkup: ReplyKeyboard? = null,
         parseMode: String = ParseMode.MARKDOWN
     ): Message? {
         return try {
