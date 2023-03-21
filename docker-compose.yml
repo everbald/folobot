@@ -13,7 +13,6 @@ services:
     environment:
       - BOT_USERNAME
       - BOT_TOKEN
-      - BOT_PATH
       - DB_NAME
       - DB_USER
       - DB_PASS
