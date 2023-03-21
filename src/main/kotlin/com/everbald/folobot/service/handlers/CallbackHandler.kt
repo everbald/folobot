@@ -14,7 +14,7 @@ import java.util.*
 
 @Component
 @Priority(1)
-class CallbackCommandHandler(
+class CallbackHandler(
     private val foloCoinService: FoloCoinService,
     private val messageService: MessageService,
     private val userService: UserService,

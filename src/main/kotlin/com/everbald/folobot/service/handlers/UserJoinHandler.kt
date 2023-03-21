@@ -5,7 +5,6 @@ import com.everbald.folobot.model.Action
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.UserService
 import jakarta.annotation.Priority
-import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -15,12 +14,10 @@ import org.telegram.telegrambots.meta.api.objects.Update
 class UserJoinHandler(
     private val messageService: MessageService,
     private val userService: UserService
-) : Handler, KLogging() {
-    override fun canHandle(update: Update): Boolean {
-        return (update.hasMessage() && (update.message.isUserJoin() || update.message.isUserLeft())).also {
-            if (it) logger.addActionReceived(Action.USERNEW, update.message.chatId)
-        }
-    }
+) : AbstractMessageHandler() {
+    override fun canHandle(update: Update) = super.canHandle(update) &&
+        (update.message.isUserJoin() || update.message.isUserLeft())
+            .also { if (it) logger.addActionReceived(Action.USERNEW, update.message.chatId) }
 
     override fun handle(update: Update) {
         when {

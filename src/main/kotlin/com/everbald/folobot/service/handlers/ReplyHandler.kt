@@ -5,7 +5,6 @@ import com.everbald.folobot.model.Action
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.UserService
 import jakarta.annotation.Priority
-import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -15,15 +14,12 @@ import org.telegram.telegrambots.meta.api.objects.Update
 class ReplyHandler(
     private val userService: UserService,
     private val messageService: MessageService
-) : Handler, KLogging() {
+) : AbstractMessageHandler() {
     fun Message.isGreetMe() = this.isNotForward() && this.isAboutBot() &&
             this.text?.contains("привет", ignoreCase = true) == true
 
-    override fun canHandle(update: Update): Boolean {
-        return (update.hasMessage() && update.message.isGreetMe()).also {
-            if (it) logger.addActionReceived(Action.REPLY, update.message.chatId)
-        }
-    }
+    override fun canHandle(update: Update) = super.canHandle(update) && update.message.isGreetMe()
+            .also { if (it) logger.addActionReceived(Action.REPLY, update.message.chatId) }
 
     override fun handle(update: Update) {
         if (update.message.from.isAndrew()) {

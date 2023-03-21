@@ -7,7 +7,6 @@ import com.everbald.folobot.model.Action
 import com.everbald.folobot.service.OpenAIService
 import com.everbald.folobot.service.UserService
 import jakarta.annotation.Priority
-import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -21,16 +20,13 @@ import kotlin.time.Duration.Companion.seconds
 class SmallTalkHandler(
     private val openAIService: OpenAIService,
     private val userService: UserService
-) : Handler, KLogging() {
+) : AbstractMessageHandler() {
     private var smallTalkStatus: MutableMap<Long?, Boolean> = mutableMapOf()
 
     fun Message.isSmallTalk() = userService.isSelf(this.replyToMessage?.from) || this.isFromFoloSwarm()
 
-    override fun canHandle(update: Update): Boolean {
-        return (update.hasMessage() && update.message.isSmallTalk()).also {
-            if (it) logger.addActionReceived(Action.SMALLTALK, update.message.chatId)
-        }
-    }
+    override fun canHandle(update: Update) = super.canHandle(update) && update.message.isSmallTalk()
+            .also { if (it) logger.addActionReceived(Action.SMALLTALK, update.message.chatId) }
 
     override fun handle(update: Update) = handle(update, false)
 

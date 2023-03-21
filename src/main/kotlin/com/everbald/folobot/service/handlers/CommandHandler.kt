@@ -11,7 +11,6 @@ import com.everbald.folobot.utils.Utils.Companion.getNumText
 import com.everbald.folobot.utils.Utils.Companion.getPeriodText
 import com.ibm.icu.text.RuleBasedNumberFormat
 import jakarta.annotation.Priority
-import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
@@ -35,18 +34,15 @@ class CommandHandler(
     private val smallTalkHandler: SmallTalkHandler,
     private val botCredentials: BotCredentialsConfig,
     private val inlineKeyboardService: InlineKeyboardService
-) : Handler, KLogging() {
+) : AbstractMessageHandler() {
     fun Message.isMyCommand() =
         this.isCommand && this.isNotForward() &&
                 (this.chat.isUserChat ||
                         this.entities.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text
                             ?.contains(botCredentials.botUsername) == true)
 
-    override fun canHandle(update: Update): Boolean {
-        return (update.hasMessage() && update.message.isMyCommand()).also {
-            if (it) logger.addActionReceived(Action.COMMAND, update.message.chatId)
-        }
-    }
+    override fun canHandle(update: Update) = super.canHandle(update) && update.message.isMyCommand()
+            .also { if (it) logger.addActionReceived(Action.COMMAND, update.message.chatId) }
 
     override fun handle(update: Update) {
         when (
