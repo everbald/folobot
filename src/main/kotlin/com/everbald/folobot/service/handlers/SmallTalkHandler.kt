@@ -23,7 +23,7 @@ class SmallTalkHandler(
 ) : AbstractMessageHandler() {
     private var smallTalkStatus: MutableMap<Long?, Boolean> = mutableMapOf()
 
-    fun Message.isSmallTalk() = userService.isSelf(this.replyToMessage?.from) || this.isFromFoloSwarm()
+    fun Message.isSmallTalk() = isUserMessage || userService.isSelf(this.replyToMessage?.from) || this.isFromFoloSwarm()
 
     override fun canHandle(update: Update) = super.canHandle(update) && update.message.isSmallTalk()
             .also { if (it) logger.addActionReceived(Action.SMALLTALK, update.message.chatId) }
