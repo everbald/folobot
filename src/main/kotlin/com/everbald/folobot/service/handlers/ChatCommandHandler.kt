@@ -4,7 +4,6 @@ import com.everbald.folobot.extensions.addActionReceived
 import com.everbald.folobot.extensions.isAboutBot
 import com.everbald.folobot.model.Action
 import jakarta.annotation.Priority
-import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -14,17 +13,14 @@ import org.telegram.telegrambots.meta.api.objects.Update
 class ChatCommandHandler(
     private val smallTalkHandler: SmallTalkHandler,
     private val commandHandler: CommandHandler,
-) : Handler, KLogging() {
+) : AbstractMessageHandler() {
 
     fun Message.isChatCommand() = !this.isReply &&
             (this.isSmallTalk() || this.isFreelance() || this.isNoFap() || this.isFolopidor() ||
                     this.isFolopidorTop() || this.isCoin() || this.isFoloIndexDinamics())
 
-    override fun canHandle(update: Update): Boolean {
-        return (update.hasMessage() && update.message.isChatCommand()).also {
-            if (it) logger.addActionReceived(Action.CHATCOMMAND, update.message.chatId)
-        }
-    }
+    override fun canHandle(update: Update) = super.canHandle(update) && update.message.isChatCommand()
+            .also { if (it) logger.addActionReceived(Action.CHATCOMMAND, update.message.chatId) }
 
     override fun handle(update: Update) {
         val message = update.message
