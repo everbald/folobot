@@ -18,10 +18,12 @@ class CallbackCommandHandler(
     private val foloCoinService: FoloCoinService,
     private val messageService: MessageService,
     private val userService: UserService,
-    private val inlineKeyboardService: InlineKeyboardService
+    private val inlineKeyboardService: InlineKeyboardService,
+    private val callbackService: CallbackService
 ) : Handler, KLogging() {
     override fun canHandle(update: Update) = CallbackCommand.isMyCommand(update.callbackQuery?.data)
     override fun handle(update: Update) {
+        callbackService.answerCallbackQuery(update)
         when (
             CallbackCommand.fromCommand(update.callbackQuery.data).also {
                 logger.info { "Received command ${it ?: "UNDEFINED"} in chat ${getChatIdentity(update.callbackQuery.message.chatId)}" }
