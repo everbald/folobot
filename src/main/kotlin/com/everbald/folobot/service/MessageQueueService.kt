@@ -9,8 +9,10 @@ import com.everbald.folobot.extensions.isNotUserJoin
 import com.everbald.folobot.model.dto.MessageQueueDto
 import mu.KLogging
 import org.springframework.stereotype.Service
+import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard
 import java.time.LocalDateTime
 
 @Service
@@ -38,8 +40,14 @@ class MessageQueueService(
     fun checkFirstInMediaGroup(mediaGroup: String?) =
         mediaGroup == null || messageStack.plus(messageQueue).count { it.message.mediaGroupId == mediaGroup } == 1
 
-    fun sendAndAddToQueue(text: String, update: Update, parseMode: String, reply: Boolean) {
-        messageService.sendMessage(text, update, parseMode, reply)?.let {
+    fun sendAndAddToQueue(
+        text: String,
+        update: Update,
+        replyMarkup: ReplyKeyboard? = null,
+        reply: Boolean = false,
+        parseMode: String = ParseMode.MARKDOWN
+    ) {
+        messageService.sendMessage(text, update, replyMarkup, reply, parseMode)?.let {
             messageQueue.add(MessageQueueDto(LocalDateTime.now(), it))
             if (update.message.isUserMessage) messageService.forwardMessage(POC_ID, it)
         }

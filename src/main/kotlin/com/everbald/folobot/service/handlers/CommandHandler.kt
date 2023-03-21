@@ -168,9 +168,7 @@ class CommandHandler(
                 //Поздравляем
                 messageService.sendMessage(textService.setup, update)
                 messageService.sendMessage(
-                    textService.getPunch(
-                        userService.getFoloUserNameLinked(foloPidor, chatId)
-                    ), update
+                    textService.getPunch(userService.getFoloUserNameLinked(foloPidor, chatId)), update
                 ).also { logger.addMessage(it) }
 
             } else {
@@ -230,54 +228,47 @@ class CommandHandler(
      * @return [BotApiMethod]
      */
     fun foloSlackers(update: Update) {
-        if (!update.message.isUserMessage) {
-            messageService.sendMessage(
-                foloPidorService.getSlackers(update.message.chatId).withIndex().joinToString(
-                    separator = "\n",
-                    prefix = "*Фолопидоры не уделяющих фоломании достаточно времени*:\n\n",
-                    transform = {
-                        "\u2004*${it.index + 1}*.\u2004${
-                            userService.getFoloUserName(it.value, update.message.chatId)
-                        } — бездельничает _${getNumText(it.value.getPassiveDays(), NumType.DAY)}_"
-                    }
-                ),
-                update
+        val text = if (!update.message.isUserMessage) {
+            val slackers = foloPidorService.getSlackers(update.message.chatId)
+            if (slackers.isNotEmpty()) {
+            foloPidorService.getSlackers(update.message.chatId).withIndex().joinToString(
+                separator = "\n",
+                prefix = "*Фолопидоры не уделяющих фоломании достаточно времени*:\n\n",
+                transform = {
+                    "\u2004*${it.index + 1}*.\u2004${
+                        userService.getFoloUserName(it.value, update.message.chatId)
+                    } — бездельничает _${getNumText(it.value.getPassiveDays(), NumType.DAY)}_"
+                }
             )
+            } else {
+                "Все *фолопидоры* были активны в последнее время! Но иногда можно и в диван попердеть..."
+            }
         } else {
-            messageService.sendMessage("Предавайтесь фоломании хотя бы 10 минут в день!", update)
-        }.also { logger.addMessage(it) }
+            "Предавайтесь фоломании хотя бы 10 минут в день!"
+        }
+        messageService.sendMessage(text, update).also { logger.addMessage(it) }
     }
 
     fun foloUnderdogs(update: Update) {
-        if (!update.message.isUserMessage) {
+        val text = if (!update.message.isUserMessage) {
             val foloUnderdogs = foloPidorService.getUnderdogs(update.message.chatId)
             if (foloUnderdogs.isNotEmpty()) {
-                messageService.sendMessage(
-                    text = "Когда-нибудь и вы станете *фолопидорами дня*, уважаемые фанаты " +
-                            "и милые фанаточки, просто берите пример с Андрея!\n\n" +
-                            foloUnderdogs.joinToString(
-                                separator = "\n• ",
-                                prefix = "• ",
-                                transform = { foloPidor ->
-                                    userService.getFoloUserName(foloPidor, update.message.chatId)
-                                }
-                            ),
-                    update = update
-                )
+                "Когда-нибудь и вы станете *фолопидорами дня*, уважаемые фанаты " +
+                        "и милые фанаточки, просто берите пример с Андрея!\n\n" +
+                        foloUnderdogs.joinToString(
+                            separator = "\n• ",
+                            prefix = "• ",
+                            transform = { foloPidor ->
+                                userService.getFoloUserName(foloPidor, update.message.chatId)
+                            }
+                        )
             } else {
-                messageService.sendMessage(
-                    text = "Все *фолопидоры* хотя бы раз побывали *фолопидорами дня*, это потрясающе!",
-                    update = update
-                )
+                "Все *фолопидоры* хотя бы раз побывали *фолопидорами дня*, это потрясающе!"
             }
         } else {
-            messageService.sendMessage(
-                "Для меня вы все фолопидоры, " +
-                        userService.getFoloUserName(update.message.from),
-                update,
-                reply = true
-            )
-        }.also { logger.addMessage(it) }
+            "Для меня вы все фолопидоры, ${userService.getFoloUserName(update.message.from)}"
+        }
+        messageService.sendMessage(text, update).also { logger.addMessage(it) }
     }
 
     /**
