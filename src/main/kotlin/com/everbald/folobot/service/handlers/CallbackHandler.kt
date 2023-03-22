@@ -81,10 +81,10 @@ class CallbackHandler(
 
     fun buyCoin(update: Update) {
         messageService.editMessageCaption(
-            "Старт продаж ₣ таботает в *тестовом* режиме",
+            "Продажа фолокойнов работает в *тестовом* режиме",
             update,
             inlineKeyboardService.getFoloCoinKeyboard()
         ).also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with coin invoice" } }
-//        invoiceService.sendInvoice(update)
+        invoiceService.sendInvoice(update)
     }
 }

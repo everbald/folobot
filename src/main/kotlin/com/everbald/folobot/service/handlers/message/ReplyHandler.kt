@@ -1,4 +1,4 @@
-package com.everbald.folobot.service.handlers
+package com.everbald.folobot.service.handlers.message
 
 import com.everbald.folobot.extensions.*
 import com.everbald.folobot.model.Action

@@ -2,6 +2,7 @@ package com.everbald.folobot.service.folocoin
 
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.config.BotCredentialsConfig
+import com.everbald.folobot.extensions.getMsg
 import com.everbald.folobot.service.folocoin.model.InvoicePayload
 import com.everbald.folobot.service.folocoin.model.Product
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -33,41 +34,49 @@ class InvoiceService(
 
     private fun buildInvoice(update: Update): SendInvoice {
         val payload = buildPayload(update, Product.FOLOCOIN)
-        val price = (foloCoinService.getPrice() * 100).toInt()
+        val prices = buildPrice()
         return SendInvoice.builder()
-            .chatId(update.message.chatId)
+            .chatId(update.getMsg().chatId)
             .title(Product.FOLOCOIN.label)
-            .description("Тут нужен какой то текст про продажу фолокойна, давайте подумаем что будет топово написать тут")
+            .description(description)
             .payload(objectMapper.writeValueAsString(payload))
             .providerToken(botCredentials.botProviderToken)
             .currency("RUB")
-            .price(LabeledPrice(Product.FOLOCOIN.label, price))
+            .prices(prices)
             .maxTipAmount(1000 * 100)
             .suggestedTipAmounts(listOf(100 * 100, 200 * 100, 300 * 100, 500 * 100))
             .startParameter("")
             .photoUrl("https://folomkin.ru/images/foloMoney.jpg")
-            .needName(true)
-            .needPhoneNumber(true)
-            .needEmail(true)
-            .sendPhoneNumberToProvider(true)
-            .sendEmailToProvider(true)
-            .replyMarkup(buildPayButton())
+//            .replyMarkup(buildPayButton())
             .build()
     }
+
+    private val description =
+        "Уважаемый фолопидор, ты можешь круто изменить свою жизнь, став обладателем эксклюзивной мировой валюты - Фолокойна.\n" +
+                "После покупки он будет зачислен на баланс твоего фолокошелька"
 
     private fun buildPayload(update: Update, product: Product) =
         InvoicePayload(
             product = product,
-            userId = update.message.from.id,
-            chatId = update.message.chatId
+            userId = update.getMsg().from.id,
+            chatId = update.getMsg().chatId
         )
+
+    private fun buildPrice(): List<LabeledPrice> {
+        val price = (foloCoinService.getPrice() * 100).toInt()
+        return listOf(
+            LabeledPrice(Product.FOLOCOIN.label, price),
+            LabeledPrice("Вы восхитительны! (скидка 20%)", price / 100 * -20),
+//            LabeledPrice("Распродажа в честь открытия торгов (скидка 10%)", price / 100 * -10)
+        )
+    }
 
     private fun buildPayButton(): InlineKeyboardMarkup {
         return InlineKeyboardMarkup.builder()
             .keyboardRow(
                 listOf(
                     InlineKeyboardButton.builder()
-                        .text("Записаться на сессию")
+                        .text("Купить ₣")
                         .pay(true)
                         .build()
                 )
