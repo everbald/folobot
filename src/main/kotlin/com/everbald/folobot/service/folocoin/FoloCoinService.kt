@@ -67,6 +67,7 @@ class FoloCoinService(
 
     fun getPrice(): Double {
         val yesterdayIndex = foloIndexService.getById(FOLO_CHAT_ID, LocalDate.now().minusDays(1)).index ?: 100.0
-        return ((300 / 100 * yesterdayIndex) * 100).roundToInt().toDouble() / 100
+        val price = ((300 / 100 * yesterdayIndex) * 100).roundToInt().toDouble() / 100
+        return if (price > 0) price else 300.00
     }
 }
