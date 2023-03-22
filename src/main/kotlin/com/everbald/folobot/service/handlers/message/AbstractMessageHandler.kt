@@ -1,5 +1,6 @@
-package com.everbald.folobot.service.handlers
+package com.everbald.folobot.service.handlers.message
 
+import com.everbald.folobot.service.handlers.Handler
 import mu.KLogging
 import org.telegram.telegrambots.meta.api.objects.Update
 
