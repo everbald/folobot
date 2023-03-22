@@ -43,10 +43,13 @@ class InvoiceService(
             .providerToken(botCredentials.botProviderToken)
             .currency("RUB")
             .prices(prices)
+
             .maxTipAmount(1000 * 100)
             .suggestedTipAmounts(listOf(100 * 100, 200 * 100, 300 * 100, 500 * 100))
             .startParameter("")
             .photoUrl("https://folomkin.ru/images/foloMoney.jpg")
+            .photoHeight(750)
+            .photoWidth(1000)
 //            .replyMarkup(buildPayButton())
             .build()
     }
