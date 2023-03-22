@@ -66,7 +66,7 @@ class InvoiceService(
         val price = (foloCoinService.getPrice() * 100).toInt()
         return listOf(
             LabeledPrice(Product.FOLOCOIN.label, price),
-            LabeledPrice("Вы восхитительны! (скидка 20%)", price / 100 * -20),
+            LabeledPrice("Вы восхитительны! (-20%)", price / 100 * -20),
 //            LabeledPrice("Распродажа в честь открытия торгов (скидка 10%)", price / 100 * -10)
         )
     }
