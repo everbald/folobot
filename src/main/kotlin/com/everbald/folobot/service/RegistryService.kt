@@ -4,6 +4,8 @@ import com.everbald.folobot.utils.FoloId.ANDREWSLEGACY_ID
 import com.everbald.folobot.utils.FoloId.FO_LEGACY_ID
 import com.everbald.folobot.utils.FoloId.POC_ID
 import com.everbald.folobot.extensions.*
+import com.everbald.folobot.service.folocoin.FoloCoinService
+import com.everbald.folobot.service.folocoin.FoloIndexService
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.Update
