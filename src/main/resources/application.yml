@@ -39,6 +39,7 @@ spring:
 bot:
   username: ${BOT_USERNAME}
   token: ${BOT_TOKEN}
+  provider.token: ${BOT_PROVIDER_TOKEN}
 
 openai:
   token: ${OPENAI_TOKEN}

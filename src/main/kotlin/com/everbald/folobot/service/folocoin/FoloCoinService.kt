@@ -1,4 +1,4 @@
-package com.everbald.folobot.service
+package com.everbald.folobot.service.folocoin
 
 import com.everbald.folobot.utils.FoloId.FOLOMKIN_ID
 import com.everbald.folobot.extensions.isAboutFo
@@ -8,6 +8,7 @@ import com.everbald.folobot.model.dto.FoloCoinDto
 import com.everbald.folobot.model.dto.toEntity
 import com.everbald.folobot.persistence.entity.toDto
 import com.everbald.folobot.persistence.repos.FoloCoinRepo
+import com.everbald.folobot.service.UserService
 import com.everbald.folobot.utils.FoloId.FOLO_CHAT_ID
 import mu.KLogging
 import org.springframework.stereotype.Service

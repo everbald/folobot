@@ -1,4 +1,4 @@
-package com.everbald.folobot.service
+package com.everbald.folobot.service.folocoin
 
 import com.everbald.folobot.utils.Utils
 import com.everbald.folobot.extensions.getChatIdentity
@@ -10,6 +10,8 @@ import com.everbald.folobot.model.dto.toEntity
 import com.everbald.folobot.persistence.entity.FoloIndexId
 import com.everbald.folobot.persistence.entity.toDto
 import com.everbald.folobot.persistence.repos.FoloIndexRepo
+import com.everbald.folobot.service.MessageService
+import com.everbald.folobot.service.UserService
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.objects.Update

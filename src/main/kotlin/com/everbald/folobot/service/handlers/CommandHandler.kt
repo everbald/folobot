@@ -6,6 +6,7 @@ import com.everbald.folobot.model.Action
 import com.everbald.folobot.model.BotCommand
 import com.everbald.folobot.model.NumType
 import com.everbald.folobot.service.*
+import com.everbald.folobot.service.folocoin.FoloIndexChartService
 import com.everbald.folobot.utils.FoloId.ANDREW_ID
 import com.everbald.folobot.utils.Utils.Companion.getNumText
 import com.everbald.folobot.utils.Utils.Companion.getPeriodText

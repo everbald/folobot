@@ -4,6 +4,8 @@ import com.everbald.folobot.extensions.*
 import com.everbald.folobot.model.CallbackCommand
 import com.everbald.folobot.model.NumType
 import com.everbald.folobot.service.*
+import com.everbald.folobot.service.folocoin.FoloCoinService
+import com.everbald.folobot.service.folocoin.InvoiceService
 import com.everbald.folobot.utils.Utils.Companion.getNumText
 import jakarta.annotation.Priority
 import mu.KLogging
@@ -19,7 +21,8 @@ class CallbackHandler(
     private val messageService: MessageService,
     private val userService: UserService,
     private val inlineKeyboardService: InlineKeyboardService,
-    private val callbackService: CallbackService
+    private val callbackService: CallbackService,
+    private val invoiceService: InvoiceService
 ) : Handler, KLogging() {
     override fun canHandle(update: Update) = CallbackCommand.isMyCommand(update.callbackQuery?.data)
     override fun handle(update: Update) {
@@ -78,9 +81,10 @@ class CallbackHandler(
 
     fun buyCoin(update: Update) {
         messageService.editMessageCaption(
-            "Старт продаж ₣ ожидается в течении недели",
+            "Старт продаж ₣ таботает в *тестовом* режиме",
             update,
             inlineKeyboardService.getFoloCoinKeyboard()
         ).also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with coin invoice" } }
+//        invoiceService.sendInvoice(update)
     }
 }

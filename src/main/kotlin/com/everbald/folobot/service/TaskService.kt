@@ -3,6 +3,8 @@ package com.everbald.folobot.service
 import com.everbald.folobot.utils.Utils
 import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.model.NumType
+import com.everbald.folobot.service.folocoin.FoloCoinService
+import com.everbald.folobot.service.folocoin.FoloIndexService
 import mu.KLogging
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service

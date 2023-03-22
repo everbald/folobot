@@ -1,4 +1,4 @@
-package com.everbald.folobot.service
+package com.everbald.folobot.service.folocoin
 
 import com.everbald.folobot.persistence.entity.toDto
 import com.everbald.folobot.persistence.repos.FoloIndexRepo
