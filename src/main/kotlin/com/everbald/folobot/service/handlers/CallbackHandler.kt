@@ -23,7 +23,6 @@ class CallbackHandler(
 ) : Handler, KLogging() {
     override fun canHandle(update: Update) = CallbackCommand.isMyCommand(update.callbackQuery?.data)
     override fun handle(update: Update) {
-        callbackService.answerCallbackQuery(update)
         when (
             CallbackCommand.fromCommand(update.callbackQuery.data).also {
                 logger.info { "Received command ${it ?: "UNDEFINED"} in chat ${getChatIdentity(update.callbackQuery.message.chatId)}" }
@@ -35,6 +34,7 @@ class CallbackHandler(
             CallbackCommand.BUYCOIN -> buyCoin(update)
             else -> {}
         }
+        callbackService.answerCallbackQuery(update)
     }
 
     fun coinBalance(update: Update) {
