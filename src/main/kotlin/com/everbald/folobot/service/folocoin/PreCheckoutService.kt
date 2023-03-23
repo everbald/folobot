@@ -1,6 +1,9 @@
 package com.everbald.folobot.service.folocoin
 
 import com.everbald.folobot.FoloBot
+import com.everbald.folobot.extensions.addOutdatedInvoiceCheckout
+import com.everbald.folobot.extensions.getChatIdentity
+import com.everbald.folobot.extensions.getName
 import com.everbald.folobot.service.folocoin.model.InvoicePayload
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -36,7 +39,13 @@ class PreCheckoutService(
         val answer = AnswerPreCheckoutQuery.builder()
             .preCheckoutQueryId(update.preCheckoutQuery.id)
             .ok(isValid)
-        if (!isValid) answer.errorMessage("Счет неактуален, запросите новый")
+        if (!isValid) {
+            answer.errorMessage("Счет неактуален, запросите новый")
+            logger.addOutdatedInvoiceCheckout(
+                getChatIdentity(update.message.chatId),
+                update.message.from.getName()
+            )
+        }
         return answer.build()
     }
 }
