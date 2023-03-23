@@ -13,6 +13,8 @@ fun KLogger.addMessageForward(message: Message?) =
 fun KLogger.addActionReceived(action: Action, chatId: Long) =
     this.info { "Received request with action $action in chat ${getChatIdentity(chatId)}" }
 
-fun KLogger.addPreCheckoutQueryReceived() = this.info { "Received preCheckout query" }
+fun KLogger.addPreCheckoutQueryReceived(userIdentity: String) =
+    this.info { "Received preCheckout query from $userIdentity" }
 
-fun KLogger.addSuccessfulPaymentReceived() = this.info { "Received successful payment" }
+fun KLogger.addSuccessfulPaymentReceived(chatIdentity: String, userIdentity: String) =
+    this.info { "Received successful payment from $userIdentity in chat $chatIdentity" }

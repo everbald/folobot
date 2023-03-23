@@ -10,6 +10,8 @@ fun Message.isNotForward() = !this.isForward()
 fun Message.isUserJoin() = this.newChatMembers.isNotEmpty()
 fun Message.isNotUserJoin() = !this.isUserJoin()
 fun Message.isUserLeft() = this.leftChatMember != null
+fun Message.isSuccessfulPayment() = this.successfulPayment != null
+fun Message.isNotSuccessfulPayment() = !this.isSuccessfulPayment()
 fun Message?.isFromFoloSwarm() =
     FOLO_SWARM.contains(this?.forwardFromChat?.id) || this?.forwardFrom?.id == FOLOMKIN_ID
 
