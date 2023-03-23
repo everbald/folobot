@@ -1,6 +1,8 @@
 package com.everbald.folobot.service.handlers.message
 
 import com.everbald.folobot.extensions.addSuccessfulPaymentReceived
+import com.everbald.folobot.extensions.getChatIdentity
+import com.everbald.folobot.extensions.getName
 import com.everbald.folobot.service.folocoin.SuccessfulPaymentService
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
@@ -12,7 +14,11 @@ class SuccessfulPaymentHandler(
     private val successfulPaymentService: SuccessfulPaymentService
 ) : AbstractMessageHandler() {
     override fun canHandle(update: Update): Boolean {
-        return (update.message?.successfulPayment != null).also { if (it) logger.addSuccessfulPaymentReceived() }
+        return (update.message?.successfulPayment != null).also {
+            if (it) logger.addSuccessfulPaymentReceived(
+                getChatIdentity(update.message.chatId),
+                update.message.from.getName())
+        }
     }
 
     override fun handle(update: Update) {

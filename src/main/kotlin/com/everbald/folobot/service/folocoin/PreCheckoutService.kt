@@ -1,6 +1,9 @@
 package com.everbald.folobot.service.folocoin
 
 import com.everbald.folobot.FoloBot
+import com.everbald.folobot.service.folocoin.model.InvoicePayload
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery
@@ -9,21 +12,31 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 @Service
 class PreCheckoutService(
-    private val foloBot: FoloBot
+    private val foloBot: FoloBot,
+    private val foloCoinService: FoloCoinService,
+    private val objectMapper: ObjectMapper
 ) : KLogging() {
-    fun sendConfirmation(update: Update): Boolean {
+    fun confirmOrder(update: Update) {
+        val invoicePrice: InvoicePayload = objectMapper.readValue(update.preCheckoutQuery.invoicePayload)
+        val price = 500.0 //foloCoinService.getPrice()
+        val isValid = invoicePrice.price == price
+        sendConfirmation(update, isValid)
+    }
+
+    fun sendConfirmation(update: Update, isValid: Boolean): Boolean {
         return try {
-            foloBot.execute(buildConfirmation(update))
+            foloBot.execute(buildConfirmation(update, isValid))
         } catch (ex: TelegramApiException) {
             logger.error(ex) { "Error occurred while sending pre checkout confirmation" }
             false
         }
     }
 
-    private fun buildConfirmation(update: Update): AnswerPreCheckoutQuery {
-        return AnswerPreCheckoutQuery.builder()
+    private fun buildConfirmation(update: Update, isValid: Boolean): AnswerPreCheckoutQuery {
+        val answer = AnswerPreCheckoutQuery.builder()
             .preCheckoutQueryId(update.preCheckoutQuery.id)
-            .ok(true)
-            .build()
+            .ok(isValid)
+        if (!isValid) answer.errorMessage("Счет неактуален, запросите новый")
+        return answer.build()
     }
 }
