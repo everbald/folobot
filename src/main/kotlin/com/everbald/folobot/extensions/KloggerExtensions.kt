@@ -16,8 +16,8 @@ fun KLogger.addActionReceived(action: Action, chatId: Long) =
 fun KLogger.addPreCheckoutQueryReceived(userIdentity: String) =
     this.info { "Received preCheckout query from $userIdentity" }
 
+fun KLogger.addOutdatedInvoiceCheckout(userIdentity: String) =
+    this.info { "Attempt to use an outdated invoice by $userIdentity" }
+
 fun KLogger.addSuccessfulPaymentReceived(chatIdentity: String, userIdentity: String) =
     this.info { "Received successful payment from $userIdentity in chat $chatIdentity" }
-
-fun KLogger.addOutdatedInvoiceCheckout(chatIdentity: String, userIdentity: String) =
-    this.info { "Attempt to use an outdated invoice by $userIdentity in chat $chatIdentity" }

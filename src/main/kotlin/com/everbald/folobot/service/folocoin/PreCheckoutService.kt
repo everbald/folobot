@@ -41,10 +41,7 @@ class PreCheckoutService(
             .ok(isValid)
         if (!isValid) {
             answer.errorMessage("Счет неактуален, запросите новый")
-            logger.addOutdatedInvoiceCheckout(
-                getChatIdentity(update.message.chatId),
-                update.message.from.getName()
-            )
+            logger.addOutdatedInvoiceCheckout(update.preCheckoutQuery.from.getName())
         }
         return answer.build()
     }
