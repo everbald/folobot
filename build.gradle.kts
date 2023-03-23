@@ -46,7 +46,7 @@ dependencies {
     implementation("org.telegram:telegrambots:6.5.0")
 
     // open api
-    implementation("com.aallam.openai:openai-client:3.1.1")
+    implementation("com.aallam.openai:openai-client:3.2.0")
 
     // serialisation
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
