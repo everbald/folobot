@@ -18,7 +18,7 @@ class PreCheckoutService(
 ) : KLogging() {
     fun confirmOrder(update: Update) {
         val invoicePrice: InvoicePayload = objectMapper.readValue(update.preCheckoutQuery.invoicePayload)
-        val price = 500.0 //foloCoinService.getPrice()
+        val price = foloCoinService.getPrice()
         val isValid = invoicePrice.price == price
         sendConfirmation(update, isValid)
     }
