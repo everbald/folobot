@@ -1,21 +1,21 @@
 package com.everbald.folobot.service.folocoin
 
-import com.everbald.folobot.utils.FoloId.FOLOMKIN_ID
 import com.everbald.folobot.extensions.isAboutFo
 import com.everbald.folobot.extensions.isFolochat
 import com.everbald.folobot.extensions.isFromFoloSwarm
+import com.everbald.folobot.extensions.round
 import com.everbald.folobot.model.dto.FoloCoinDto
 import com.everbald.folobot.model.dto.toEntity
 import com.everbald.folobot.persistence.entity.toDto
 import com.everbald.folobot.persistence.repos.FoloCoinRepo
 import com.everbald.folobot.service.UserService
+import com.everbald.folobot.utils.FoloId.FOLOMKIN_ID
 import com.everbald.folobot.utils.FoloId.FOLO_CHAT_ID
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.time.LocalDate
 import kotlin.math.pow
-import kotlin.math.roundToInt
 
 @Service
 class FoloCoinService(
@@ -24,6 +24,15 @@ class FoloCoinService(
     private val foloIndexService: FoloIndexService
 ) : KLogging() {
     private val THRESHOLD_MULTIPLIER = 10
+    private val COIN_MULTIPLIER = 3
+
+    private val coinThreshold get() = ((foloCoinRepo.getSumCoins() ?: 0) + 1) * THRESHOLD_MULTIPLIER
+    private val coinPrice get() = 100 + (foloCoinRepo.getSumCoins() ?: 0) * COIN_MULTIPLIER
+
+    private val currentIndex get() =
+        (foloIndexService.getById(FOLO_CHAT_ID, LocalDate.now().minusDays(1)).index ?: 100.0).run {
+            if (this == 0.0) this else 100.0
+        }
 
     fun getById(userId: Long): FoloCoinDto {
         return foloCoinRepo.findCoinByUserId(userId)?.toDto() ?: FoloCoinDto(userId)
@@ -43,16 +52,14 @@ class FoloCoinService(
         }
     }
 
-    fun getCoinThreshold(): Int {
-        return ((foloCoinRepo.getSumCoins() ?: 0) + 1) * THRESHOLD_MULTIPLIER
-    }
+
 
     fun getValidForCoinIssue(threshold: Int): List<FoloCoinDto> {
         return foloCoinRepo.findByPointsGreaterThanEqual(threshold).map { it.toDto() }
     }
 
     fun issueCoins() {
-        val threshold = getCoinThreshold()
+        val threshold = coinThreshold
         if (threshold <= 10.0.pow(5)) {
             logger.trace { "Current coin threshold is $threshold" }
             getValidForCoinIssue(threshold).forEach {
@@ -65,9 +72,5 @@ class FoloCoinService(
         }
     }
 
-    fun getPrice(): Double {
-        val yesterdayIndex = foloIndexService.getById(FOLO_CHAT_ID, LocalDate.now().minusDays(1)).index ?: 100.0
-        val price = ((300 / 100 * yesterdayIndex) * 100).roundToInt().toDouble() / 100
-        return if (price > 0) price else 300.00
-    }
+    fun getPrice(): Double = maxOf((coinPrice / 100.0 * currentIndex).round(), 100.0)
 }

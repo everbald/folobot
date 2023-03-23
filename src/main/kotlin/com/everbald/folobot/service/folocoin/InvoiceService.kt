@@ -13,8 +13,6 @@ import org.telegram.telegrambots.meta.api.methods.invoices.SendInvoice
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 @Service
@@ -57,7 +55,6 @@ class InvoiceService(
             .photoUrl("https://folomkin.ru/images/foloMoney.jpg")
             .photoHeight(750)
             .photoWidth(1000)
-//            .replyMarkup(buildPayButton())
             .build()
     }
 
@@ -80,18 +77,5 @@ class InvoiceService(
             LabeledPrice("Скидка фолопидора (-20%)", amount / 100 * -20),
 //            LabeledPrice("Распродажа в честь открытия торгов (скидка 10%)", price / 100 * -10)
         )
-    }
-
-    private fun buildPayButton(): InlineKeyboardMarkup {
-        return InlineKeyboardMarkup.builder()
-            .keyboardRow(
-                listOf(
-                    InlineKeyboardButton.builder()
-                        .text("Купить ₣")
-                        .pay(true)
-                        .build()
-                )
-            )
-            .build()
     }
 }
