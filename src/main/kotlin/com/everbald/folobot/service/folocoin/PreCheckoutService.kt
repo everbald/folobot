@@ -23,7 +23,7 @@ class PreCheckoutService(
         sendConfirmation(update, isValid)
     }
 
-    fun sendConfirmation(update: Update, isValid: Boolean): Boolean {
+    private fun sendConfirmation(update: Update, isValid: Boolean): Boolean {
         return try {
             foloBot.execute(buildConfirmation(update, isValid))
         } catch (ex: TelegramApiException) {

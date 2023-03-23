@@ -63,3 +63,11 @@ databaseChangeLog:
             encoding: utf8
             path: 20230115-01-folocoin.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: 20230324-01
+      author: everbald
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: 20230324-01-order_info.sql
+            relativeToChangelogFile: true
