@@ -74,7 +74,7 @@ allOpen {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "18" //TODO 19
+        jvmTarget = "19"
     }
 }
 
