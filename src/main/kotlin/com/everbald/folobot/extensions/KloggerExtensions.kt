@@ -1,6 +1,8 @@
 package com.everbald.folobot.extensions
 
 import com.everbald.folobot.model.Action
+import com.everbald.folobot.model.BotCommand
+import com.everbald.folobot.model.CallbackCommand
 import mu.KLogger
 import org.telegram.telegrambots.meta.api.objects.Message
 
@@ -12,6 +14,12 @@ fun KLogger.addMessageForward(message: Message?) =
 
 fun KLogger.addActionReceived(action: Action, chatId: Long) =
     this.info { "Received request with action $action in chat ${getChatIdentity(chatId)}" }
+
+fun KLogger.addCallbackCommandReceived(callbackCommand: CallbackCommand?, chatIdentity: String, userIdentity: String) =
+    this.info { "Received callback command ${callbackCommand ?: "UNDEFINED"} from $userIdentity in chat $chatIdentity" }
+
+fun KLogger.addCommandReceived(botCommand: BotCommand?, chatIdentity: String, userIdentity: String) =
+    this.info { "Received command ${botCommand ?: "UNDEFINED"} from $userIdentity in chat $chatIdentity" }
 
 fun KLogger.addPreCheckoutQueryReceived(userIdentity: String) =
     this.info { "Received preCheckout query from $userIdentity" }
