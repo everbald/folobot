@@ -48,7 +48,11 @@ class CommandHandler(
     override fun handle(update: Update) {
         when (
             BotCommand.fromCommand(update.message.getBotCommand()).also {
-                logger.info { "Received command ${it ?: "UNDEFINED"} in chat ${getChatIdentity(update.message.chatId)}" }
+                logger.addCommandReceived(
+                    it,
+                    getChatIdentity(update.message.chatId),
+                    update.message.from.getName()
+                )
             }
         ) {
             BotCommand.START -> messageService.sendSticker(messageService.randomSticker, update)

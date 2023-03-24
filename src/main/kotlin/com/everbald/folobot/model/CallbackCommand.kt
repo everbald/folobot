@@ -5,7 +5,6 @@ enum class CallbackCommand(val command: String, val description: String) {
     COINPRICE("/coinprice", "Цена фолокойна"),
     FOLOMILLIONAIRE("/millionaire", "Топ акционеров"),
     BUYCOIN("/buycoin", "Покупка ₣");
-
     companion object {
         private val map = CallbackCommand.values().associateBy(CallbackCommand::command)
         fun fromCommand(command: String?) = map[command]

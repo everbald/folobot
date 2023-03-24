@@ -1,6 +1,7 @@
 package com.everbald.folobot.service.handlers
 
 import com.everbald.folobot.extensions.*
+import com.everbald.folobot.model.Action
 import com.everbald.folobot.model.CallbackCommand
 import com.everbald.folobot.model.NumType
 import com.everbald.folobot.service.*
@@ -25,10 +26,16 @@ class CallbackHandler(
     private val invoiceService: InvoiceService
 ) : Handler, KLogging() {
     override fun canHandle(update: Update) = CallbackCommand.isMyCommand(update.callbackQuery?.data)
+        .also { if (it) logger.addActionReceived(Action.CALLBACKCOMAND, update.callbackQuery.message.chatId) }
+
     override fun handle(update: Update) {
         when (
             CallbackCommand.fromCommand(update.callbackQuery.data).also {
-                logger.info { "Received command ${it ?: "UNDEFINED"} in chat ${getChatIdentity(update.callbackQuery.message.chatId)}" }
+                logger.addCallbackCommandReceived(
+                    it,
+                    getChatIdentity(update.callbackQuery.message.chatId),
+                    update.callbackQuery.from.getName()
+                )
             }
         ) {
             CallbackCommand.COINBALANCE -> coinBalance(update)
@@ -84,7 +91,8 @@ class CallbackHandler(
             "Продажа фолокойнов работает в *тестовом* режиме",
             update,
             inlineKeyboardService.getFoloCoinKeyboard()
-        ).also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with coin invoice" } }
+        )
+            .also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with coin invoice" } }
         invoiceService.sendInvoice(update)
     }
 }
