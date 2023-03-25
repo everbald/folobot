@@ -26,7 +26,7 @@ class CallbackHandler(
     private val invoiceService: InvoiceService
 ) : Handler, KLogging() {
     override fun canHandle(update: Update) = CallbackCommand.isMyCommand(update.callbackQuery?.data)
-        .also { if (it) logger.addActionReceived(Action.CALLBACKCOMAND, update.callbackQuery.message.chatId) }
+        .also { if (it) logger.addActionReceived(Action.CALLBACKCOMMAND, update.callbackQuery.message.chatId) }
 
     override fun handle(update: Update) {
         when (
