@@ -31,7 +31,7 @@ class FoloCoinService(
 
     private val currentIndex get() =
         (foloIndexService.getById(FOLO_CHAT_ID, LocalDate.now().minusDays(1)).index ?: 100.0).run {
-            if (this == 0.0) this else 100.0
+            if (this != 0.0) this else 100.0
         }
 
     fun getById(userId: Long): FoloCoinDto {
@@ -72,5 +72,6 @@ class FoloCoinService(
         }
     }
 
-    fun getPrice(): Double = maxOf((coinPrice / 100.0 * currentIndex).round(), 100.0)
+    fun getPrice(): Double
+        = maxOf((coinPrice / 100.0 * currentIndex).round(), 100.0)
 }
