@@ -62,7 +62,7 @@ class CommandHandler(
                 .also { logger.info { "Sent sticker to ${getChatIdentity(update.message.chatId)}" } }
 
             BotCommand.SMALLTALK -> smallTalk(update)
-            BotCommand.FREELANCE -> frelanceTimer(update)
+            BotCommand.FREELANCE -> freelanceTimer(update)
             BotCommand.NOFAP -> nofapTimer(update)
             BotCommand.FOLOPIDOR -> foloPidor(update)
             BotCommand.FOLOPIDORTOP -> foloPidorTop(update)
@@ -70,7 +70,7 @@ class CommandHandler(
             BotCommand.FOLOUNDERDOGS -> foloUnderdogs(update)
             BotCommand.FOLOPIDORALPHA -> alphaTimer(update)
             BotCommand.FOLOCOIN -> foloCoin(update)
-            BotCommand.FOLOINDEXDYNAMICS -> foloIndexDinamics(update)
+            BotCommand.FOLOINDEX -> foloIndexChart(update)
             else -> {}
         }
     }
@@ -82,7 +82,7 @@ class CommandHandler(
      *
      * @param update [Update]
      */
-    fun frelanceTimer(update: Update) {
+    fun freelanceTimer(update: Update) {
         messageService.sendMessage(
             """
                 18 ноября 2019 года я уволился с завода по своему желанию.
@@ -318,7 +318,7 @@ class CommandHandler(
             inlineKeyboardService.getFoloCoinKeyboard()
         )
 
-    fun foloIndexDinamics(update: Update) {
+    fun foloIndexChart(update: Update) {
         if (update.message.chat.isFolochat()) {
             val endDate = LocalDate.now().minusDays(1)
             val chart = foloIndexChartService.buildChart(
@@ -326,8 +326,8 @@ class CommandHandler(
                 endDate.minusMonths(1),
                 endDate
             )
-            messageService.sendPhoto(chart, update.message.chatId, "#динамикафолоиндекса")
-                .also { logger.info { "Replied to ${getChatIdentity(update.message.chatId)} with IndexChart" } }
+            messageService.sendPhoto(chart, update.message.chatId, "#фолоиндекс")
+                .also { logger.addMessage(it) }
         } else {
             messageService.sendMessage("Фолоиндекс только для фолочата!", update)
         }.also { logger.addMessage(it) }

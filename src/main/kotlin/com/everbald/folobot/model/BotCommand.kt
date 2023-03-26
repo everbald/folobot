@@ -12,7 +12,7 @@ enum class BotCommand(val command: String) {
     FOLOUNDERDOGS("/folounderdogs"),
     FOLOPIDORALPHA("/folopidoralpha"),
     FOLOCOIN("/folocoin"),
-    FOLOINDEXDYNAMICS("/foloindexdynamics");
+    FOLOINDEX("/foloindex");
 
     companion object {
         private val map = BotCommand.values().associateBy(BotCommand::command)

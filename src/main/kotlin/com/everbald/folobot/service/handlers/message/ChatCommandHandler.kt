@@ -26,12 +26,12 @@ class ChatCommandHandler(
         val message = update.message
         when {
             message.isSmallTalk() -> smallTalkHandler.handle(update)
-            message.isFreelance() -> commandHandler.frelanceTimer(update)
+            message.isFreelance() -> commandHandler.freelanceTimer(update)
             message.isNoFap() -> commandHandler.nofapTimer(update)
             message.isFolopidor() -> commandHandler.foloPidor(update)
             message.isFolopidorTop() -> commandHandler.foloPidorTop(update)
             message.isCoin() -> commandHandler.foloCoin(update)
-            message.isFoloIndexDinamics() -> commandHandler.foloIndexDinamics(update)
+            message.isFoloIndexDinamics() -> commandHandler.foloIndexChart(update)
             else -> {}
         }
     }

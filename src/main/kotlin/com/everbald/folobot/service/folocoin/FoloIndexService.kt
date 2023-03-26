@@ -113,6 +113,6 @@ class FoloIndexService(
             LocalDate.now().minusMonths(1),
             LocalDate.now()
         )
-        messageService.sendPhoto(chart, chatId,"#динамикафолоиндекса")
+        messageService.sendPhoto(chart, chatId,"#фолоиндекс")
     }
 }
