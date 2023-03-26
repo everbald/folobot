@@ -17,10 +17,10 @@ class ChatCommandHandler(
 
     fun Message.isChatCommand() = !this.isReply &&
             (this.isSmallTalk() || this.isFreelance() || this.isNoFap() || this.isFolopidor() ||
-                    this.isFolopidorTop() || this.isCoin() || this.isFoloIndexDinamics())
+                    this.isFolopidorTop() || this.isCoin() || this.isFoloIndex())
 
     override fun canHandle(update: Update) = super.canHandle(update) && update.message.isChatCommand()
-            .also { if (it) logger.addActionReceived(Action.CHATCOMMAND, update.message.chatId) }
+        .also { if (it) logger.addActionReceived(Action.CHATCOMMAND, update.message.chatId) }
 
     override fun handle(update: Update) {
         val message = update.message
@@ -31,7 +31,7 @@ class ChatCommandHandler(
             message.isFolopidor() -> commandHandler.foloPidor(update)
             message.isFolopidorTop() -> commandHandler.foloPidorTop(update)
             message.isCoin() -> commandHandler.foloCoin(update)
-            message.isFoloIndexDinamics() -> commandHandler.foloIndexChart(update)
+            message.isFoloIndex() -> commandHandler.foloIndexChart(update)
             else -> {}
         }
     }
@@ -63,9 +63,8 @@ class ChatCommandHandler(
                     this.text?.contains("топ", true) == true)
 
     private fun Message.isCoin() = this.isAboutBot() &&
-            this.text?.contains("фолобирж", true ) == true
+            this.text?.contains("фолобирж", true) == true
 
-    private fun Message.isFoloIndexDinamics() = this.isAboutBot() &&
-            (this.text?.contains("фолоиндекс", true) == true &&
-                    this.text?.contains("динамик", true) == true)
+    private fun Message.isFoloIndex() = this.isAboutBot() &&
+            this.text?.contains("фолоиндекс", true) == true
 }
