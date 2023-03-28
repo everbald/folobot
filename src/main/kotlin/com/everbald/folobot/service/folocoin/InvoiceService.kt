@@ -24,9 +24,14 @@ class InvoiceService(
     private val objectMapper: ObjectMapper
 ) : KLogging() {
     private val issuedInvoices: MutableList<Message> = mutableListOf()
-    fun sendInvoice(update: Update): Message? {
+
+    fun clearInvoices() {
         issuedInvoices.forEach { messageService.deleteMessage(it.chatId, it.messageId) }
         issuedInvoices.clear()
+    }
+
+    fun sendInvoice(update: Update): Message? {
+        clearInvoices()
         return try {
             foloBot.execute(buildInvoice(update)).also {
                 issuedInvoices.add(it)
@@ -65,9 +70,9 @@ class InvoiceService(
     private fun buildPayload(update: Update, product: Product, price: Double) =
         InvoicePayload(
             product = product,
-            userId = update.getMsg().from.id,
+            price = price,
             chatId = update.getMsg().chatId,
-            price = price
+            isPrivateChat = update.getMsg().isUserMessage
         )
 
     private fun buildLabeledPrice(price: Double): List<LabeledPrice> {
