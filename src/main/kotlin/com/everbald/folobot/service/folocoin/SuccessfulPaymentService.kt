@@ -23,11 +23,12 @@ class SuccessfulPaymentService(
         invoiceService.clearInvoices()
         val newOrder = orderRepo.save(
             OrderInfoDto(
+                userId = update.message.from.id,
                 status = OrderStatus.NEW,
                 payment = update.message.successfulPayment
             ).toEntity()
         ).toDto()
-        foloCoinService.issuePurchasedCoins(update.message.from.id, 1)
+//        foloCoinService.issuePurchasedCoins(update.message.from.id, 1)
         orderRepo.save(newOrder.setStatus(OrderStatus.DONE).toEntity())
         if (!newOrder.payload.isPrivateChat) {
             messageService.sendMessage(

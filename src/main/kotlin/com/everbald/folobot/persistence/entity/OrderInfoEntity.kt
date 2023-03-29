@@ -15,6 +15,9 @@ class OrderInfoEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int? = null,
 
+    @Column(nullable = false)
+    val userId: Long,
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val status: OrderStatus,
@@ -24,4 +27,4 @@ class OrderInfoEntity(
     val payment: SuccessfulPayment
 )
 
-fun OrderInfoEntity.toDto() = OrderInfoDto(id, status, payment)
+fun OrderInfoEntity.toDto() = OrderInfoDto(id, userId, status, payment)

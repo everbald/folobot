@@ -14,6 +14,7 @@ val objectMapper: ObjectMapper
 
 class OrderInfoDto(
     val id: Int? = null,
+    val userId: Long,
     var status: OrderStatus,
     val payment: SuccessfulPayment,
     val payload: InvoicePayload = objectMapper.readValue(payment.invoicePayload)
@@ -24,4 +25,4 @@ class OrderInfoDto(
     }
 }
 
-fun OrderInfoDto.toEntity() = OrderInfoEntity(id, status, payment)
+fun OrderInfoDto.toEntity() = OrderInfoEntity(id, userId, status, payment)
