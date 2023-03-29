@@ -29,10 +29,11 @@ class FoloCoinService(
     private val coinThreshold get() = ((foloCoinRepo.getSumCoins() ?: 0) + 1) * THRESHOLD_MULTIPLIER
     private val coinPrice get() = 100 + (foloCoinRepo.getSumCoins() ?: 0) * COIN_MULTIPLIER
 
-    private val currentIndex get() =
-        (foloIndexService.getById(FOLO_CHAT_ID, LocalDate.now().minusDays(1)).index ?: 100.0).run {
-            if (this != 0.0) this else 100.0
-        }
+    private val currentIndex
+        get() =
+            (foloIndexService.getById(FOLO_CHAT_ID, LocalDate.now().minusDays(1)).index ?: 100.0).run {
+                if (this != 0.0) this else 100.0
+            }
 
     fun getById(userId: Long): FoloCoinDto {
         return foloCoinRepo.findCoinByUserId(userId)?.toDto() ?: FoloCoinDto(userId)
@@ -45,16 +46,15 @@ class FoloCoinService(
     fun addCoinPoints(update: Update) {
         if (update.message.chat.isFolochat()) {
             val points = if (update.message.isAboutFo()) 3 else 1
-            val receiver = if (update.message.isFromFoloSwarm() || update.message.isAutomaticForward == true) FOLOMKIN_ID
-            else update.message.from.id
+            val receiver =
+                if (update.message.isFromFoloSwarm() || update.message.isAutomaticForward == true) FOLOMKIN_ID
+                else update.message.from.id
             foloCoinRepo.save(getById(receiver).addPoints(points).toEntity())
             logger.trace { "Added $points folocoin points to ${userService.getFoloUserName(receiver)}" }
         }
     }
 
-
-
-    fun getValidForCoinIssue(threshold: Int): List<FoloCoinDto> {
+    private fun getValidForCoinIssue(threshold: Int): List<FoloCoinDto> {
         return foloCoinRepo.findByPointsGreaterThanEqual(threshold).map { it.toDto() }
     }
 
@@ -72,6 +72,10 @@ class FoloCoinService(
         }
     }
 
-    fun getPrice(): Double
-        = maxOf((coinPrice / 100.0 * currentIndex).round(), 100.0)
+    fun getPrice(): Double = maxOf((coinPrice / 100.0 * currentIndex).round(), 100.0)
+
+    fun issuePurchasedCoins(userId: Long, amount: Int) {
+        val coin = foloCoinRepo.findCoinByUserId(userId)?.toDto() ?: FoloCoinDto(userId)
+        foloCoinRepo.save(coin.addCoins(amount).toEntity())
+    }
 }

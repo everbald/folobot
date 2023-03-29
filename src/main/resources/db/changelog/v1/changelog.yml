@@ -71,3 +71,11 @@ databaseChangeLog:
             encoding: utf8
             path: 20230324-01-order_info.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: 20230329-01
+      author: everbald
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: 20230329-01-order_info_add_user_id.sql
+            relativeToChangelogFile: true

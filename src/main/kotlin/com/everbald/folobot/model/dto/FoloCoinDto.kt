@@ -13,6 +13,11 @@ data class FoloCoinDto(
         return this
     }
 
+    fun addCoins(coins: Int): FoloCoinDto {
+        this.coins += coins
+        return this
+    }
+
     fun calcCoins(threshold: Int): FoloCoinDto {
         this.coins++
         this.points -= threshold
