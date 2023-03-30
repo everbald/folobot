@@ -75,9 +75,9 @@ class CommandHandler(
         }
     }
 
-//    private fun smallTalk(update: Update) = smallTalkHandler.handle(update, withInit = true)
-    private fun smallTalk(update: Update) =
-        messageService.sendMessage("Адекватное общение временно(?) под санкциями", update)
+    private fun smallTalk(update: Update) = smallTalkHandler.handle(update, withInit = true)
+//    private fun smallTalk(update: Update) =
+//        messageService.sendMessage("Адекватное общение временно(?) под санкциями", update)
 
     /**
      * Подсчет времени прошедшего с дня F
