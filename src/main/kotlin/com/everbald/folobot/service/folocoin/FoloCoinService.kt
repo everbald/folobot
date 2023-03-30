@@ -29,9 +29,8 @@ class FoloCoinService(
     private val coinThreshold get() = ((foloCoinRepo.getSumCoins() ?: 0) + 1) * THRESHOLD_MULTIPLIER
     private val coinPrice get() = 100 + (foloCoinRepo.getSumCoins() ?: 0) * COIN_MULTIPLIER
 
-    private val currentIndex
-        get() =
-            (foloIndexService.getById(FOLO_CHAT_ID, LocalDate.now().minusDays(1)).index ?: 100.0).run {
+    private val averageIndex get() =
+            (foloIndexService.getAverageIndex(FOLO_CHAT_ID, LocalDate.now())).run {
                 if (this != 0.0) this else 100.0
             }
 
@@ -72,7 +71,7 @@ class FoloCoinService(
         }
     }
 
-    fun getPrice(): Double = maxOf((coinPrice / 100.0 * currentIndex).round(), 100.0)
+    fun getPrice(): Double = maxOf((coinPrice / 100.0 * averageIndex).round(), 100.0)
 
     fun issuePurchasedCoins(userId: Long, amount: Int) {
         val coin = foloCoinRepo.findCoinByUserId(userId)?.toDto() ?: FoloCoinDto(userId)

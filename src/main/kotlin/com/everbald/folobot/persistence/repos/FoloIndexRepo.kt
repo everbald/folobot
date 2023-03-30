@@ -12,5 +12,9 @@ interface FoloIndexRepo : CrudRepository<FoloIndexEntity, FoloIndexId> {
     fun findIndexById(id: FoloIndexId): FoloIndexEntity?
     @Query(value = "select avg(points) from folo_index where chat_id = ?1 and date between ?2 and ?3", nativeQuery = true)
     fun getAveragePointsByIdChatId(chatId: Long, startDate: LocalDate, endDate: LocalDate): Double?
+
+    @Query(value = "select avg(index) from folo_index where chat_id = ?1 and date between ?2 and ?3", nativeQuery = true)
+    fun getAverageIndexByIdChatId(chatId: Long, startDate: LocalDate, endDate: LocalDate): Double?
+
     fun findByIdChatIdAndIdDateBetweenOrderByIdDate(chatId: Long, startDate: LocalDate, endDate: LocalDate): List<FoloIndexEntity>
 }
