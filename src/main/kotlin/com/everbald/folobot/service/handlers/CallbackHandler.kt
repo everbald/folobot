@@ -88,7 +88,7 @@ class CallbackHandler(
 
     fun buyCoin(update: Update) {
         messageService.editMessageCaption(
-            "Продажа фолокойнов работает в *тестовом* режиме",
+            "Создан счет на оплату",
             update,
             inlineKeyboardService.getFoloCoinKeyboard()
         )

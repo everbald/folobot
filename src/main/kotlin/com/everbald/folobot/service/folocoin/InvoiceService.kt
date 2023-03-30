@@ -25,13 +25,13 @@ class InvoiceService(
 ) : KLogging() {
     private val issuedInvoices: MutableList<Message> = mutableListOf()
 
-    fun clearInvoices() {
-        issuedInvoices.forEach { messageService.deleteMessage(it.chatId, it.messageId) }
-        issuedInvoices.clear()
+    fun clearInvoices(chatId: Long) {
+        issuedInvoices.filter { it.chatId == chatId }.forEach { messageService.deleteMessage(it.chatId, it.messageId) }
+        issuedInvoices.removeIf { it.chatId == chatId }
     }
 
     fun sendInvoice(update: Update): Message? {
-        clearInvoices()
+        clearInvoices(update.getMsg().chatId)
         return try {
             foloBot.execute(buildInvoice(update)).also {
                 issuedInvoices.add(it)
@@ -56,7 +56,8 @@ class InvoiceService(
             .prices(labeledPrice)
             .maxTipAmount(1000 * 100)
             .suggestedTipAmounts(listOf(100 * 100, 200 * 100, 300 * 100, 500 * 100))
-            .startParameter("")
+            .startParameter("folo")
+            .protectContent(true)
             .photoUrl("https://folomkin.ru/images/foloMoney.jpg")
             .photoHeight(750)
             .photoWidth(1000)
