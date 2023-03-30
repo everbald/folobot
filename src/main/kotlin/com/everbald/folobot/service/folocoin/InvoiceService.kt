@@ -63,9 +63,7 @@ class InvoiceService(
             .build()
     }
 
-    private val description =
-        "Уважаемый фолопидор, ты можешь круто изменить свою жизнь, став обладателем эксклюзивной мировой валюты - Фолокойна.\n" +
-                "После покупки он будет зачислен на баланс твоего фолокошелька"
+    private val description = "Фолокойн будет зачислен на баланс твоего фолокошелька"
 
     private fun buildPayload(update: Update, product: Product, price: Double) =
         InvoicePayload(
@@ -79,8 +77,8 @@ class InvoiceService(
         val amount = (price * 100).toInt()
         return listOf(
             LabeledPrice(Product.FOLOCOIN.label, amount),
-            LabeledPrice("Скидка фолопидора (-20%)", amount / 100 * -20),
-//            LabeledPrice("Распродажа в честь открытия торгов (скидка 10%)", price / 100 * -10)
+            LabeledPrice("Скидка фолопидора (-10%)", amount / 100 * -10),
+            LabeledPrice("Открытие торгов! (-10%)", amount / 100 * -10)
         )
     }
 }

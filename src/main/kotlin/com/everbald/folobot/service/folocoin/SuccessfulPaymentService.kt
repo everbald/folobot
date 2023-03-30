@@ -28,7 +28,7 @@ class SuccessfulPaymentService(
                 payment = update.message.successfulPayment
             ).toEntity()
         ).toDto()
-//        foloCoinService.issuePurchasedCoins(update.message.from.id, 1)
+        foloCoinService.issuePurchasedCoins(update.message.from.id, 1)
         orderRepo.save(newOrder.setStatus(OrderStatus.DONE).toEntity())
         if (!newOrder.payload.isPrivateChat) {
             messageService.sendMessage(
