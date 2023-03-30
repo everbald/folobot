@@ -30,9 +30,8 @@ class FoloCoinService(
     private val coinPrice get() = 100 + (foloCoinRepo.getSumCoins() ?: 0) * COIN_MULTIPLIER
 
     private val averageIndex get() =
-            (foloIndexService.getAverageIndex(FOLO_CHAT_ID, LocalDate.now())).run {
-                if (this != 0.0) this else 100.0
-            }
+        (foloIndexService.getAverageIndex(FOLO_CHAT_ID, LocalDate.now().minusDays(1)))
+            .run { if (this != 0.0) this else 100.0 }
 
     fun getById(userId: Long): FoloCoinDto {
         return foloCoinRepo.findCoinByUserId(userId)?.toDto() ?: FoloCoinDto(userId)
