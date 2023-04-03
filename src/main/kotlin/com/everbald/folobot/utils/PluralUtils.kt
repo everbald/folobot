@@ -25,7 +25,7 @@ class PluralUtils {
             "{0,plural, one{# ${numText[pluralType]?.get(0)}} few{# ${numText[pluralType]?.get(1)}} other{# ${numText[pluralType]?.get(2)}}}"
 
         fun getPluralText(number: Number, pluralType: PluralType) =
-            MessageFormat(buildPattern(pluralType), locale).format(arrayOf<Any>(number)).toString()
+            MessageFormat(buildPattern(pluralType), locale).format(arrayOf<Any>(number.toInt())).toString()
 
         fun getPeriodText(period: Period): String {
             val stringBuilder = StringBuilder()
