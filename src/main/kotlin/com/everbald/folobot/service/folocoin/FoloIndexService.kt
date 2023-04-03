@@ -1,10 +1,10 @@
 package com.everbald.folobot.service.folocoin
 
-import com.everbald.folobot.utils.Utils
 import com.everbald.folobot.extensions.getChatIdentity
+import com.everbald.folobot.extensions.toText
 import com.everbald.folobot.extensions.isAboutFo
 import com.everbald.folobot.extensions.isFo
-import com.everbald.folobot.model.NumType
+import com.everbald.folobot.model.PluralType
 import com.everbald.folobot.model.dto.FoloIndexDto
 import com.everbald.folobot.model.dto.toEntity
 import com.everbald.folobot.persistence.entity.FoloIndexId
@@ -90,14 +90,14 @@ class FoloIndexService(
             .roundToInt().toDouble() / 100
         val yesterdayIndex = ((getById(chatId, LocalDate.now().minusDays(1)).index ?: 0.0) * 100)
             .roundToInt().toDouble() / 100
-        val indexChange = ((todayIndex - yesterdayIndex) * 100).roundToInt()
+        val indexChange = todayIndex - yesterdayIndex
 
         if (indexChange > 0) {
             photoPath = PATH + indexUp.random()
-            indexText = "растет на ${Utils.getNumText(indexChange.absoluteValue, NumType.POINT)}"
+            indexText = "растет на ${indexChange.absoluteValue.toText(PluralType.PERCENT)}"
         } else if (indexChange < 0) {
             photoPath = PATH + indexDown.random()
-            indexText = "падает на ${Utils.getNumText(indexChange.absoluteValue, NumType.POINT)}"
+            indexText = "падает на ${indexChange.absoluteValue.toText(PluralType.PERCENT)}}"
         } else {
             photoPath = PATH + indexNeutral.random()
             indexText = "не изменился"

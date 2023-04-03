@@ -4,13 +4,10 @@ import com.everbald.folobot.config.BotCredentialsConfig
 import com.everbald.folobot.extensions.*
 import com.everbald.folobot.model.Action
 import com.everbald.folobot.model.BotCommand
-import com.everbald.folobot.model.NumType
+import com.everbald.folobot.model.PluralType
 import com.everbald.folobot.service.*
 import com.everbald.folobot.service.folocoin.FoloIndexChartService
 import com.everbald.folobot.utils.FoloId.ANDREW_ID
-import com.everbald.folobot.utils.Utils.Companion.getNumText
-import com.everbald.folobot.utils.Utils.Companion.getPeriodText
-import com.ibm.icu.text.RuleBasedNumberFormat
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
@@ -19,8 +16,6 @@ import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.time.LocalDate
 import java.time.Period
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import java.util.*
 
 @Component
@@ -89,7 +84,7 @@ class CommandHandler(
             """
                 18 ноября 2019 года я уволился с завода по своему желанию.
                 С тех пор я стремительно вхожу в IT вот уже
-                *${getPeriodText(Period.between(LocalDate.of(2019, 11, 18), LocalDate.now()))}*!
+                *${Period.between(LocalDate.of(2019, 11, 18), LocalDate.now()).toText()}*!
             """.trimIndent(),
             update
         ).also { logger.addMessage(it) }
@@ -119,21 +114,9 @@ class CommandHandler(
             )
         } else {
             messageService.sendMessage(
-                "Для особо озабоченных в *" +
-                        RuleBasedNumberFormat(Locale.forLanguageTag("ru"), RuleBasedNumberFormat.SPELLOUT)
-                            .format(noFapCount.toLong(), "%spellout-ordinal-masculine") +
-                        "* раз повторяю тут Вам, что я с *" +
-                        DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-                            .withLocale(Locale("ru"))
-                            .format(noFapDate) +
-                        "* и до сих пор вот уже *" +
-                        getPeriodText(
-                            Period.between(
-                                noFapDate,
-                                LocalDate.now()
-                            )
-                        ) +
-                        "* твёрдо и уверенно держу \"Но Фап\".",
+                "Для особо озабоченных в *${noFapCount.spellOut()}* раз повторяю тут Вам, что я с " +
+                        "*${noFapDate.toText()}* и до сих пор вот уже *${Period.between(noFapDate, LocalDate.now()).toText()}* " +
+                        "твёрдо и уверенно держу \"Но Фап\".",
                 update
             )
         }.also { logger.addMessage(it) }
@@ -215,7 +198,7 @@ class CommandHandler(
                 val foloPidor = foloPidors[i]
                 top.add(
                     place + userService.getFoloUserName(foloPidor, update.message.chatId) + " — _" +
-                            getNumText(foloPidor.score, NumType.COUNT) + "_"
+                            foloPidor.score.toText(PluralType.COUNT) + "_"
                 )
             }
             messageService.sendMessage(top.toString(), update)
@@ -240,7 +223,7 @@ class CommandHandler(
                 transform = {
                     "\u2004*${it.index + 1}*.\u2004${
                         userService.getFoloUserName(it.value, update.message.chatId)
-                    } — бездельничает _${getNumText(it.value.getPassiveDays(), NumType.DAY)}_"
+                    } — бездельничает _${it.value.getPassiveDays().toText(PluralType.DAY)}_"
                 }
             )
             } else {
@@ -291,22 +274,14 @@ class CommandHandler(
             messageService.sendMessage(
                 "Поздравляю моего хорошего друга и главного фолопидора " +
                         "[Андрея](tg://user?id=$ANDREW_ID) с днем рождения!\nСегодня ему исполнилось " +
-                        "*${
-                            getNumText(
-                                Period.between(alfaBirthday, nextAlphaBirthday).years,
-                                NumType.YEARISH
-                            )
-                        }*!",
+                        "*${Period.between(alfaBirthday, nextAlphaBirthday).years.toText(PluralType.YEARISH)}*!",
                 update
             )
         } else {
             messageService.sendMessage(
                 "День рождения моего хорошего друга и главного фолопидора " +
-                        "[Андрея](tg://user?id=$ANDREW_ID) *" +
-                        DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-                            .withLocale(Locale("ru"))
-                            .format(alfaBirthday) +
-                        "* через *${getPeriodText(Period.between(LocalDate.now(), nextAlphaBirthday))}*",
+                        "[Андрея](tg://user?id=$ANDREW_ID) *${alfaBirthday.toText()}* через " +
+                        "*${Period.between(LocalDate.now(), nextAlphaBirthday).toText()}*",
                 update
             )
         }.also { logger.addMessage(it) }

@@ -1,8 +1,8 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.utils.Utils
 import com.everbald.folobot.extensions.getChatIdentity
-import com.everbald.folobot.model.NumType
+import com.everbald.folobot.extensions.toText
+import com.everbald.folobot.model.PluralType
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.FoloIndexService
 import mu.KLogging
@@ -29,7 +29,7 @@ class TaskService(
                 transform = {
                     "\u2004*${it.index + 1}*.\u2004${
                         userService.getFoloUserName(it.value, chatId)
-                    } — ${Utils.getNumText(it.value.messagesPerDay, NumType.MESSAGE)}"
+                    } — ${it.value.messagesPerDay.toText(PluralType.MESSAGE)}"
                 }
             ),
             chatId
