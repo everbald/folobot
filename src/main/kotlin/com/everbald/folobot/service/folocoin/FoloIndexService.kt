@@ -94,10 +94,10 @@ class FoloIndexService(
 
         if (indexChange > 0) {
             photoPath = PATH + indexUp.random()
-            indexText = "растет на ${indexChange.absoluteValue.toText(PluralType.PERCENT)}"
+            indexText = "растет"
         } else if (indexChange < 0) {
             photoPath = PATH + indexDown.random()
-            indexText = "падает на ${indexChange.absoluteValue.toText(PluralType.PERCENT)}}"
+            indexText = "падает"
         } else {
             photoPath = PATH + indexNeutral.random()
             indexText = "не изменился"
@@ -105,8 +105,8 @@ class FoloIndexService(
 
         messageService.sendPhoto(
             photoPath, chatId,
-            "Индекс фолоактивности *$indexText* и на сегодня составляет *$todayIndex%* от среднегодового значения\n" +
-                    "#фолоиндекс"
+            "Индекс фолоактивности *$indexText на ${indexChange.absoluteValue}%* " +
+                    "и на сегодня составляет *$todayIndex%* от среднегодового значения\n#фолоиндекс"
         ).also { logger.info { "Sent foloindex to ${getChatIdentity(chatId)}" } }
     }
 
