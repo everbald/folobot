@@ -68,7 +68,9 @@ dependencies {
 }
 
 allOpen {
-    annotations("javax.persistence.Entity", "javax.persistence.MappedSuperclass", "javax.persistence.Embeddable")
+    annotation("javax.persistence.Entity")
+    annotation("javax.persistence.MappedSuperclass")
+    annotation("javax.persistence.Embeddable")
 }
 
 tasks.withType<KotlinCompile> {

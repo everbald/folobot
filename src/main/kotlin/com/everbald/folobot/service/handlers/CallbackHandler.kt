@@ -3,11 +3,10 @@ package com.everbald.folobot.service.handlers
 import com.everbald.folobot.extensions.*
 import com.everbald.folobot.model.Action
 import com.everbald.folobot.model.CallbackCommand
-import com.everbald.folobot.model.NumType
+import com.everbald.folobot.model.PluralType
 import com.everbald.folobot.service.*
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.InvoiceService
-import com.everbald.folobot.utils.Utils.Companion.getNumText
 import jakarta.annotation.Priority
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -50,7 +49,7 @@ class CallbackHandler(
     fun coinBalance(update: Update) {
         val balance = foloCoinService.getById(update.callbackQuery.from.id).coins
         val text = if (balance > 0) {
-            "На твоем счете *${getNumText(balance, NumType.COIN)}*, уважаемый " +
+            "На твоем счете *${balance.toText(PluralType.COIN)}*, уважаемый " +
                     "${update.callbackQuery.from.getPremiumPrefix()}фолопидор " +
                     userService.getFoloUserNameLinked(update.callbackQuery.from)
         } else {
