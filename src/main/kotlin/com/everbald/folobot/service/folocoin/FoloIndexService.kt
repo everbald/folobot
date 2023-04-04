@@ -1,10 +1,8 @@
 package com.everbald.folobot.service.folocoin
 
 import com.everbald.folobot.extensions.getChatIdentity
-import com.everbald.folobot.extensions.toText
 import com.everbald.folobot.extensions.isAboutFo
 import com.everbald.folobot.extensions.isFo
-import com.everbald.folobot.model.PluralType
 import com.everbald.folobot.model.dto.FoloIndexDto
 import com.everbald.folobot.model.dto.toEntity
 import com.everbald.folobot.persistence.entity.FoloIndexId
