@@ -1,10 +1,6 @@
 package com.everbald.folobot.service.folocoin
 
-import com.everbald.folobot.extensions.getChatIdentity
-import com.everbald.folobot.extensions.toText
-import com.everbald.folobot.extensions.isAboutFo
-import com.everbald.folobot.extensions.isFo
-import com.everbald.folobot.model.PluralType
+import com.everbald.folobot.extensions.*
 import com.everbald.folobot.model.dto.FoloIndexDto
 import com.everbald.folobot.model.dto.toEntity
 import com.everbald.folobot.persistence.entity.FoloIndexId
@@ -90,7 +86,7 @@ class FoloIndexService(
             .roundToInt().toDouble() / 100
         val yesterdayIndex = ((getById(chatId, LocalDate.now().minusDays(1)).index ?: 0.0) * 100)
             .roundToInt().toDouble() / 100
-        val indexChange = todayIndex - yesterdayIndex
+        val indexChange = (todayIndex - yesterdayIndex).round()
 
         if (indexChange > 0) {
             photoPath = PATH + indexUp.random()
