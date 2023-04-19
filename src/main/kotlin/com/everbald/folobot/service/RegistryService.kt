@@ -58,7 +58,11 @@ class RegistryService(
      * @param update [Update]
      */
     private fun forwardPrivate(update: Update) {
-        if (update.hasMessage() && update.message.isNotUserJoin() && update.message.isNotSuccessfulPayment()) {
+        if (
+            update.hasMessage() && update.message.isNotUserJoin() &&
+            update.message.isNotSuccessfulPayment() &&
+            update.message.isNotUserShared()
+        ) {
             when {
                 update.message.isUserMessage -> POC_ID
                 update.message.from.isFo() -> FO_LEGACY_ID

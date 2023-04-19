@@ -12,7 +12,7 @@ class UserSharedHandler(
     private val foloCoinService: FoloCoinService
 ) : AbstractMessageHandler() {
     override fun canHandle(update: Update): Boolean {
-        return (update.message?.userShared != null).also {
+        return (update.message.isUserShared()).also {
             if (it) logger.addUserSharedReceived(getChatIdentity(update.message.chatId), update.message.from.getName())
         }
     }
