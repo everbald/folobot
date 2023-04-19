@@ -25,7 +25,7 @@ class SmallTalkHandler(
 
     fun Message.isSmallTalk() = isUserMessage || userService.isSelf(this.replyToMessage?.from) || this.isFromFoloSwarm()
 
-    override fun canHandle(update: Update) = super.canHandle(update) && update.message.isSmallTalk()
+    override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isSmallTalk())
             .also { if (it) logger.addActionReceived(Action.SMALLTALK, update.message.chatId) }
 
     override fun handle(update: Update) = handle(update, false)

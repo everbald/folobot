@@ -39,7 +39,7 @@ class CommandHandler(
                         this.entities.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text
                             ?.contains(botCredentials.botUsername) == true)
 
-    override fun canHandle(update: Update) = super.canHandle(update) && update.message.isMyCommand()
+    override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isMyCommand())
             .also { if (it) logger.addActionReceived(Action.COMMAND, update.message.chatId) }
 
     override fun handle(update: Update) {

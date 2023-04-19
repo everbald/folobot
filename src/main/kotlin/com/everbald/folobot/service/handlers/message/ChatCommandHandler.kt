@@ -22,7 +22,7 @@ class ChatCommandHandler(
             (this.isSmallTalk() || this.isFreelance() || this.isNoFap() || this.isFolopidor() ||
                     this.isFolopidorTop() || this.isCoin() || this.isFoloIndex()) || this.isTransterCancel()
 
-    override fun canHandle(update: Update) = super.canHandle(update) && update.message.isChatCommand()
+    override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isChatCommand())
         .also { if (it) logger.addActionReceived(Action.CHATCOMMAND, update.message.chatId) }
 
     override fun handle(update: Update) {

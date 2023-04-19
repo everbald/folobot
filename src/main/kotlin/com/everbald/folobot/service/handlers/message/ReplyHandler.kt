@@ -18,7 +18,7 @@ class ReplyHandler(
     fun Message.isGreetMe() = this.isNotForward() && this.isAboutBot() &&
             this.text?.contains("привет", ignoreCase = true) == true
 
-    override fun canHandle(update: Update) = super.canHandle(update) && update.message.isGreetMe()
+    override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isGreetMe())
             .also { if (it) logger.addActionReceived(Action.REPLY, update.message.chatId) }
 
     override fun handle(update: Update) {
