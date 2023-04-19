@@ -12,13 +12,8 @@ import org.telegram.telegrambots.meta.api.objects.Update
 class PreCheckoutHandler(
     private val preCheckoutService: PreCheckoutService,
 ) : Handler, KLogging() {
-    override fun canHandle(update: Update): Boolean {
-        return update.hasPreCheckoutQuery().also {
-            if (it) logger.addPreCheckoutQueryReceived(update.preCheckoutQuery.from.getName())
-        }
-    }
+    override fun canHandle(update: Update) = update.hasPreCheckoutQuery()
+        .also { if (it) logger.addPreCheckoutQueryReceived(update.preCheckoutQuery.from.getName()) }
 
-    override fun handle(update: Update) {
-        preCheckoutService.confirmOrder(update)
-    }
+    override fun handle(update: Update) = preCheckoutService.confirmOrder(update)
 }

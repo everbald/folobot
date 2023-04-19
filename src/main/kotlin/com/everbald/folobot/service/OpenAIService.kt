@@ -5,7 +5,6 @@ import com.aallam.openai.api.audio.TranscriptionRequest
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
-import com.aallam.openai.api.completion.CompletionRequest
 import com.aallam.openai.api.exception.OpenAIHttpException
 import com.aallam.openai.api.file.FileSource
 import com.aallam.openai.api.model.ModelId
@@ -18,7 +17,7 @@ import com.everbald.folobot.utils.OggConverter
 import io.ktor.client.network.sockets.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import mu.KLogging
 import okio.source
 import org.springframework.stereotype.Service
@@ -35,16 +34,6 @@ class OpenAIService(
     private val fileService: FileService,
     private val oggConverter: OggConverter
 ) : KLogging() {
-    fun smallTalkCompletion(update: Update) {
-        val completionRequest = CompletionRequest(
-            model = ModelId("text-davinci-003"),
-            prompt = buildPrompt(update.message),
-            maxTokens = 2048,
-            user = update.message.from.id.toString()
-        )
-        makeRequest(completionRequest, update)
-    }
-
     @OptIn(BetaOpenAI::class)
     fun smallTalk(update: Update, withInit: Boolean = false) {
         val messageStack = buildChatMessageStack(update.message)
@@ -93,28 +82,8 @@ class OpenAIService(
 
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    private fun makeRequest(request: CompletionRequest, update: Update) = GlobalScope.async {
-        try {
-            openAI.completion(request).choices.firstOrNull()?.text?.let {
-                messageQueueService.sendAndAddToQueue(
-                    it.telegramEscape(),
-                    update,
-                    parseMode = ParseMode.MARKDOWNV2,
-                    reply = true
-                )
-            }
-            logger.info {
-                "Had a small talk with ${update.message.from.getName()} " +
-                        "in chat ${getChatIdentity(update.message.chatId)}"
-            }
-        } catch (ex: SocketTimeoutException) {
-            logger.warn { "Request to OpenAI API finished with socket timeout" }
-        }
-    }
-
     @OptIn(DelicateCoroutinesApi::class, BetaOpenAI::class)
-    private fun makeRequest(request: ChatCompletionRequest, update: Update) = GlobalScope.async {
+    private fun makeRequest(request: ChatCompletionRequest, update: Update) = GlobalScope.launch {
         try {
             openAI.chatCompletion(request).choices.firstOrNull()?.message?.content?.let {
                 messageQueueService.sendAndAddToQueue(
@@ -135,12 +104,12 @@ class OpenAIService(
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class, BetaOpenAI::class)
-    private fun makeRequest(request: TranscriptionRequest, update: Update) = GlobalScope.async {
+    @OptIn(BetaOpenAI::class, DelicateCoroutinesApi::class)
+    private fun makeRequest(request: TranscriptionRequest, update: Update) = GlobalScope.launch {
         try {
-            val trasncription = openAI.transcription(request).text
+            val transcription = openAI.transcription(request).text
             messageQueueService.sendAndAddToQueue(
-                trasncription.telegramEscape(),
+                transcription.telegramEscape(),
                 update,
                 parseMode = ParseMode.MARKDOWNV2,
                 reply = true
