@@ -1,23 +1,26 @@
 package com.everbald.folobot.service.handlers.message
 
-import com.everbald.folobot.extensions.addActionReceived
-import com.everbald.folobot.extensions.isAboutBot
+import com.everbald.folobot.extensions.*
 import com.everbald.folobot.model.Action
+import com.everbald.folobot.model.BotCommand
+import com.everbald.folobot.service.MessageService
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove
 
 @Component
 @Priority(2)
 class ChatCommandHandler(
     private val smallTalkHandler: SmallTalkHandler,
     private val commandHandler: CommandHandler,
+    private val messageService: MessageService
 ) : AbstractMessageHandler() {
 
     fun Message.isChatCommand() = !this.isReply &&
             (this.isSmallTalk() || this.isFreelance() || this.isNoFap() || this.isFolopidor() ||
-                    this.isFolopidorTop() || this.isCoin() || this.isFoloIndex())
+                    this.isFolopidorTop() || this.isCoin() || this.isFoloIndex()) || this.isTransterCancel()
 
     override fun canHandle(update: Update) = super.canHandle(update) && update.message.isChatCommand()
         .also { if (it) logger.addActionReceived(Action.CHATCOMMAND, update.message.chatId) }
@@ -32,9 +35,16 @@ class ChatCommandHandler(
             message.isFolopidorTop() -> commandHandler.foloPidorTop(update)
             message.isCoin() -> commandHandler.foloCoin(update)
             message.isFoloIndex() -> commandHandler.foloIndexChart(update)
+            message.isTransterCancel() -> transferCancel(update)
             else -> {}
         }
     }
+
+    private fun transferCancel(update: Update) = messageService.sendMessage(
+        "Перевод фолокойна отменен",
+        update,
+        ReplyKeyboardRemove.builder().removeKeyboard(true).build()
+    ).also { logger.info { "Folocoin transfer canceled by user ${update.getFrom().getName()}" } }
 
     private fun Message.isSmallTalk() = this.isAboutBot() &&
             (this.text?.contains("адекватно", true) == true &&
@@ -67,4 +77,7 @@ class ChatCommandHandler(
 
     private fun Message.isFoloIndex() = this.isAboutBot() &&
             this.text?.contains("фолоиндекс", true) == true
+
+    private fun Message.isTransterCancel() =
+        this.isUserMessage && this.text == BotCommand.FOLOCOINTRANSFERCANCEL.command
 }

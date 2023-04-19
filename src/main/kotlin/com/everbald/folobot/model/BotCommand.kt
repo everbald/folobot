@@ -12,6 +12,8 @@ enum class BotCommand(val command: String) {
     FOLOUNDERDOGS("/folounderdogs"),
     FOLOPIDORALPHA("/folopidoralpha"),
     FOLOCOIN("/folocoin"),
+    FOLOCOINTRANSFER("folocointransfer"),
+    FOLOCOINTRANSFERCANCEL("Отменить перевод"),
     FOLOINDEX("/foloindex");
 
     companion object {

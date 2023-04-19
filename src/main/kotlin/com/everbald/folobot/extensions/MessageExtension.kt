@@ -1,5 +1,6 @@
 package com.everbald.folobot.extensions
 
+import com.everbald.folobot.model.BotCommand
 import com.everbald.folobot.utils.FoloId.FOLOMKIN_ID
 import com.everbald.folobot.utils.FoloId.FOLO_SWARM
 import org.telegram.telegrambots.meta.api.objects.EntityType
@@ -32,6 +33,13 @@ fun Message?.isAboutBot() = listOf("гурманыч", "шурка").any {
             this?.caption?.contains(it, true) == true
 }
 
-fun Message?.getBotCommand() =
-    this?.entities?.firstOrNull { it.type == "bot_command" }?.text?.substringBefore("@")
+fun Message?.getBotCommand(): String? {
+    var command = this?.entities?.firstOrNull { it.type == "bot_command" }?.text?.substringBefore("@")
+    if (command == BotCommand.START.command) {
+        command = this?.text?.substringAfter(BotCommand.START.command)?.trimIndent().orEmpty()
+            .ifEmpty { BotCommand.START.command }
+    }
+    return command
+}
+
 

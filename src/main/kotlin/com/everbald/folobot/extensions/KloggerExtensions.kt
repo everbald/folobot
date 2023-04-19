@@ -29,3 +29,6 @@ fun KLogger.addOutdatedInvoiceCheckout(userIdentity: String) =
 
 fun KLogger.addSuccessfulPaymentReceived(chatIdentity: String, userIdentity: String) =
     this.info { "Received successful payment from $userIdentity in chat $chatIdentity" }
+
+fun KLogger.addUserSharedReceived(chatIdentity: String, userIdentity: String) =
+    this.info { "Received user shared from $userIdentity in chat $chatIdentity" }
