@@ -13,6 +13,8 @@ fun Message.isNotUserJoin() = !this.isUserJoin()
 fun Message.isUserLeft() = this.leftChatMember != null
 fun Message.isSuccessfulPayment() = this.successfulPayment != null
 fun Message.isNotSuccessfulPayment() = !this.isSuccessfulPayment()
+fun Message.isUserShared() = this.userShared != null
+fun Message.isNotUserShared() = !this.isUserShared()
 fun Message?.isFromFoloSwarm() =
     FOLO_SWARM.contains(this?.forwardFromChat?.id) || this?.forwardFrom?.id == FOLOMKIN_ID
 
