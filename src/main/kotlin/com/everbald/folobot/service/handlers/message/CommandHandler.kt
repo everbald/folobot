@@ -6,6 +6,7 @@ import com.everbald.folobot.model.Action
 import com.everbald.folobot.model.BotCommand
 import com.everbald.folobot.model.PluralType
 import com.everbald.folobot.service.*
+import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.FoloIndexChartService
 import com.everbald.folobot.utils.FoloId.ANDREW_ID
 import jakarta.annotation.Priority
@@ -29,7 +30,8 @@ class CommandHandler(
     private val foloIndexChartService: FoloIndexChartService,
     private val smallTalkHandler: SmallTalkHandler,
     private val botCredentials: BotCredentialsConfig,
-    private val inlineKeyboardService: InlineKeyboardService
+    private val keyboardService: KeyboardService,
+    private val foloCoinService: FoloCoinService
 ) : AbstractMessageHandler() {
     fun Message.isMyCommand() =
         this.isCommand && this.isNotForward() &&
@@ -46,7 +48,7 @@ class CommandHandler(
                 logger.addCommandReceived(
                     it,
                     getChatIdentity(update.message.chatId),
-                    update.message.from.getName()
+                    update.getFrom().getName()
                 )
             }
         ) {
@@ -65,6 +67,7 @@ class CommandHandler(
             BotCommand.FOLOUNDERDOGS -> foloUnderdogs(update)
             BotCommand.FOLOPIDORALPHA -> alphaTimer(update)
             BotCommand.FOLOCOIN -> foloCoin(update)
+            BotCommand.FOLOCOINTRANSFER -> foloCoinTransfer(update)
             BotCommand.FOLOINDEX -> foloIndexChart(update)
             else -> {}
         }
@@ -292,8 +295,28 @@ class CommandHandler(
             "/static/images/foloStock.png",
             update.message.chatId,
             "Добро пожаловать на фолобиржу!",
-            inlineKeyboardService.getFoloCoinKeyboard()
+            keyboardService.getFoloCoinKeyboard(update.message.isUserMessage)
         )
+
+    fun foloCoinTransfer(update: Update) : Message? {
+        val coinBalance = foloCoinService.getById(update.getFrom().id).coins
+        return if (coinBalance > 0) {
+            messageService.sendMessage(
+                """
+                Выбери фолопидора для перевода.
+                Для удобства поиска его вероятно стоит добавить в контакты
+            """.trimIndent(),
+                update,
+                keyboardService.getFolocoinTransferKeyboard()
+            )
+        } else {
+            messageService.sendMessage(
+                "На твоем счете нет фолокойнов досупных для трансфера дугому фолопидору 🫥",
+                update,
+            )
+        }.also { logger.addMessage(it) }
+    }
+
 
     fun foloIndexChart(update: Update) {
         if (update.message.chat.isFolochat()) {

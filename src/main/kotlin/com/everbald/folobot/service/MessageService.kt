@@ -1,7 +1,9 @@
 package com.everbald.folobot.service
 
 import com.everbald.folobot.FoloBot
+import com.everbald.folobot.extensions.getChatId
 import com.everbald.folobot.extensions.getChatIdentity
+import com.everbald.folobot.extensions.getMsg
 import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -36,7 +38,7 @@ class MessageService(
         val sendMessage = SendMessage
             .builder()
             .parseMode(parseMode)
-            .chatId(update.message?.chatId ?: update.callbackQuery.message.chatId)
+            .chatId(update.getChatId())
             .text(text)
         if (reply) sendMessage.replyToMessageId(update.message.messageId)
         replyMarkup?.let { sendMessage.replyMarkup(replyMarkup) }
@@ -55,6 +57,7 @@ class MessageService(
             )
         } catch (e: TelegramApiException) {
             logger.error { e }
+            logger.error { "Message text was: $text" }
             null
         }
     }
@@ -70,6 +73,7 @@ class MessageService(
             return foloBot.execute(buildMessage(text, update, replyMarkup, reply, parseMode))
         } catch (e: TelegramApiException) {
             logger.error { e }
+            logger.error { "Message text was: $text" }
             null
         }
     }
@@ -82,8 +86,8 @@ class MessageService(
     ): EditMessageText {
         return EditMessageText
             .builder()
-            .messageId(update.message?.messageId ?: update.callbackQuery?.message?.messageId)
-            .chatId(update.message?.chatId ?: update.callbackQuery?.message?.chatId)
+            .messageId(update.getMsg().messageId)
+            .chatId(update.getChatId())
             .parseMode(parseMode)
             .text(text)
             .replyMarkup(replyMarkup)
@@ -111,8 +115,8 @@ class MessageService(
     ): EditMessageCaption {
         return EditMessageCaption
             .builder()
-            .messageId(update.message?.messageId ?: update.callbackQuery?.message?.messageId)
-            .chatId(update.message?.chatId ?: update.callbackQuery?.message?.chatId)
+            .messageId(update.getMsg().messageId)
+            .chatId(update.getMsg().chatId)
             .parseMode(parseMode)
             .caption(text)
             .replyMarkup(replyMarkup)

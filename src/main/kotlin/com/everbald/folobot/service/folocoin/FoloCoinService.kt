@@ -1,19 +1,18 @@
 package com.everbald.folobot.service.folocoin
 
-import com.everbald.folobot.extensions.isAboutFo
-import com.everbald.folobot.extensions.isFolochat
-import com.everbald.folobot.extensions.isFromFoloSwarm
-import com.everbald.folobot.extensions.round
+import com.everbald.folobot.extensions.*
 import com.everbald.folobot.model.dto.FoloCoinDto
 import com.everbald.folobot.model.dto.toEntity
 import com.everbald.folobot.persistence.entity.toDto
 import com.everbald.folobot.persistence.repos.FoloCoinRepo
+import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.UserService
 import com.everbald.folobot.utils.FoloId.FOLOMKIN_ID
 import com.everbald.folobot.utils.FoloId.FOLO_CHAT_ID
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove
 import java.time.LocalDate
 import kotlin.math.pow
 
@@ -21,7 +20,8 @@ import kotlin.math.pow
 class FoloCoinService(
     private val foloCoinRepo: FoloCoinRepo,
     private val userService: UserService,
-    private val foloIndexService: FoloIndexService
+    private val foloIndexService: FoloIndexService,
+    private val messageService: MessageService
 ) : KLogging() {
     private val THRESHOLD_MULTIPLIER = 10
     private val COIN_MULTIPLIER = 3
@@ -72,8 +72,34 @@ class FoloCoinService(
 
     fun getPrice(): Double = maxOf((coinPrice / 100.0 * averageIndex).round(), 100.0)
 
-    fun issuePurchasedCoins(userId: Long, amount: Int) {
+    fun issueCoins(userId: Long, amount: Int) {
         val coin = foloCoinRepo.findCoinByUserId(userId)?.toDto() ?: FoloCoinDto(userId)
         foloCoinRepo.save(coin.addCoins(amount).toEntity())
+    }
+
+    fun transferCoin(update: Update) {
+        val coinBalance = getById(update.message.from.id).coins
+        if (coinBalance > 0) {
+            issueCoins(update.message.userShared.userId, 1)
+            issueCoins(update.message.from.id, -1)
+            val sourceName = update.message.from.getName()
+            val targetName = userService.getFoloUserName(update.message.userShared.userId)
+            logger.info { "Successfully transferred folocoin from $sourceName to $targetName" }
+            messageService.sendMessage(
+                "Фолокойн переведен фолопидору $targetName",
+                update,
+                ReplyKeyboardRemove.builder().removeKeyboard(true).build()
+            )
+            messageService.sendMessage(
+                "На твой фолосчет поступил перевод фолокойна от фолопидора $sourceName",
+                update.message.userShared.userId,
+            )
+        } else {
+            messageService.sendMessage(
+                "На твоем счете нет фолокойнов досупных для трансфера дугому фолопидору 🫥",
+                update,
+                ReplyKeyboardRemove.builder().removeKeyboard(true).build()
+            )
+        }
     }
 }
