@@ -15,8 +15,8 @@ class UserJoinHandler(
     private val messageService: MessageService,
     private val userService: UserService
 ) : AbstractMessageHandler() {
-    override fun canHandle(update: Update) = super.canHandle(update) &&
-        (update.message.isUserJoin() || update.message.isUserLeft())
+    override fun canHandle(update: Update) = (super.canHandle(update) &&
+        (update.message.isUserJoin() || update.message.isUserLeft()))
             .also { if (it) logger.addActionReceived(Action.USERNEW, update.message.chatId) }
 
     override fun handle(update: Update) {

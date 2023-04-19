@@ -17,8 +17,8 @@ class UserMessageHandler(
     private val messageService: MessageService,
     private val textService: TextService
 ) : AbstractMessageHandler() {
-    override fun canHandle(update: Update) = super.canHandle(update) &&
-        (update.message.from.isAndrew() && Random(System.nanoTime()).nextInt(100) < 7)
+    override fun canHandle(update: Update) = (super.canHandle(update) &&
+        (update.message.from.isAndrew() && Random(System.nanoTime()).nextInt(100) < 7))
             .also { if (it) logger.addActionReceived(Action.USERMESSAGE, update.message.chatId) }
 
     override fun handle(update: Update) {

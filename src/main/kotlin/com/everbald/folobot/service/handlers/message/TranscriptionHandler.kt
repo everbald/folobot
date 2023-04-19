@@ -15,7 +15,7 @@ class TranscriptionHandler(
 ) : AbstractMessageHandler() {
     fun Message.isTranscribe() = this.hasVoice() || this.hasVideoNote()
 
-    override fun canHandle(update: Update) = super.canHandle(update) && update.message.isTranscribe()
+    override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isTranscribe())
             .also { if (it) logger.addActionReceived(Action.TRANSCRIPTION, update.message.chatId) }
 
     override fun handle(update: Update) = openAIService.transcription(update)
