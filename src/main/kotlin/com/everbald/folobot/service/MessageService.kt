@@ -34,16 +34,13 @@ class MessageService(
         replyMarkup: ReplyKeyboard? = null,
         reply: Boolean = false,
         parseMode: String = ParseMode.MARKDOWN
-    ): SendMessage {
-        val sendMessage = SendMessage
-            .builder()
-            .parseMode(parseMode)
-            .chatId(update.getChatId())
-            .text(text)
-        if (reply) sendMessage.replyToMessageId(update.message.messageId)
-        replyMarkup?.let { sendMessage.replyMarkup(replyMarkup) }
-        return sendMessage.build()
-    }
+    ) = SendMessage.builder()
+        .parseMode(parseMode)
+        .chatId(update.getChatId())
+        .text(text)
+        .also { if (reply) it.replyToMessageId(update.message.messageId) }
+        .also { sendMessage -> replyMarkup?.let<ReplyKeyboard, Unit> { sendMessage.replyMarkup(it) } }
+        .build()
 
     fun sendMessage(text: String, chatId: Long, parseMode: String = ParseMode.MARKDOWN): Message? {
         return try {
@@ -83,16 +80,14 @@ class MessageService(
         update: Update,
         replyMarkup: InlineKeyboardMarkup,
         parseMode: String = ParseMode.MARKDOWN
-    ): EditMessageText {
-        return EditMessageText
-            .builder()
-            .messageId(update.getMsg().messageId)
-            .chatId(update.getChatId())
-            .parseMode(parseMode)
-            .text(text)
-            .replyMarkup(replyMarkup)
-            .build()
-    }
+    ): EditMessageText = EditMessageText
+        .builder()
+        .messageId(update.getMsg().messageId)
+        .chatId(update.getChatId())
+        .parseMode(parseMode)
+        .text(text)
+        .replyMarkup(replyMarkup)
+        .build()
 
     fun editMessageText(
         text: String,
@@ -112,16 +107,14 @@ class MessageService(
         update: Update,
         replyMarkup: InlineKeyboardMarkup,
         parseMode: String = ParseMode.MARKDOWN
-    ): EditMessageCaption {
-        return EditMessageCaption
-            .builder()
-            .messageId(update.getMsg().messageId)
-            .chatId(update.getMsg().chatId)
-            .parseMode(parseMode)
-            .caption(text)
-            .replyMarkup(replyMarkup)
-            .build()
-    }
+    ): EditMessageCaption = EditMessageCaption
+        .builder()
+        .messageId(update.getMsg().messageId)
+        .chatId(update.getMsg().chatId)
+        .parseMode(parseMode)
+        .caption(text)
+        .replyMarkup(replyMarkup)
+        .build()
 
     fun editMessageCaption(
         text: String,
@@ -136,14 +129,11 @@ class MessageService(
         }
     }
 
-    private fun buildSticker(stickerId: String, update: Update): SendSticker? {
-        return SendSticker
-            .builder()
-            .chatId(update.message.chatId.toString())
-            .sticker(InputFile(stickerId))
-            .replyToMessageId(update.message.messageId)
-            .build()
-    }
+    private fun buildSticker(stickerId: String, update: Update): SendSticker? = SendSticker.builder()
+        .chatId(update.message.chatId.toString())
+        .sticker(InputFile(stickerId))
+        .replyToMessageId(update.message.messageId)
+        .build()
 
     fun sendSticker(stickerId: String, update: Update): Message? {
         return try {
@@ -214,16 +204,13 @@ class MessageService(
         text: String? = null,
         replyMarkup: ReplyKeyboard? = null,
         parseMode: String = ParseMode.MARKDOWN
-    ): SendPhoto {
-        val sendPhoto = SendPhoto
-            .builder()
-            .parseMode(parseMode)
-            .chatId(chatId.toString())
-            .photo(photo)
-        text?.let { sendPhoto.caption(text) }
-        replyMarkup?.let { sendPhoto.replyMarkup(replyMarkup) }
-        return sendPhoto.build()
-    }
+    ): SendPhoto = SendPhoto.builder()
+        .parseMode(parseMode)
+        .chatId(chatId.toString())
+        .photo(photo)
+        .also { sendPhoto -> text?.let { sendPhoto.caption(text) } }
+        .also { sendPhoto -> replyMarkup?.let { sendPhoto.replyMarkup(replyMarkup) } }
+        .build()
 
     fun buildPhoto(
         photoPath: String,
@@ -279,14 +266,12 @@ class MessageService(
         text: String? = null,
         chatId: Long,
         parseMode: String = ParseMode.MARKDOWN
-    ): SendVoice {
-        val voice = SendVoice.builder()
-            .parseMode(parseMode)
-            .chatId(chatId.toString())
-            .voice(InputFile(voiceId))
-        text?.let { voice.caption(text) }
-        return voice.build()
-    }
+    ) = SendVoice.builder()
+        .parseMode(parseMode)
+        .chatId(chatId.toString())
+        .voice(InputFile(voiceId))
+        .also { voice -> text?.let { voice.caption(text) } }
+        .build()
 
     fun sendVoice(
         voiceId: String,
