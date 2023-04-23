@@ -1,7 +1,7 @@
 package com.everbald.folobot.service.handlers
 
 import com.everbald.folobot.extensions.*
-import com.everbald.folobot.service.folocoin.PreCheckoutService
+import com.everbald.folobot.service.folocoin.sale.PreCheckoutService
 import jakarta.annotation.Priority
 import mu.KLogging
 import org.springframework.stereotype.Component

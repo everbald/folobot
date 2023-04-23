@@ -1,10 +1,11 @@
-package com.everbald.folobot.service.folocoin
+package com.everbald.folobot.service.folocoin.sale
 
 import com.everbald.folobot.extensions.getChatId
 import com.everbald.folobot.persistence.entity.toDto
 import com.everbald.folobot.persistence.repos.OrderRepo
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.UserService
+import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.model.OrderInfoDto
 import com.everbald.folobot.service.folocoin.model.OrderStatus
 import com.everbald.folobot.service.folocoin.model.toEntity

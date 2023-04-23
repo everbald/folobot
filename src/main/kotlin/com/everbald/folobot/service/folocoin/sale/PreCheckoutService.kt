@@ -1,8 +1,9 @@
-package com.everbald.folobot.service.folocoin
+package com.everbald.folobot.service.folocoin.sale
 
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.extensions.addOutdatedInvoiceCheckout
 import com.everbald.folobot.extensions.getName
+import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.model.InvoicePayload
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue

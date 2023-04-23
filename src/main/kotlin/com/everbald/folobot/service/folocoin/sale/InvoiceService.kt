@@ -1,10 +1,11 @@
-package com.everbald.folobot.service.folocoin
+package com.everbald.folobot.service.folocoin.sale
 
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.config.BotCredentialsConfig
 import com.everbald.folobot.extensions.getChatId
 import com.everbald.folobot.extensions.getMsg
 import com.everbald.folobot.service.MessageService
+import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.model.InvoicePayload
 import com.everbald.folobot.service.folocoin.model.Product
 import com.fasterxml.jackson.databind.ObjectMapper

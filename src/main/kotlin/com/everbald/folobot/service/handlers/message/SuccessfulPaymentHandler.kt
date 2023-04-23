@@ -4,7 +4,7 @@ import com.everbald.folobot.extensions.addSuccessfulPaymentReceived
 import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.getName
 import com.everbald.folobot.extensions.isSuccessfulPayment
-import com.everbald.folobot.service.folocoin.SuccessfulPaymentService
+import com.everbald.folobot.service.folocoin.sale.SuccessfulPaymentService
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.Update

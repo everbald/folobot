@@ -20,7 +20,7 @@ class ChatCommandHandler(
 
     fun Message.isChatCommand() = !this.isReply &&
             (this.isSmallTalk() || this.isFreelance() || this.isNoFap() || this.isFolopidor() ||
-                    this.isFolopidorTop() || this.isCoin() || this.isFoloIndex()) || this.isTransterCancel()
+                    this.isCoin() || this.isFoloIndex()) || this.isTransterCancel()
 
     override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isChatCommand())
         .also { if (it) logger.addActionReceived(Action.CHATCOMMAND, update.message.chatId) }
@@ -32,7 +32,6 @@ class ChatCommandHandler(
             message.isFreelance() -> commandHandler.freelanceTimer(update)
             message.isNoFap() -> commandHandler.nofapTimer(update)
             message.isFolopidor() -> commandHandler.foloPidor(update)
-            message.isFolopidorTop() -> commandHandler.foloPidorTop(update)
             message.isCoin() -> commandHandler.foloCoin(update)
             message.isFoloIndex() -> commandHandler.foloIndexChart(update)
             message.isTransterCancel() -> transferCancel(update)
@@ -67,10 +66,6 @@ class ChatCommandHandler(
     private fun Message.isNoFap() = this.isAboutBot() &&
             (this.text?.contains("но фап", true) == true ||
                     this.text?.contains("дрочишь", true) == true)
-
-    private fun Message.isFolopidorTop() = this.isAboutBot() &&
-            (this.text?.contains("фолопидор", true) == true &&
-                    this.text?.contains("топ", true) == true)
 
     private fun Message.isCoin() = this.isAboutBot() &&
             this.text?.contains("фолобирж", true) == true

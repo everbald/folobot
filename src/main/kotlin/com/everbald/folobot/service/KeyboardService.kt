@@ -16,31 +16,28 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 class KeyboardService(
     private val botCredentials: BotCredentialsConfig
 ) : KLogging() {
+
+    fun buildCallbackButton(callbackCommand: CallbackCommand, pay: Boolean = false): InlineKeyboardButton =
+        InlineKeyboardButton.builder()
+            .text(callbackCommand.description)
+            .callbackData(callbackCommand.command)
+            .build()
+
+
     fun getFoloCoinKeyboard(isUserMessage: Boolean): InlineKeyboardMarkup = InlineKeyboardMarkup.builder()
-        .keyboardRow(listOf(buildFoloMillionaireButton()))
-        .keyboardRow(listOf(buildCoinBalanceButton(), buildCoinPriceButton()))
-        .keyboardRow(listOf(buildBuyCoinButton(), buildTransferCoinButton(isUserMessage)))
-        .build()
-
-    fun buildCoinBalanceButton(): InlineKeyboardButton = InlineKeyboardButton.builder()
-        .text(CallbackCommand.COINBALANCE.description)
-        .callbackData(CallbackCommand.COINBALANCE.command)
-        .build()
-
-    fun buildCoinPriceButton(): InlineKeyboardButton = InlineKeyboardButton.builder()
-        .text(CallbackCommand.COINPRICE.description)
-        .callbackData(CallbackCommand.COINPRICE.command)
-        .build()
-
-    fun buildFoloMillionaireButton(): InlineKeyboardButton = InlineKeyboardButton.builder()
-        .text(CallbackCommand.FOLOMILLIONAIRE.description)
-        .callbackData(CallbackCommand.FOLOMILLIONAIRE.command)
-        .build()
-
-    fun buildBuyCoinButton(): InlineKeyboardButton = InlineKeyboardButton.builder()
-        .text(CallbackCommand.BUYCOIN.description)
-        .callbackData(CallbackCommand.BUYCOIN.command)
-        .pay(true)
+        .keyboardRow(listOf(buildCallbackButton(CallbackCommand.FOLOMILLIONAIRE)))
+        .keyboardRow(
+            listOf(
+                buildCallbackButton(CallbackCommand.COINBALANCE),
+                buildCallbackButton(CallbackCommand.COINPRICE)
+            )
+        )
+        .keyboardRow(
+            listOf(
+                buildCallbackButton(CallbackCommand.BUYCOIN, true),
+                buildTransferCoinButton(isUserMessage)
+            )
+        )
         .build()
 
     fun buildTransferCoinButton(isUserMessage: Boolean): InlineKeyboardButton {
@@ -69,5 +66,20 @@ class KeyboardService(
 
     fun buildFolocoinTransferButton(): KeyboardButton = KeyboardButton.builder()
         .text(BotCommand.FOLOCOINTRANSFERCANCEL.command)
+        .build()
+
+    fun getFoloPidorKeyboard(): InlineKeyboardMarkup = InlineKeyboardMarkup.builder()
+        .keyboardRow(
+            listOf(
+                buildCallbackButton(CallbackCommand.FOLOPIDOR),
+                buildCallbackButton(CallbackCommand.FOLOPIDORTOP)
+            )
+        )
+        .keyboardRow(
+            listOf(
+                buildCallbackButton(CallbackCommand.FOLOSLACKERS),
+                buildCallbackButton(CallbackCommand.FOLOUNDERDOGS)
+            )
+        )
         .build()
 }
