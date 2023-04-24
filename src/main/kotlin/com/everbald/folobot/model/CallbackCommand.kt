@@ -6,6 +6,7 @@ enum class CallbackCommand(val command: String, val description: String) {
     FOLOMILLIONAIRE("/millionaire", "Топ акционеров"),
     BUYCOIN("/buycoin", "Покупка ₣"),
     TRANSFERCOIN("/transfercoin", "Перевод ₣"),
+    FOLOINDEX("/foloindex", "Фолоиндекс"),
     FOLOPIDOR("/folopidor", "Фолопидор дня"),
     FOLOPIDORTOP("/folopidortop", "Топ фолопидоров"),
     FOLOSLACKERS("/foloslackers", "Фолобездельники"),

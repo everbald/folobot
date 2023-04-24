@@ -44,7 +44,7 @@ class CommandHandler(
                 logger.addCommandReceived(
                     it,
                     getChatIdentity(update.message.chatId),
-                    update.getFrom().getName()
+                    update.from.getName()
                 )
             }
         ) {
@@ -61,7 +61,6 @@ class CommandHandler(
             BotCommand.FOLOPIDORALPHA -> alphaTimer(update)
             BotCommand.FOLOCOIN -> foloCoin(update)
             BotCommand.FOLOCOINTRANSFER -> foloCoinTransfer(update)
-            BotCommand.FOLOINDEX -> foloIndexChart(update)
             else -> {}
         }
     }
@@ -169,7 +168,7 @@ class CommandHandler(
         )
 
     fun foloCoinTransfer(update: Update) : Message? {
-        val coinBalance = foloCoinService.getById(update.getFrom().id).coins
+        val coinBalance = foloCoinService.getById(update.from.id).coins
         return if (coinBalance > 0) {
             messageService.sendMessage(
                 """
@@ -184,22 +183,6 @@ class CommandHandler(
                 "На твоем счете нет фолокойнов досупных для трансфера дугому фолопидору 🫥",
                 update,
             )
-        }.also { logger.addMessage(it) }
-    }
-
-
-    fun foloIndexChart(update: Update) {
-        if (update.message.chat.isFolochat()) {
-            val endDate = LocalDate.now().minusDays(1)
-            val chart = foloIndexChartService.buildChart(
-                update.message.chatId,
-                endDate.minusMonths(1),
-                endDate
-            )
-            messageService.sendPhoto(chart, update.message.chatId, "#фолоиндекс")
-                .also { logger.addMessage(it) }
-        } else {
-            messageService.sendMessage("Фолоиндекс только для фолочата!", update)
         }.also { logger.addMessage(it) }
     }
 }

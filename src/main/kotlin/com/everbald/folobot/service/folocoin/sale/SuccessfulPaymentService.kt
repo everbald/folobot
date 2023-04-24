@@ -1,6 +1,6 @@
 package com.everbald.folobot.service.folocoin.sale
 
-import com.everbald.folobot.extensions.getChatId
+import com.everbald.folobot.extensions.chatId
 import com.everbald.folobot.persistence.entity.toDto
 import com.everbald.folobot.persistence.repos.OrderRepo
 import com.everbald.folobot.service.MessageService
@@ -22,7 +22,7 @@ class SuccessfulPaymentService(
     private val messageService: MessageService
 ) : KLogging() {
     fun processPayment(update: Update) {
-        invoiceService.clearInvoices(update.getChatId())
+        invoiceService.clearInvoices(update.chatId)
         val newOrder = orderRepo.save(
             OrderInfoDto(
                 userId = update.message.from.id,

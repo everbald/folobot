@@ -20,15 +20,15 @@ class FoloPidorCallbackService(
     private val keyboardService: KeyboardService
 ) : KLogging() {
     fun foloPidor(update: Update) {
-        if (!update.getMsg().isUserMessage) {
+        if (!update.isUserMessage) {
             //Определяем дату и победителя предыдущего запуска
-            val lastDate = foloVarService.getLastFolopidorDate(update.getChatId())
-            val lastWinner = foloVarService.getLastFolopidorWinner(update.getChatId())
+            val lastDate = foloVarService.getLastFolopidorDate(update.chatId)
+            val lastWinner = foloVarService.getLastFolopidorWinner(update.chatId)
 
             //Определяем либо показываем победителя
             if (lastWinner == FoloVarService.INITIAL_USERID || lastDate < LocalDate.now()) {
                 //Выбираем случайного
-                val foloPidor = foloPidorService.getRandom(update.getChatId())
+                val foloPidor = foloPidorService.getRandom(update.chatId)
 
                 //Обновляем счетчик
                 foloPidor.score++
@@ -37,8 +37,8 @@ class FoloPidorCallbackService(
                 logger.debug { "Updated $foloPidor score" }
 
                 //Обновляем текущего победителя
-                foloVarService.setLastFolopidorWinner(update.getChatId(), foloPidor.id.userId)
-                foloVarService.setLastFolopidorDate(update.getChatId(), LocalDate.now())
+                foloVarService.setLastFolopidorWinner(update.chatId, foloPidor.id.userId)
+                foloVarService.setLastFolopidorDate(update.chatId, LocalDate.now())
                 logger.info { "Updated foloPidor winner ${foloPidor.foloUser.getTagName()} and win date ${LocalDate.now()}" }
 
                 //Поздравляем
@@ -49,41 +49,33 @@ class FoloPidorCallbackService(
                 )
                 messageService.sendMessage(textService.setup, update)
                 messageService.sendMessage(
-                    textService.getPunch(userService.getFoloUserNameLinked(foloPidor, update.getChatId())), update
+                    textService.getPunch(userService.getFoloUserNameLinked(foloPidor, update.chatId)), update
                 ).also { logger.addMessage(it) }
             } else {
                 messageService.editMessageCaption(
                     "Фолопидор дня уже выбран, это *" +
                             userService.getFoloUserName(
-                                foloPidorService.findById(update.getChatId(), lastWinner),
-                                update.getChatId()
+                                foloPidorService.findById(update.chatId, lastWinner),
+                                update.chatId
                             ) +
                             "*. Пойду лучше лампово попержу в диван",
                     update,
                     keyboardService.getFoloPidorKeyboard()
-                ).also {
-                    logger.debug {
-                        "Replied to ${getChatIdentity(update.getChatId())} with folopidor of the day"
-                    }
-                }
+                ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with folopidor of the day" } }
             }
         } else {
             messageService.editMessageCaption(
-                "Для меня вы все фолопидоры, ${userService.getFoloUserName(update.getFrom())}",
+                "Для меня вы все фолопидоры, ${userService.getFoloUserName(update.chatId)}",
                 update,
                 keyboardService.getFoloPidorKeyboard()
-            ).also {
-                logger.debug {
-                    "Replied to ${getChatIdentity(update.getChatId())} with folopidor of the day"
-                }
-            }
+            ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with folopidor of the day" } }
         }
     }
 
     fun foloPidorTop(update: Update) {
-        val text = if (!update.getMsg().isUserMessage) {
+        val text = if (!update.isUserMessage) {
             val top = StringJoiner("\n").add("Топ 10 *фолопидоров*:\n")
-            val foloPidors = foloPidorService.getTop(update.getChatId())
+            val foloPidors = foloPidorService.getTop(update.chatId)
             for (i in foloPidors.indices) {
                 val place = when (i) {
                     0 -> "\uD83E\uDD47"
@@ -93,18 +85,14 @@ class FoloPidorCallbackService(
                 }
                 val foloPidor = foloPidors[i]
                 top.add(
-                    place + userService.getFoloUserName(foloPidor, update.getChatId()) + " — _" +
+                    place + userService.getFoloUserName(foloPidor, update.chatId) + " — _" +
                             foloPidor.score.toText(PluralType.COUNT) + "_"
                 )
             }
             top.toString()
-        } else {
-            "Андрей - почетный фолопидор на все времена!"
-        }
+        } else "Андрей - почетный фолопидор на все времена!"
         messageService.editMessageCaption(text, update, keyboardService.getFoloPidorKeyboard()).also {
-            logger.debug {
-                "Replied to ${getChatIdentity(update.getChatId())} with folopidor top"
-            }
+            logger.debug { "Replied to ${getChatIdentity(update.chatId)} with folopidor top" }
         }
     }
 
@@ -115,34 +103,28 @@ class FoloPidorCallbackService(
      * @return [BotApiMethod]
      */
     fun foloSlackers(update: Update) {
-        val text = if (!update.getMsg().isUserMessage) {
-            val slackers = foloPidorService.getSlackers(update.getChatId())
+        val text = if (!update.isUserMessage) {
+            val slackers = foloPidorService.getSlackers(update.chatId)
             if (slackers.isNotEmpty()) {
-                foloPidorService.getSlackers(update.getChatId()).withIndex().joinToString(
+                foloPidorService.getSlackers(update.chatId).withIndex().joinToString(
                     separator = "\n",
                     prefix = "*Фолопидоры не уделяющих фоломании достаточно времени*:\n\n",
                     transform = {
                         "\u2004*${it.index + 1}*.\u2004${
-                            userService.getFoloUserName(it.value, update.getChatId())
+                            userService.getFoloUserName(it.value, update.chatId)
                         } — бездельничает _${it.value.getPassiveDays().toText(PluralType.DAY)}_"
                     }
                 )
-            } else {
-                "Все *фолопидоры* были активны в последнее время! Но иногда можно и в диван попердеть..."
-            }
-        } else {
-            "Предавайтесь фоломании хотя бы 10 минут в день!"
-        }
+            } else "Все *фолопидоры* были активны в последнее время! Но иногда можно и в диван попердеть..."
+        } else "Предавайтесь фоломании хотя бы 10 минут в день!"
         messageService.editMessageCaption(text, update, keyboardService.getFoloPidorKeyboard()).also {
-            logger.debug {
-                "Replied to ${getChatIdentity(update.getChatId())} with foloslackers"
-            }
+            logger.debug { "Replied to ${getChatIdentity(update.chatId)} with foloslackers" }
         }
     }
 
     fun foloUnderdogs(update: Update) {
-        val text = if (!update.getMsg().isUserMessage) {
-            val foloUnderdogs = foloPidorService.getUnderdogs(update.getChatId())
+        val text = if (!update.isUserMessage) {
+            val foloUnderdogs = foloPidorService.getUnderdogs(update.chatId)
             if (foloUnderdogs.isNotEmpty()) {
                 "Когда-нибудь и вы станете *фолопидорами дня*, уважаемые фанаты " +
                         "и милые фанаточки, просто берите пример с Андрея!\n\n" +
@@ -150,20 +132,13 @@ class FoloPidorCallbackService(
                             separator = "\n• ",
                             prefix = "• ",
                             transform = { foloPidor ->
-                                userService.getFoloUserName(foloPidor, update.getChatId())
+                                userService.getFoloUserName(foloPidor, update.chatId)
                             }
                         )
-            } else {
-                "Все *фолопидоры* хотя бы раз побывали *фолопидорами дня*, это потрясающе!"
-            }
-        } else {
-            "Для меня вы все фолопидоры, ${userService.getFoloUserName(update.getFrom())}"
-        }
+            } else "Все *фолопидоры* хотя бы раз побывали *фолопидорами дня*, это потрясающе!"
+        } else "Для меня вы все фолопидоры, ${userService.getFoloUserName(update.chatId)}"
         messageService.editMessageCaption(text, update, keyboardService.getFoloPidorKeyboard()).also {
-            logger.debug {
-                "Replied to ${getChatIdentity(update.getChatId())} with folounderdogs"
-            }
+            logger.debug { "Replied to ${getChatIdentity(update.chatId)} with folounderdogs" }
         }
     }
-
 }

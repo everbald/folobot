@@ -20,15 +20,15 @@ class CallbackHandler(
     private val callbackService: CallbackService
 ) : Handler, KLogging() {
     override fun canHandle(update: Update) = CallbackCommand.isMyCommand(update.callbackQuery?.data)
-        .also { if (it) logger.addActionReceived(Action.CALLBACKCOMMAND, update.callbackQuery.message.chatId) }
+        .also { if (it) logger.addActionReceived(Action.CALLBACKCOMMAND, update.chatId) }
 
     override fun handle(update: Update) {
         when (
             CallbackCommand.fromCommand(update.callbackQuery.data).also {
                 logger.addCallbackCommandReceived(
                     it,
-                    getChatIdentity(update.callbackQuery.message.chatId),
-                    update.callbackQuery.from.getName()
+                    getChatIdentity(update.chatId),
+                    update.from.getName()
                 )
             }
         ) {
@@ -37,6 +37,7 @@ class CallbackHandler(
             CallbackCommand.FOLOMILLIONAIRE -> foloCoinCallbackService.foloMillionaire(update)
             CallbackCommand.BUYCOIN -> foloCoinCallbackService.buyCoin(update)
             CallbackCommand.TRANSFERCOIN -> foloCoinCallbackService.transferCoin(update)
+            CallbackCommand.FOLOINDEX -> foloCoinCallbackService.foloIndex(update)
             CallbackCommand.FOLOPIDOR -> foloPidorCallbackService.foloPidor(update)
             CallbackCommand.FOLOPIDORTOP -> foloPidorCallbackService.foloPidorTop(update)
             CallbackCommand.FOLOSLACKERS -> foloPidorCallbackService.foloSlackers(update)
