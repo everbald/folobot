@@ -20,7 +20,7 @@ class ChatCommandHandler(
 
     fun Message.isChatCommand() = !this.isReply &&
             (this.isSmallTalk() || this.isFreelance() || this.isNoFap() || this.isFolopidor() ||
-                    this.isCoin() || this.isFoloIndex()) || this.isTransterCancel()
+                    this.isCoin() || this.isTransterCancel())
 
     override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isChatCommand())
         .also { if (it) logger.addActionReceived(Action.CHATCOMMAND, update.message.chatId) }
@@ -33,7 +33,6 @@ class ChatCommandHandler(
             message.isNoFap() -> commandHandler.nofapTimer(update)
             message.isFolopidor() -> commandHandler.foloPidor(update)
             message.isCoin() -> commandHandler.foloCoin(update)
-            message.isFoloIndex() -> commandHandler.foloIndexChart(update)
             message.isTransterCancel() -> transferCancel(update)
             else -> {}
         }
@@ -43,7 +42,7 @@ class ChatCommandHandler(
         "Перевод фолокойна отменен",
         update,
         ReplyKeyboardRemove.builder().removeKeyboard(true).build()
-    ).also { logger.info { "Folocoin transfer canceled by user ${update.getFrom().getName()}" } }
+    ).also { logger.info { "Folocoin transfer canceled by user ${update.from.getName()}" } }
 
     private fun Message.isSmallTalk() = this.isAboutBot() &&
             (this.text?.contains("адекватно", true) == true &&
@@ -69,9 +68,6 @@ class ChatCommandHandler(
 
     private fun Message.isCoin() = this.isAboutBot() &&
             this.text?.contains("фолобирж", true) == true
-
-    private fun Message.isFoloIndex() = this.isAboutBot() &&
-            this.text?.contains("фолоиндекс", true) == true
 
     private fun Message.isTransterCancel() =
         this.isUserMessage && this.text == BotCommand.FOLOCOINTRANSFERCANCEL.command

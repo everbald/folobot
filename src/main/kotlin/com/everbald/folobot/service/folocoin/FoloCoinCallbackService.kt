@@ -1,9 +1,6 @@
 package com.everbald.folobot.service.folocoin
 
-import com.everbald.folobot.extensions.format
-import com.everbald.folobot.extensions.getChatIdentity
-import com.everbald.folobot.extensions.getPremiumPrefix
-import com.everbald.folobot.extensions.toText
+import com.everbald.folobot.extensions.*
 import com.everbald.folobot.model.PluralType
 import com.everbald.folobot.service.KeyboardService
 import com.everbald.folobot.service.MessageService
@@ -22,25 +19,25 @@ class FoloCoinCallbackService(
     private val userService: UserService,
     private val keyboardService: KeyboardService,
     private val invoiceService: InvoiceService,
-    private val commandHandler: CommandHandler
+    private val commandHandler: CommandHandler,
+    private val foloIndexChartService: FoloIndexChartService
 ) : KLogging() {
 
     fun coinBalance(update: Update) {
-        val balance = foloCoinService.getById(update.callbackQuery.from.id).coins
+        val balance = foloCoinService.getById(update.from.id).coins
         val text = if (balance > 0) {
             "На твоем счете *${balance.toText(PluralType.COIN)}*, уважаемый " +
-                    "${update.callbackQuery.from.getPremiumPrefix()}фолопидор " +
-                    userService.getFoloUserNameLinked(update.callbackQuery.from)
+                    "${update.from.getPremiumPrefix()}фолопидор " +
+                    userService.getFoloUserNameLinked(update.from)
         } else {
-            "На твоем счете нет фолокойнов, уважаемый ${update.callbackQuery.from.getPremiumPrefix()}фолопидор " +
-                    userService.getFoloUserNameLinked(update.callbackQuery.from)
+            "На твоем счете нет фолокойнов, уважаемый ${update.from.getPremiumPrefix()}фолопидор " +
+                    userService.getFoloUserNameLinked(update.chatId)
         }
         messageService.editMessageCaption(
             text,
             update,
-            keyboardService.getFoloCoinKeyboard(update.callbackQuery.message.isUserMessage)
-        )
-            .also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with coin balance" } }
+            keyboardService.getFoloCoinKeyboard(update.isUserMessage)
+        ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with coin balance" } }
     }
 
     fun coinPrice(update: Update) {
@@ -48,8 +45,8 @@ class FoloCoinCallbackService(
         messageService.editMessageCaption(
             "Стоимость фолокойна на сегодня составляет *${price.format()}*₽",
             update,
-            keyboardService.getFoloCoinKeyboard(update.callbackQuery.message.isUserMessage)
-        ).also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with coin price" } }
+            keyboardService.getFoloCoinKeyboard(update.isUserMessage)
+        ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with coin price" } }
     }
 
     fun foloMillionaire(update: Update) {
@@ -64,17 +61,16 @@ class FoloCoinCallbackService(
                 }
             ),
             update,
-            keyboardService.getFoloCoinKeyboard(update.callbackQuery.message.isUserMessage)
-        ).also { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)} with folomillionaire chart" }
+            keyboardService.getFoloCoinKeyboard(update.isUserMessage)
+        ).also { "Replied to ${getChatIdentity(update.chatId)} with folomillionaire chart" }
     }
 
     fun buyCoin(update: Update) {
         messageService.editMessageCaption(
             "Создан счет на оплату",
             update,
-            keyboardService.getFoloCoinKeyboard(update.callbackQuery.message.isUserMessage)
-        ).also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)}" +
-                " with coin invoice" } }
+            keyboardService.getFoloCoinKeyboard(update.isUserMessage)
+        ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with coin invoice" } }
         invoiceService.sendInvoice(update)
     }
 
@@ -82,9 +78,32 @@ class FoloCoinCallbackService(
         messageService.editMessageCaption(
             "Выбор фолопидора для перевода",
             update,
-            keyboardService.getFoloCoinKeyboard(update.callbackQuery.message.isUserMessage)
-        ).also { logger.debug { "Replied to ${getChatIdentity(update.callbackQuery.message.chatId)}" +
-                " with folotransfer keyboard" } }
+            keyboardService.getFoloCoinKeyboard(update.isUserMessage)
+        ).also { logger.debug {"Replied to ${getChatIdentity(update.chatId)} with folotransfer keyboard" } }
         commandHandler.foloCoinTransfer(update)
+    }
+
+    fun foloIndex(update: Update) {
+        if (update.chat.isFolochat()) {
+            messageService.editMessageCaption(
+                "Строим график фолоиндекса...",
+                update,
+                keyboardService.getFoloCoinKeyboard(update.isUserMessage),
+            )
+            val endDate = LocalDate.now().minusDays(1)
+            val chart = foloIndexChartService.buildChart(
+                update.chatId,
+                endDate.minusMonths(1),
+                endDate
+            )
+            messageService.sendPhoto(chart, update.chatId, "#фолоиндекс")
+                .also { logger.addMessage(it) }
+        } else {
+            messageService.editMessageCaption(
+                "Фолоиндекс только для фолочата!",
+                update,
+                keyboardService.getFoloCoinKeyboard(update.isUserMessage),
+            ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with foloindex" } }
+        }
     }
 }

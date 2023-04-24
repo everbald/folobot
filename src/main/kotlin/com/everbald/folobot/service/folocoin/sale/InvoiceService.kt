@@ -2,8 +2,8 @@ package com.everbald.folobot.service.folocoin.sale
 
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.config.BotCredentialsConfig
-import com.everbald.folobot.extensions.getChatId
-import com.everbald.folobot.extensions.getMsg
+import com.everbald.folobot.extensions.chatId
+import com.everbald.folobot.extensions.isUserMessage
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.model.InvoicePayload
@@ -33,7 +33,7 @@ class InvoiceService(
     }
 
     fun sendInvoice(update: Update): Message? {
-        clearInvoices(update.getChatId())
+        clearInvoices(update.chatId)
         return try {
             foloBot.execute(buildInvoice(update)).also {
                 issuedInvoices.add(it)
@@ -49,7 +49,7 @@ class InvoiceService(
         val payload = buildPayload(update, Product.FOLOCOIN, price)
         val labeledPrice = buildLabeledPrice(price)
         return SendInvoice.builder()
-            .chatId(update.getChatId())
+            .chatId(update.chatId)
             .title(Product.FOLOCOIN.label)
             .description(description)
             .payload(objectMapper.writeValueAsString(payload))
@@ -72,8 +72,8 @@ class InvoiceService(
         InvoicePayload(
             product = product,
             price = price,
-            chatId = update.getChatId(),
-            isPrivateChat = update.getMsg().isUserMessage
+            chatId = update.chatId,
+            isPrivateChat = update.isUserMessage
         )
 
     private fun buildLabeledPrice(price: Double): List<LabeledPrice> {

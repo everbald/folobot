@@ -1,9 +1,7 @@
 package com.everbald.folobot.service
 
 import com.everbald.folobot.FoloBot
-import com.everbald.folobot.extensions.getChatId
-import com.everbald.folobot.extensions.getChatIdentity
-import com.everbald.folobot.extensions.getMsg
+import com.everbald.folobot.extensions.*
 import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -36,7 +34,7 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN
     ) = SendMessage.builder()
         .parseMode(parseMode)
-        .chatId(update.getChatId())
+        .chatId(update.chatId)
         .text(text)
         .also { if (reply) it.replyToMessageId(update.message.messageId) }
         .also { sendMessage -> replyMarkup?.let<ReplyKeyboard, Unit> { sendMessage.replyMarkup(it) } }
@@ -82,8 +80,8 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN
     ): EditMessageText = EditMessageText
         .builder()
-        .messageId(update.getMsg().messageId)
-        .chatId(update.getChatId())
+        .messageId(update.messageId)
+        .chatId(update.chatId)
         .parseMode(parseMode)
         .text(text)
         .replyMarkup(replyMarkup)
@@ -109,8 +107,8 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN
     ): EditMessageCaption = EditMessageCaption
         .builder()
-        .messageId(update.getMsg().messageId)
-        .chatId(update.getMsg().chatId)
+        .messageId(update.messageId)
+        .chatId(update.chatId)
         .parseMode(parseMode)
         .caption(text)
         .replyMarkup(replyMarkup)
