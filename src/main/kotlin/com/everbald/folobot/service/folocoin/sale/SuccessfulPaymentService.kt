@@ -1,6 +1,7 @@
 package com.everbald.folobot.service.folocoin.sale
 
 import com.everbald.folobot.extensions.chatId
+import com.everbald.folobot.extensions.from
 import com.everbald.folobot.persistence.entity.toDto
 import com.everbald.folobot.persistence.repos.OrderRepo
 import com.everbald.folobot.service.MessageService
@@ -25,20 +26,20 @@ class SuccessfulPaymentService(
         invoiceService.clearInvoices(update.chatId)
         val newOrder = orderRepo.save(
             OrderInfoDto(
-                userId = update.message.from.id,
+                userId = update.from.id,
                 status = OrderStatus.NEW,
                 payment = update.message.successfulPayment
             ).toEntity()
         ).toDto()
-        foloCoinService.issueCoins(update.message.from.id, 1)
+        foloCoinService.issueCoins(update.from.id, 1)
         orderRepo.save(newOrder.setStatus(OrderStatus.DONE).toEntity())
         messageService.sendMessage(
             if (!newOrder.payload.isPrivateChat)
-                "Поздравим фолопидора ${userService.getFoloUserName(update.message.from.id)} " +
+                "Поздравим фолопидора ${userService.getFoloUserName(update.from.id)} " +
                         "с приобретением фолокойна!"
             else "Фолокойн добавлен в твой фолокошелек!",
             newOrder.payload.chatId
         )
-        logger.info { "Issued folocoin to ${userService.getFoloUserName(update.message.from.id)} after successful purchase" }
+        logger.info { "Issued folocoin to ${userService.getFoloUserName(update.from.id)} after successful purchase" }
     }
 }
