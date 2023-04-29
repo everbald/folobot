@@ -31,7 +31,7 @@ class FoloCoinCallbackService(
                     userService.getFoloUserNameLinked(update.from)
         } else {
             "На твоем счете нет фолокойнов, уважаемый ${update.from.getPremiumPrefix()}фолопидор " +
-                    userService.getFoloUserNameLinked(update.chatId)
+                    userService.getFoloUserNameLinked(update.from)
         }
         messageService.editMessageCaption(
             text,
