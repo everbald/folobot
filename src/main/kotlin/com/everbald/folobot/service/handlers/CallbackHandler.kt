@@ -17,12 +17,18 @@ import java.util.*
 class CallbackHandler(
     private val foloCoinCallbackService: FoloCoinCallbackService,
     private val foloPidorCallbackService: FoloPidorCallbackService,
-    private val callbackService: CallbackService
+    private val callbackService: CallbackService,
+    private val messageService: MessageService
 ) : Handler, KLogging() {
     override fun canHandle(update: Update) = CallbackCommand.isMyCommand(update.callbackQuery?.data)
         .also { if (it) logger.addActionReceived(Action.CALLBACKCOMMAND, update.chatId) }
 
     override fun handle(update: Update) {
+        if (update.from.isAndrew()) {
+            messageService.sendMessage("Андрей смотрит на фото Фоломкина и мастурбирует", update)
+            callbackService.answerCallbackQuery(update)
+            return
+        }
         when (
             CallbackCommand.fromCommand(update.callbackQuery.data).also {
                 logger.addCallbackCommandReceived(
