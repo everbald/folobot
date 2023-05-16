@@ -6,6 +6,7 @@ import com.everbald.folobot.model.CallbackCommand
 import com.everbald.folobot.service.*
 import com.everbald.folobot.service.folocoin.FoloCoinCallbackService
 import com.everbald.folobot.service.folopidor.FoloPidorCallbackService
+import com.everbald.folobot.utils.FoloId.ANDREW_ID
 import jakarta.annotation.Priority
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -25,7 +26,7 @@ class CallbackHandler(
 
     override fun handle(update: Update) {
         if (update.from.isAndrew()) {
-            messageService.sendMessage("Андрей смотрит на фото Фоломкина и мастурбирует", update)
+            messageService.sendMessage("Андрей смотрит на фото Фоломкина и мастурбирует", ANDREW_ID)
             callbackService.answerCallbackQuery(update)
             return
         }
