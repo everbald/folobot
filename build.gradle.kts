@@ -43,10 +43,10 @@ dependencies {
     implementation("io.ktor:ktor-client-apache:2.2.4")
 
     // telegram api
-    implementation("org.telegram:telegrambots:6.5.0")
+    implementation("org.telegram:telegrambots:6.7.0")
 
     // open api
-    implementation("com.aallam.openai:openai-client:3.2.0")
+    implementation("com.aallam.openai:openai-client:3.2.5")
 
     // serialisation
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

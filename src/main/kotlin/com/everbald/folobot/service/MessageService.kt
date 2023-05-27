@@ -1,7 +1,9 @@
 package com.everbald.folobot.service
 
 import com.everbald.folobot.FoloBot
-import com.everbald.folobot.extensions.*
+import com.everbald.folobot.extensions.chatId
+import com.everbald.folobot.extensions.getChatIdentity
+import com.everbald.folobot.extensions.messageId
 import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -13,13 +15,17 @@ import org.telegram.telegrambots.meta.api.methods.send.SendSticker
 import org.telegram.telegrambots.meta.api.methods.send.SendVoice
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCaption
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.api.objects.media.InputMedia
+import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
+import java.io.InputStream
 
 @Component
 class MessageService(
@@ -127,23 +133,59 @@ class MessageService(
         }
     }
 
+    fun buildInputMediaPhoto(photo: InputFile, text: String?, parseMode: String = ParseMode.MARKDOWN): InputMedia =
+        InputMediaPhoto()
+            .also { mediaPhoto ->
+                mediaPhoto.setMedia(photo.newMediaStream, photo.mediaName)
+                text?.let { mediaPhoto.caption = it }
+                mediaPhoto.parseMode = parseMode
+            }
+
+    fun buildEditMessagePhoto(
+        photo: InputFile,
+        text: String?,
+        update: Update,
+        replyMarkup: InlineKeyboardMarkup,
+        parseMode: String = ParseMode.MARKDOWN
+    ): EditMessageMedia =
+        EditMessageMedia
+            .builder()
+            .messageId(update.messageId)
+            .chatId(update.chatId)
+            .replyMarkup(replyMarkup)
+            .media(buildInputMediaPhoto(photo, text))
+            .build()
+
+    fun editMessagePhoto(
+        photo: InputFile,
+        text: String?,
+        update: Update,
+        replyMarkup: InlineKeyboardMarkup,
+        parseMode: String = ParseMode.MARKDOWN
+    ) {
+        try {
+            foloBot.execute(buildEditMessagePhoto(photo, text, update, replyMarkup, parseMode))
+        } catch (e: TelegramApiException) {
+            logger.debug { e }
+        }
+    }
+
     private fun buildSticker(stickerId: String, update: Update): SendSticker? = SendSticker.builder()
         .chatId(update.message.chatId.toString())
         .sticker(InputFile(stickerId))
         .replyToMessageId(update.message.messageId)
         .build()
 
-    fun sendSticker(stickerId: String, update: Update): Message? {
-        return try {
+    fun sendSticker(stickerId: String, update: Update): Message? =
+        try {
             foloBot.execute(buildSticker(stickerId, update))
         } catch (e: TelegramApiException) {
             logger.error { e }
             null
         }
-    }
 
-    fun forwardMessage(chatId: Long, update: Update): Message? {
-        return try {
+    fun forwardMessage(chatId: Long, update: Update): Message? =
+        try {
             foloBot.execute(
                 ForwardMessage
                     .builder()
@@ -156,7 +198,6 @@ class MessageService(
             logger.error { e }
             null
         }
-    }
 
     fun forwardMessage(chatId: Long, message: Message?): Boolean {
         message?.let {

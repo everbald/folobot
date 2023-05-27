@@ -3,6 +3,7 @@ package com.everbald.folobot.config
 import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.logging.LogLevel
 import com.aallam.openai.api.logging.Logger
+import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIConfig
 import org.springframework.beans.factory.annotation.Value
@@ -19,8 +20,7 @@ class OpenAIClientConfig() {
         return OpenAI(
             OpenAIConfig(
                 token = token,
-                logLevel = LogLevel.None,
-                logger = Logger.Default,
+                logging = LoggingConfig(LogLevel.None, Logger.Default),
                 timeout = Timeout(socket = 1.minutes))
         )
     }

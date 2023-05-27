@@ -5,10 +5,13 @@ import com.everbald.folobot.model.PluralType
 import com.everbald.folobot.service.KeyboardService
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.UserService
+import com.everbald.folobot.service.folocoin.FoloIndexService.Companion.FOLO_STOCK_IMAGE
 import com.everbald.folobot.service.folocoin.sale.InvoiceService
 import com.everbald.folobot.service.handlers.message.CommandHandler
+import com.everbald.folobot.utils.FoloId
 import mu.KLogging
 import org.springframework.stereotype.Component
+import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.time.LocalDate
 
@@ -33,7 +36,8 @@ class FoloCoinCallbackService(
             "На твоем счете нет фолокойнов, уважаемый ${update.from.getPremiumPrefix()}фолопидор " +
                     userService.getFoloUserNameLinked(update.from)
         }
-        messageService.editMessageCaption(
+        messageService.editMessagePhoto(
+            buildTitlePhotoFile(),
             text,
             update,
             keyboardService.getFoloCoinKeyboard(update.isUserMessage)
@@ -41,16 +45,20 @@ class FoloCoinCallbackService(
     }
 
     fun coinPrice(update: Update) {
-        val price = foloCoinService.getPrice()
-        messageService.editMessageCaption(
-            "Стоимость фолокойна на сегодня составляет *${price.format()}*₽",
-            update,
-            keyboardService.getFoloCoinKeyboard(update.isUserMessage)
-        ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with coin price" } }
+        foloCoinService.getPrice()
+            .let { price ->
+                messageService.editMessagePhoto(
+                    buildTitlePhotoFile(),
+                    "Стоимость фолокойна на сегодня составляет *${price.format()}*₽",
+                    update,
+                    keyboardService.getFoloCoinKeyboard(update.isUserMessage)
+                )
+            }.also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with coin price" } }
     }
 
     fun foloMillionaire(update: Update) {
-        messageService.editMessageCaption(
+        messageService.editMessagePhoto(
+            buildTitlePhotoFile(),
             foloCoinService.getTop().withIndex().joinToString(
                 separator = "\n",
                 prefix = "*10 богатейших фолопидоров мира, чье состояние исчисляется в фолокойнах " +
@@ -66,7 +74,8 @@ class FoloCoinCallbackService(
     }
 
     fun buyCoin(update: Update) {
-        messageService.editMessageCaption(
+        messageService.editMessagePhoto(
+            buildTitlePhotoFile(),
             "Создан счет на оплату",
             update,
             keyboardService.getFoloCoinKeyboard(update.isUserMessage)
@@ -75,35 +84,36 @@ class FoloCoinCallbackService(
     }
 
     fun transferCoin(update: Update) {
-        messageService.editMessageCaption(
+        messageService.editMessagePhoto(
+            buildTitlePhotoFile(),
             "Выбор фолопидора для перевода",
             update,
             keyboardService.getFoloCoinKeyboard(update.isUserMessage)
-        ).also { logger.debug {"Replied to ${getChatIdentity(update.chatId)} with folotransfer keyboard" } }
+        ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with folotransfer keyboard" } }
         commandHandler.foloCoinTransfer(update)
     }
 
     fun foloIndex(update: Update) {
-        if (update.chat.isFolochat()) {
-            messageService.editMessageCaption(
-                "Строим график фолоиндекса...",
-                update,
-                keyboardService.getFoloCoinKeyboard(update.isUserMessage),
-            )
-            val endDate = LocalDate.now().minusDays(1)
-            val chart = foloIndexChartService.buildChart(
-                update.chatId,
-                endDate.minusMonths(1),
-                endDate
-            )
-            messageService.sendPhoto(chart, update.chatId, "#фолоиндекс")
-                .also { logger.addMessage(it) }
-        } else {
-            messageService.editMessageCaption(
-                "Фолоиндекс только для фолочата!",
-                update,
-                keyboardService.getFoloCoinKeyboard(update.isUserMessage),
-            ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with foloindex" } }
-        }
+        LocalDate.now().minusDays(1)
+            .let { endDate ->
+                foloIndexChartService.buildChart(
+                    FoloId.FOLO_CHAT_ID,
+                    endDate.minusMonths(1),
+                    endDate
+                )
+            }.let { chart ->
+                messageService.editMessagePhoto(
+                    chart,
+                    "График фолоиндекса за последний месяц",
+                    update,
+                    keyboardService.getFoloCoinKeyboard(update.isUserMessage)
+                )
+            }.also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with foloindex" } }
     }
+
+    private fun buildTitlePhotoFile() =
+        InputFile(
+            this::class.java.getResourceAsStream(FOLO_STOCK_IMAGE),
+            FOLO_STOCK_IMAGE.substringAfterLast("/")
+        )
 }

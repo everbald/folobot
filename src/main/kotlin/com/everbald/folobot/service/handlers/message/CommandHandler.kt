@@ -8,6 +8,7 @@ import com.everbald.folobot.model.PluralType
 import com.everbald.folobot.service.*
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.FoloIndexChartService
+import com.everbald.folobot.service.folocoin.FoloIndexService.Companion.FOLO_STOCK_IMAGE
 import com.everbald.folobot.utils.FoloId.ANDREW_ID
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
@@ -161,7 +162,7 @@ class CommandHandler(
 
     fun foloCoin(update: Update) =
         messageService.sendPhoto(
-            "/static/images/foloStock.png",
+            FOLO_STOCK_IMAGE,
             update.message.chatId,
             "Добро пожаловать на фолобиржу!",
             keyboardService.getFoloCoinKeyboard(update.message.isUserMessage)
