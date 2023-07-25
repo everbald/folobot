@@ -42,6 +42,7 @@ class FoloIndexService(
             "index_neutral2.png",
             "index_neutral3.png"
         )
+        const val FOLO_STOCK_IMAGE = "/static/images/foloStock.png"
     }
 
     fun getById(chatId: Long, date: LocalDate): FoloIndexDto {
