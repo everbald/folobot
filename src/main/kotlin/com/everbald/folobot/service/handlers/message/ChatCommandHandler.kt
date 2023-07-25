@@ -17,7 +17,6 @@ class ChatCommandHandler(
     private val commandHandler: CommandHandler,
     private val messageService: MessageService
 ) : AbstractMessageHandler() {
-
     fun Message.isChatCommand() = !this.isReply &&
             (this.isSmallTalk() || this.isFreelance() || this.isNoFap() || this.isFolopidor() ||
                     this.isCoin() || this.isTransterCancel())
@@ -29,7 +28,7 @@ class ChatCommandHandler(
         val message = update.message
         when {
             message.isSmallTalk() -> smallTalkHandler.handle(update)
-            message.isFreelance() -> commandHandler.freelanceTimer(update)
+            message.isFreelance() -> commandHandler.aboutIt(update)
             message.isNoFap() -> commandHandler.nofapTimer(update)
             message.isFolopidor() -> commandHandler.foloPidor(update)
             message.isCoin() -> commandHandler.foloCoin(update)
