@@ -5,7 +5,7 @@ tasks.getByName<BootJar>("bootJar") { enabled = true; archiveBaseName.set(rootPr
 tasks.getByName<Jar>("jar") { enabled = false }
 
 plugins {
-    id("org.springframework.boot") version "3.0.4"
+    id("org.springframework.boot") version "3.1.2"
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("plugin.jpa") version "1.8.10"
     kotlin("plugin.allopen") version "1.8.10"
