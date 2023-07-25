@@ -7,8 +7,8 @@ import com.everbald.folobot.model.BotCommand
 import com.everbald.folobot.model.PluralType
 import com.everbald.folobot.service.*
 import com.everbald.folobot.service.folocoin.FoloCoinService
-import com.everbald.folobot.service.folocoin.FoloIndexChartService
 import com.everbald.folobot.service.folocoin.FoloIndexService.Companion.FOLO_STOCK_IMAGE
+import com.everbald.folobot.service.hh.HHService
 import com.everbald.folobot.utils.FoloId.ANDREW_ID
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
@@ -24,11 +24,12 @@ import java.util.*
 class CommandHandler(
     private val foloVarService: FoloVarService,
     private val messageService: MessageService,
-    private val foloIndexChartService: FoloIndexChartService,
     private val smallTalkHandler: SmallTalkHandler,
     private val botCredentials: BotCredentialsConfig,
     private val keyboardService: KeyboardService,
-    private val foloCoinService: FoloCoinService
+    private val foloCoinService: FoloCoinService,
+    private val hhService: HHService,
+    private val userService: UserService
 ) : AbstractMessageHandler() {
     fun Message.isMyCommand() =
         this.isCommand && this.isNotForward() &&
@@ -37,7 +38,7 @@ class CommandHandler(
                             ?.contains(botCredentials.botUsername) == true)
 
     override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isMyCommand())
-            .also { if (it) logger.addActionReceived(Action.COMMAND, update.message.chatId) }
+        .also { if (it) logger.addActionReceived(Action.COMMAND, update.message.chatId) }
 
     override fun handle(update: Update) {
         when (
@@ -62,6 +63,7 @@ class CommandHandler(
             BotCommand.FOLOPIDORALPHA -> alphaTimer(update)
             BotCommand.FOLOCOIN -> foloCoin(update)
             BotCommand.FOLOCOINTRANSFER -> foloCoinTransfer(update)
+            BotCommand.IT -> aboutIt(update)
             else -> {}
         }
     }
@@ -111,7 +113,9 @@ class CommandHandler(
         } else {
             messageService.sendMessage(
                 "Для особо озабоченных в *${noFapCount.spellOut()}* раз повторяю тут Вам, что я с " +
-                        "*${noFapDate.toText()}* и до сих пор вот уже *${Period.between(noFapDate, LocalDate.now()).toText()}* " +
+                        "*${noFapDate.toText()}* и до сих пор вот уже *${
+                            Period.between(noFapDate, LocalDate.now()).toText()
+                        }* " +
                         "твёрдо и уверенно держу \"Но Фап\".",
                 update
             )
@@ -168,14 +172,14 @@ class CommandHandler(
             keyboardService.getFoloCoinKeyboard(update.message.isUserMessage)
         )
 
-    fun foloCoinTransfer(update: Update) : Message? {
+    fun foloCoinTransfer(update: Update): Message? {
         val coinBalance = foloCoinService.getById(update.from.id).coins
         return if (coinBalance > 0) {
             messageService.sendMessage(
                 """
-                Выбери фолопидора для перевода.
-                Для удобства поиска его вероятно стоит добавить в контакты
-            """.trimIndent(),
+                    Выбери фолопидора для перевода.
+                    Для удобства поиска его вероятно стоит добавить в контакты
+                """.trimIndent(),
                 update,
                 keyboardService.getFolocoinTransferKeyboard()
             )
@@ -186,4 +190,22 @@ class CommandHandler(
             )
         }.also { logger.addMessage(it) }
     }
+
+    fun aboutIt(update: Update): Message? =
+        hhService.getVacancie()
+            ?.let {
+                messageService.sendMessage(
+                    "Ок, ${update.from.getPremiumPrefix()}фолопидор " +
+                            "${userService.getFoloUserNameLinked(update.from)}, " +
+                            "вот что мне удалось найти по запросу \"вхождение в IT\": \n\n" + it,
+                    update
+                )
+            } ?: let {
+            messageService.sendMessage(
+                    "Ок, ${update.from.getPremiumPrefix()}фолопидор " +
+                            "${userService.getFoloUserNameLinked(update.from)}, " +
+                            "по запросу \"вхождение в IT\" ничего не найдено",
+                update
+            )
+        }
 }
