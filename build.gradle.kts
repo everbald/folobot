@@ -44,7 +44,6 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.3")
     // javax
     implementation("javax.servlet:javax.servlet-api:3.0.1")
-//    compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     implementation("javax.validation:validation-api:2.0.1.Final")
     // telegram api
     implementation("org.telegram:telegrambots:6.7.0")
@@ -65,6 +64,8 @@ dependencies {
     implementation("net.bramp.ffmpeg:ffmpeg:0.7.0")
     // swagger
     implementation("io.swagger.core.v3:swagger-annotations:2.2.15")
+    // NLP
+    implementation("com.textrazor:textrazor:1.0.12")
 }
 
 allOpen {

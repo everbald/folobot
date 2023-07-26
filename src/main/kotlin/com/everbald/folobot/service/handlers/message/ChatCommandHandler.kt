@@ -1,8 +1,12 @@
 package com.everbald.folobot.service.handlers.message
 
-import com.everbald.folobot.extensions.*
+import com.everbald.folobot.extensions.addActionReceived
+import com.everbald.folobot.extensions.from
+import com.everbald.folobot.extensions.getName
+import com.everbald.folobot.extensions.isAboutBot
 import com.everbald.folobot.model.Action
 import com.everbald.folobot.model.BotCommand
+import com.everbald.folobot.service.FreelanceService
 import com.everbald.folobot.service.MessageService
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
@@ -15,7 +19,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 class ChatCommandHandler(
     private val smallTalkHandler: SmallTalkHandler,
     private val commandHandler: CommandHandler,
-    private val messageService: MessageService
+    private val messageService: MessageService,
+    private val freelanceService: FreelanceService
 ) : AbstractMessageHandler() {
     fun Message.isChatCommand() = !this.isReply &&
             (this.isSmallTalk() || this.isFreelance() || this.isNoFap() || this.isFolopidor() ||
@@ -47,14 +52,7 @@ class ChatCommandHandler(
             (this.text?.contains("адекватно", true) == true &&
                     this.text?.contains("общ", true) == true)
 
-    private fun Message.isFreelance() = this.isAboutBot() &&
-            ((this.text?.contains("завод", true) == true &&
-                    this.text?.contains("увол", true) == true) ||
-                    this.text?.contains("фриланс", true) == true ||
-                    ((this.text?.contains("входишь", true) == true ||
-                            this.text?.contains("вхождение", true) == true) &&
-                            (this.text?.contains("IT", true) == true) ||
-                            (this.text?.contains("айти", true) == true)))
+    private fun Message.isFreelance() = freelanceService.isAboutFreelance(this)
 
     private fun Message.isFolopidor() = this.isAboutBot() &&
             (this.text?.contains("фолопидор", true) == true &&
