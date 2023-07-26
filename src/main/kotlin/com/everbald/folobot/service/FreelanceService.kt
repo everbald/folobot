@@ -7,14 +7,15 @@ import org.telegram.telegrambots.meta.api.objects.Message
 
 @Service
 class FreelanceService(
-    private val textRazorService: TextRazorService
+    private val textRazorService: TextRazorService,
+    private val userService: UserService
 ) {
     companion object {
         const val TEXT_CATEGORY = "596"
     }
 
     fun isAboutFreelance(message: Message): Boolean =
-        (message.isUserMessage || message.isAboutBot())
+        (message.isUserMessage || message.isAboutBot() || userService.isSelf(message.replyToMessage?.from))
             .and(
                 (textRazorService.textAnalysis(message.text)?.response?.categories
                     ?.any { it.categoryId == TEXT_CATEGORY } == true
