@@ -192,7 +192,7 @@ class CommandHandler(
     }
 
     fun aboutIt(update: Update): Message? =
-        hhService.getVacancie()
+        hhService.getVacancy()
             ?.let {
                 messageService.sendMessage(
                     "Ок, ${update.from.getPremiumPrefix()}фолопидор " +

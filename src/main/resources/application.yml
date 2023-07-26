@@ -44,5 +44,8 @@ bot:
 openai:
   token: ${OPENAI_TOKEN}
 
+text-razor:
+  token: ${TEXTRAZOR_TOKEN}
+
 ffmpeg:
   path: 'ffmpeg/ffmpeg'
