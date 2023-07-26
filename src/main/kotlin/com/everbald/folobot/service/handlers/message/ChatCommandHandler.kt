@@ -24,7 +24,7 @@ class ChatCommandHandler(
 ) : AbstractMessageHandler() {
     fun Message.isChatCommand() = !this.isReply &&
             (this.isSmallTalk() || this.isFreelance() || this.isNoFap() || this.isFolopidor() ||
-                    this.isCoin() || this.isTransterCancel())
+                    this.isCoin() || this.isTransferCancel())
 
     override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isChatCommand())
         .also { if (it) logger.addActionReceived(Action.CHATCOMMAND, update.message.chatId) }
@@ -37,7 +37,7 @@ class ChatCommandHandler(
             message.isNoFap() -> commandHandler.nofapTimer(update)
             message.isFolopidor() -> commandHandler.foloPidor(update)
             message.isCoin() -> commandHandler.foloCoin(update)
-            message.isTransterCancel() -> transferCancel(update)
+            message.isTransferCancel() -> transferCancel(update)
             else -> {}
         }
     }
@@ -66,6 +66,6 @@ class ChatCommandHandler(
     private fun Message.isCoin() = this.isAboutBot() &&
             this.text?.contains("фолобирж", true) == true
 
-    private fun Message.isTransterCancel() =
+    private fun Message.isTransferCancel() =
         this.isUserMessage && this.text == BotCommand.FOLOCOINTRANSFERCANCEL.command
 }
