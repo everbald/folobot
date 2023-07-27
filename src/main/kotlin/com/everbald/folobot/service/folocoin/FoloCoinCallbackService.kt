@@ -2,12 +2,12 @@ package com.everbald.folobot.service.folocoin
 
 import com.everbald.folobot.extensions.*
 import com.everbald.folobot.model.PluralType
+import com.everbald.folobot.service.CommandService
 import com.everbald.folobot.service.KeyboardService
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.UserService
 import com.everbald.folobot.service.folocoin.FoloIndexService.Companion.FOLO_STOCK_IMAGE
 import com.everbald.folobot.service.folocoin.sale.InvoiceService
-import com.everbald.folobot.service.handlers.message.CommandHandler
 import com.everbald.folobot.utils.FoloId
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -22,7 +22,7 @@ class FoloCoinCallbackService(
     private val userService: UserService,
     private val keyboardService: KeyboardService,
     private val invoiceService: InvoiceService,
-    private val commandHandler: CommandHandler,
+    private val commandService: CommandService,
     private val foloIndexChartService: FoloIndexChartService
 ) : KLogging() {
 
@@ -90,7 +90,7 @@ class FoloCoinCallbackService(
             update,
             keyboardService.getFoloCoinKeyboard(update.isUserMessage)
         ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with folotransfer keyboard" } }
-        commandHandler.foloCoinTransfer(update)
+        commandService.foloCoinTransfer(update)
     }
 
     fun foloIndex(update: Update) {

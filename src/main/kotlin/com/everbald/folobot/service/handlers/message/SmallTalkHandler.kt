@@ -4,7 +4,9 @@ import com.everbald.folobot.extensions.addActionReceived
 import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.isFromFoloSwarm
 import com.everbald.folobot.model.Action
-import com.everbald.folobot.service.OpenAIService
+import com.everbald.folobot.service.CommandService
+import com.everbald.folobot.service.FreelanceService
+import com.everbald.folobot.service.SmallTalkService
 import com.everbald.folobot.service.UserService
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
@@ -18,8 +20,10 @@ import kotlin.time.Duration.Companion.seconds
 @Component
 @Priority(4)
 class SmallTalkHandler(
-    private val openAIService: OpenAIService,
-    private val userService: UserService
+    private val smallTalkService: SmallTalkService,
+    private val userService: UserService,
+    private val freelanceService: FreelanceService,
+    private val commandService: CommandService
 ) : AbstractMessageHandler() {
     private var smallTalkStatus: MutableMap<Long?, Boolean> = mutableMapOf()
 
@@ -31,14 +35,18 @@ class SmallTalkHandler(
     override fun handle(update: Update) = handle(update, false)
 
     fun handle(update: Update, withInit: Boolean = false) {
-        if (update.message.isFromFoloSwarm()) {
-            if (smallTalkStatus[update.message?.chatId] != false) {
-                openAIService.smallTalk(update, withInit)
-                suspend(update, 30.seconds)
-            } else {
-                logger.info { "Canceling small talk BC it's suspended in ${getChatIdentity(update.message.chatId)}" }
-            }
-        } else openAIService.smallTalk(update, withInit)
+        if (freelanceService.isAboutFreelance(update)) {
+            commandService.aboutIt(update)
+        } else {
+            if (update.message.isFromFoloSwarm()) {
+                if (smallTalkStatus[update.message?.chatId] != false) {
+                    smallTalkService.smallTalk(update, withInit)
+                    suspend(update, 30.seconds)
+                } else {
+                    logger.info { "Canceling small talk BC it's suspended in ${getChatIdentity(update.message.chatId)}" }
+                }
+            } else smallTalkService.smallTalk(update, withInit)
+        }
     }
 
     private fun suspend(update: Update, duration: Duration) {

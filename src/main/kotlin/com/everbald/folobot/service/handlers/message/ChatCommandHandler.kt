@@ -6,7 +6,7 @@ import com.everbald.folobot.extensions.getName
 import com.everbald.folobot.extensions.isAboutBot
 import com.everbald.folobot.model.Action
 import com.everbald.folobot.model.BotCommand
-import com.everbald.folobot.service.FreelanceService
+import com.everbald.folobot.service.CommandService
 import com.everbald.folobot.service.MessageService
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
@@ -18,12 +18,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 @Priority(2)
 class ChatCommandHandler(
     private val smallTalkHandler: SmallTalkHandler,
-    private val commandHandler: CommandHandler,
-    private val messageService: MessageService,
-    private val freelanceService: FreelanceService
+    private val commandService: CommandService,
+    private val messageService: MessageService
 ) : AbstractMessageHandler() {
     fun Message.isChatCommand() = !this.isReply &&
-            (this.isSmallTalk() || this.isFreelance() || this.isNoFap() || this.isFolopidor() ||
+            (this.isSmallTalk() ||  this.isNoFap() || this.isFolopidor() ||
                     this.isCoin() || this.isTransferCancel())
 
     override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isChatCommand())
@@ -33,10 +32,9 @@ class ChatCommandHandler(
         val message = update.message
         when {
             message.isSmallTalk() -> smallTalkHandler.handle(update)
-            message.isFreelance() -> commandHandler.aboutIt(update)
-            message.isNoFap() -> commandHandler.nofapTimer(update)
-            message.isFolopidor() -> commandHandler.foloPidor(update)
-            message.isCoin() -> commandHandler.foloCoin(update)
+            message.isNoFap() -> commandService.nofapTimer(update)
+            message.isFolopidor() -> commandService.foloPidor(update)
+            message.isCoin() -> commandService.foloCoin(update)
             message.isTransferCancel() -> transferCancel(update)
             else -> {}
         }
@@ -51,8 +49,6 @@ class ChatCommandHandler(
     private fun Message.isSmallTalk() = this.isAboutBot() &&
             (this.text?.contains("адекватно", true) == true &&
                     this.text?.contains("общ", true) == true)
-
-    private fun Message.isFreelance() = freelanceService.isAboutFreelance(this)
 
     private fun Message.isFolopidor() = this.isAboutBot() &&
             (this.text?.contains("фолопидор", true) == true &&

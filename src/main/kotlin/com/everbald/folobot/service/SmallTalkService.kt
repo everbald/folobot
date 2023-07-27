@@ -27,7 +27,7 @@ import org.telegram.telegrambots.meta.api.objects.Update
 import java.io.File
 
 @Service
-class OpenAIService(
+class SmallTalkService(
     private val openAI: OpenAI,
     private val userService: UserService,
     private val messageQueueService: MessageQueueService,
