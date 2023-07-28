@@ -4,6 +4,7 @@ import com.everbald.folobot.FoloBot
 import com.everbald.folobot.extensions.chatId
 import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.messageId
+import com.everbald.folobot.utils.FoloId
 import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -25,7 +26,6 @@ import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
-import java.io.InputStream
 
 @Component
 class MessageService(
@@ -57,8 +57,7 @@ class MessageService(
                     .build()
             )
         } catch (e: TelegramApiException) {
-            logger.error { e }
-            logger.error { "Message text was: $text" }
+            logger.error(e) { "Message text was: $text" }
             null
         }
     }
@@ -69,15 +68,14 @@ class MessageService(
         replyMarkup: ReplyKeyboard? = null,
         reply: Boolean = false,
         parseMode: String = ParseMode.MARKDOWN
-    ): Message? {
-        return try {
-            return foloBot.execute(buildMessage(text, update, replyMarkup, reply, parseMode))
+    ): Message? =
+        try {
+            foloBot.execute(buildMessage(text, update, replyMarkup, reply, parseMode))
+                .also { if (update.message.isUserMessage) forwardMessage(FoloId.POC_ID, it) }
         } catch (e: TelegramApiException) {
-            logger.error { e }
-            logger.error { "Message text was: $text" }
+            logger.error(e) { "Message text was: $text" }
             null
         }
-    }
 
     fun buildEditMessageText(
         text: String,
