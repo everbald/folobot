@@ -1,12 +1,11 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
-import com.everbald.folobot.utils.FoloId.POC_ID
 import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.isFolochat
 import com.everbald.folobot.extensions.isLikesToDelete
 import com.everbald.folobot.extensions.isNotUserJoin
 import com.everbald.folobot.model.dto.MessageQueueDto
+import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.ParseMode
@@ -49,7 +48,6 @@ class MessageQueueService(
     ) {
         messageService.sendMessage(text, update, replyMarkup, reply, parseMode)?.let {
             messageQueue.add(MessageQueueDto(LocalDateTime.now(), it))
-            if (update.message.isUserMessage) messageService.forwardMessage(POC_ID, it)
         }
     }
 
