@@ -28,8 +28,9 @@ class ReplyHandler(
         } else {
             messageService
                 .sendMessage(
-                    "Привет, уважаемый ${update.message.from.getPremiumPrefix()}" +
-                            "фолофил ${userService.getFoloUserName(update.message.from)}!", update, reply = true
+                    "Привет, уважаемый ${userService.getCustomName(update.from, update.chatId)}!",
+                    update,
+                    reply = true
                 )
         }.also { logger.addMessage(it) }
     }

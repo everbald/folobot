@@ -12,4 +12,4 @@ fun User?.isAndrew() = this?.id == ANDREW_ID
 fun User?.isVitalik() = this?.id == VITALIK_ID
 fun User?.isVasya() = VASYA_ID.contains(this?.id)
 fun User?.isLikesToDelete() = this.isAndrew() || this.isFo() || this.isVasya()
-fun User?.getPremiumPrefix() = if (this?.isPremium == true) "премиум " else ""
+fun User?.getPremiumPrefix() = if (this?.isPremium == true) "премиум фолопидор " else "уважаемый фолопидор "

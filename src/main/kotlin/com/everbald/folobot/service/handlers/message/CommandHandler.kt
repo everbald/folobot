@@ -6,6 +6,7 @@ import com.everbald.folobot.model.Action
 import com.everbald.folobot.model.BotCommand
 import com.everbald.folobot.service.CommandService
 import com.everbald.folobot.service.MessageService
+import com.everbald.folobot.service.UserService
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.EntityType
@@ -18,7 +19,8 @@ class CommandHandler(
     private val commandService: CommandService,
     private val messageService: MessageService,
     private val smallTalkHandler: SmallTalkHandler,
-    private val botCredentials: BotCredentialsConfig
+    private val botCredentials: BotCredentialsConfig,
+    private val userService: UserService
 ) : AbstractMessageHandler() {
     fun Message.isMyCommand() =
         this.isCommand && this.isNotForward() &&

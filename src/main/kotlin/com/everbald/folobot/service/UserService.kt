@@ -2,14 +2,17 @@ package com.everbald.folobot.service
 
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.extensions.getName
+import com.everbald.folobot.extensions.getPremiumPrefix
 import com.everbald.folobot.model.dto.FoloPidorDto
 import com.everbald.folobot.model.dto.FoloUserDto
 import mu.KLogging
 import org.springframework.stereotype.Component
+import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatAdministrators
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember
 import org.telegram.telegrambots.meta.api.objects.MemberStatus
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember
+import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberAdministrator
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 @Component
@@ -69,14 +72,48 @@ class UserService(
         return userName
     }
 
-    fun getChatMember(userId: Long, chatId: Long = userId): ChatMember? {
-        return try {
+    fun getChatMember(userId: Long, chatId: Long = userId): ChatMember? =
+        try {
             foloBot.execute(GetChatMember(chatId.toString(), userId))
         } catch (e: TelegramApiException) {
-            logger.warn("Can't get user $userId for chat $chatId" )
+            logger.warn("Can't get user $userId for chat $chatId")
             null
         }
-    }
+
+    fun buildGetChatAdmins(chatId: Long): GetChatAdministrators =
+        GetChatAdministrators
+            .builder()
+            .chatId(chatId)
+            .build()
+
+    fun getChatAdmins(chatId: Long): List<ChatMember> =
+        try {
+            buildGetChatAdmins(chatId)
+                .let { foloBot.execute(it) }
+        } catch (e: TelegramApiException) {
+            logger.debug(e) { "Can't get admins for chat $chatId" }
+            emptyList()
+        }
+
+    fun getChatAdminTitles(chatId: Long): Map<Long, String> =
+        getChatAdmins(chatId)
+            .filter { it is ChatMemberAdministrator && it.customTitle != null }
+            .associate { it.user.id to (it as ChatMemberAdministrator).customTitle }
+
+    fun getCustomAdminTitle(userId: Long, chatId: Long): String? =
+        getChatAdminTitles(chatId)[userId]
+
+    fun getCustomName(user: User, chatId: Long): String =
+        (getCustomAdminTitle(user.id, chatId)
+            ?.let { "ваше фолопидрейшество $it " }
+            ?: user.getPremiumPrefix()) +
+                getFoloUserName(user)
+
+    fun getCustomNameLinked(user: User, chatId: Long): String =
+        (getCustomAdminTitle(user.id, chatId)
+            ?.let { "ваше фолопидрейшество $it " }
+            ?: user.getPremiumPrefix()) +
+                getFoloUserNameLinked(user)
 
     /**
      * Получение кликабельного имени пользователя
@@ -84,9 +121,8 @@ class UserService(
      * @param user [User]
      * @return Имя пользователя
      */
-    fun getFoloUserNameLinked(user: User): String {
-        return "[" + getFoloUserName(user) + "](tg://user?id=" + user.id + ")"
-    }
+    fun getFoloUserNameLinked(user: User): String =
+        "[" + getFoloUserName(user) + "](tg://user?id=" + user.id + ")"
 
     /**
      * Получение кликабельного имени пользователя
@@ -94,9 +130,8 @@ class UserService(
      * @param userId [Long]
      * @return Имя пользователя
      */
-    fun getFoloUserNameLinked(userId: Long): String {
-        return "[" + foloUserService.findById(userId).getTagName() + "](tg://user?id=" + userId + ")"
-    }
+    fun getFoloUserNameLinked(userId: Long): String =
+        "[" + foloUserService.findById(userId).getTagName() + "](tg://user?id=" + userId + ")"
 
     /**
      * Получение кликабельного имени фолопидора
@@ -104,9 +139,8 @@ class UserService(
      * @param foloPidor [FoloPidorDto]
      * @return Имя фолопидора
      */
-    fun getFoloUserNameLinked(foloPidor: FoloPidorDto, chatId: Long): String {
-        return "[" + getFoloUserName(foloPidor, chatId) + "](tg://user?id=" + foloPidor.id.userId + ")"
-    }
+    fun getFoloUserNameLinked(foloPidor: FoloPidorDto, chatId: Long): String =
+        "[" + getFoloUserName(foloPidor, chatId) + "](tg://user?id=" + foloPidor.id.userId + ")"
 
     /**
      * Проверка, что [User] это этот бот
@@ -114,9 +148,7 @@ class UserService(
      * @param user [User]
      * @return да/нет
      */
-    fun isSelf(user: User?): Boolean {
-        return user?.id == foloBot.me.id
-    }
+    fun isSelf(user: User?): Boolean = user?.id == foloBot.me.id
 
     /**
      * Проверка, что пользователь состоит в чате
@@ -124,8 +156,8 @@ class UserService(
      * @param chatId [Long]
      * @return [Boolean]
      */
-    fun isInChat(foloPidorDto: FoloPidorDto, chatId: Long): Boolean {
-        return getChatMember(foloPidorDto.id.userId, chatId)
-            ?.let { !(it.status == MemberStatus.LEFT || it.status == MemberStatus.KICKED) } ?: false
-    }
+    fun isInChat(foloPidorDto: FoloPidorDto, chatId: Long): Boolean =
+        getChatMember(foloPidorDto.id.userId, chatId)
+            ?.let { !(it.status == MemberStatus.LEFT || it.status == MemberStatus.KICKED) }
+            ?: false
 }

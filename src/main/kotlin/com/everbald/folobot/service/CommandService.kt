@@ -19,6 +19,7 @@ import java.time.Period
 class CommandService(
     private val foloVarService: FoloVarService,
     private val messageService: MessageService,
+    private val messageQueueService: MessageQueueService,
     private val keyboardService: KeyboardService,
     private val foloCoinService: FoloCoinService,
     private val hhService: HHService,
@@ -143,21 +144,20 @@ class CommandService(
         }.also { logger.addMessage(it) }
     }
 
-    fun aboutIt(update: Update): Message? =
+    fun aboutIt(update: Update) {
         hhService.getVacancy()
             ?.let {
-                messageService.sendMessage(
-                    "Ок, ${update.from.getPremiumPrefix()}фолопидор " +
-                            "${userService.getFoloUserNameLinked(update.from)}, " +
+                messageQueueService.sendAndAddToQueue(
+                    "Ок, ${userService.getCustomNameLinked(update.from, update.chatId)}, " +
                             "вот что мне удалось найти по запросу \"вхождение в IT\": \n\n" + it,
                     update
                 )
             } ?: let {
-            messageService.sendMessage(
-                    "Ок, ${update.from.getPremiumPrefix()}фолопидор " +
-                            "${userService.getFoloUserNameLinked(update.from)}, " +
-                            "по запросу \"вхождение в IT\" ничего не найдено",
+            messageQueueService.sendAndAddToQueue(
+                "Ок, ${userService.getCustomNameLinked(update.from, update.chatId)}, " +
+                        "по запросу \"вхождение в IT\" ничего не найдено",
                 update
             )
         }
+    }
 }

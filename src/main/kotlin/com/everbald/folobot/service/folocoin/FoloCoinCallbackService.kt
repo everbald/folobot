@@ -29,12 +29,11 @@ class FoloCoinCallbackService(
     fun coinBalance(update: Update) {
         val balance = foloCoinService.getById(update.from.id).coins
         val text = if (balance > 0) {
-            "На твоем счете *${balance.toText(PluralType.COIN)}*, уважаемый " +
-                    "${update.from.getPremiumPrefix()}фолопидор " +
-                    userService.getFoloUserNameLinked(update.from)
+            "На твоем счете *${balance.toText(PluralType.COIN)}*, " +
+                    userService.getCustomName(update.from, update.chatId)
         } else {
-            "На твоем счете нет фолокойнов, уважаемый ${update.from.getPremiumPrefix()}фолопидор " +
-                    userService.getFoloUserNameLinked(update.from)
+            "На твоем счете нет фолокойнов, " +
+                    userService.getCustomName(update.from, update.chatId)
         }
         messageService.editMessagePhoto(
             buildTitlePhotoFile(),
