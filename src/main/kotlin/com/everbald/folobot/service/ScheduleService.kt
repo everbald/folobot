@@ -19,7 +19,4 @@ class ScheduleService(
     private fun foloCoin() = taskService.foloCoin()
 
     fun restoreMessages() = taskService.restoreMessages()
-
-    @Scheduled(cron = "0 */10 * ? * *")
-    private fun deleteTempFiles() = taskService.deleteTempFiles()
 }

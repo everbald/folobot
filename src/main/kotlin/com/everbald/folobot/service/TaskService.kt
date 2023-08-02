@@ -18,8 +18,7 @@ class TaskService(
     private val userService: UserService,
     private val foloIndexService: FoloIndexService,
     private val foloCoinService: FoloCoinService,
-    private val messageQueueService: MessageQueueService,
-    private val tempFileService: TempFileService
+    private val messageQueueService: MessageQueueService
 ) : KLogging() {
     fun dayStats(chatId: Long) {
         messageService.sendMessage(
@@ -45,6 +44,4 @@ class TaskService(
 
     @Async
     fun restoreMessages() = messageQueueService.restoreMessages()
-    @Async
-    fun deleteTempFiles() = tempFileService.deleteTempFiles()
 }

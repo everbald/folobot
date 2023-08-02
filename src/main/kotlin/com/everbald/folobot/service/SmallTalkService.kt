@@ -13,7 +13,6 @@ import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.getName
 import com.everbald.folobot.extensions.isAboutBot
 import com.everbald.folobot.extensions.telegramEscape
-import com.everbald.folobot.utils.OggConverter
 import io.ktor.client.network.sockets.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -24,15 +23,13 @@ import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
-import java.io.File
 
 @Service
 class SmallTalkService(
     private val openAI: OpenAI,
     private val userService: UserService,
     private val messageQueueService: MessageQueueService,
-    private val fileService: FileService,
-    private val oggConverter: OggConverter
+    private val fileService: FileService
 ) : KLogging() {
     @OptIn(BetaOpenAI::class)
     fun smallTalk(update: Update, withInit: Boolean = false) {
@@ -49,22 +46,9 @@ class SmallTalkService(
     @OptIn(BetaOpenAI::class)
     fun transcription(update: Update) {
         val fileSource: FileSource? = when {
-            update.message.hasVoice() -> {
-//                val source = File.createTempFile("source", ".ogg")
-//                val target = File.createTempFile("target", ".mp3")
-//                fileService.downloadFile(update, source)
-//                oggConverter.convertOggToMp3(source.absolutePath, target.absolutePath)
-//                FileSource(name = target.name, source = target.source())
+            update.message.hasVoice() || update.message.hasVideoNote() -> {
                 val target = fileService.downloadFileAsStream(update)
-                target?.let {
-                    FileSource(name = "file.ogg", source = it.source())
-                }
-            }
-            update.message.hasVideoNote() -> {
-                val target = fileService.downloadFileAsStream(update)
-                target?.let {
-                    FileSource(name = "file.mp4", source = it.source())
-                }
+                target?.let { FileSource(name = "file", source = it.source()) }
             }
             else -> null
         }
