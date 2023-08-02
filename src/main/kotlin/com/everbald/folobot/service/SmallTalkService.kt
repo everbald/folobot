@@ -50,11 +50,15 @@ class SmallTalkService(
     fun transcription(update: Update) {
         val fileSource: FileSource? = when {
             update.message.hasVoice() -> {
-                val source = File.createTempFile("source", ".ogg")
-                val target = File.createTempFile("target", ".mp3")
-                fileService.downloadFile(update, source)
-                oggConverter.convertOggToMp3(source.absolutePath, target.absolutePath)
-                FileSource(name = target.name, source = target.source())
+//                val source = File.createTempFile("source", ".ogg")
+//                val target = File.createTempFile("target", ".mp3")
+//                fileService.downloadFile(update, source)
+//                oggConverter.convertOggToMp3(source.absolutePath, target.absolutePath)
+//                FileSource(name = target.name, source = target.source())
+                val target = fileService.downloadFileAsStream(update)
+                target?.let {
+                    FileSource(name = "file.ogg", source = it.source())
+                }
             }
             update.message.hasVideoNote() -> {
                 val target = fileService.downloadFileAsStream(update)

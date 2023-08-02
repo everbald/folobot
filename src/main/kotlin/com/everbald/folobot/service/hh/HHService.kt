@@ -20,7 +20,7 @@ class HHService(
                 onlyWithSalary = true
             ).body?.items?.random()?.alternateUrl
         } catch (ex: Exception) {
-            logger.warn(ex) { "Error occured while getting vacancies" }
+            logger.warn(ex) { "Error occurred while getting vacancies" }
             null
         }
 }
