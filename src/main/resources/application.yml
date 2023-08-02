@@ -46,6 +46,3 @@ openai:
 
 text-razor:
   token: ${TEXTRAZOR_TOKEN}
-
-ffmpeg:
-  path: 'ffmpeg/ffmpeg'
