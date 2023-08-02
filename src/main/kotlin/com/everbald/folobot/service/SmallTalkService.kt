@@ -16,6 +16,7 @@ import com.everbald.folobot.extensions.telegramEscape
 import io.ktor.client.network.sockets.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KLogging
 import okio.source
@@ -65,7 +66,6 @@ class SmallTalkService(
             )
             makeRequest(request, update)
         }
-    }
 
     private fun buildPrompt(message: Message): String? =
         when {
