@@ -45,7 +45,7 @@ class SmallTalkService(
     }
 
     @OptIn(BetaOpenAI::class)
-    fun transcription(update: Update): Job? =
+    fun transcription(update: Update) {
         when {
             update.message.hasVoice() -> "ogg"
             update.message.hasVideoNote() -> "mp4"
