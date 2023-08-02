@@ -65,7 +65,7 @@ class FoloPidorService(
     fun getRandom(chatId: Long): FoloPidorDto {
         return foloPidorRepo.findByIdChatId(chatId)
             .map { it.toDto() }
-            .filter { it.isAnchored() || (it.isValid() && userService.isInChat(it, chatId)) }
+            .filter { it.isAnchored() || (it.isValid() && userService.isInChat(it)) }
             .random()
     }
 
@@ -90,7 +90,7 @@ class FoloPidorService(
     fun getSlackers(chatId: Long): List<FoloPidorDto> {
         return foloPidorRepo.findByIdChatId(chatId)
             .map { it.toDto() }
-            .filter { userService.isInChat(it, chatId) && it.isValidSlacker() }
+            .filter { userService.isInChat(it) && it.isValidSlacker() }
             .sortedBy { it.lastActiveDate }
             .take(10)
     }
@@ -103,7 +103,7 @@ class FoloPidorService(
     fun getUnderdogs(chatId: Long): List<FoloPidorDto> {
         return foloPidorRepo.findByIdChatId(chatId)
             .map { it.toDto() }
-            .filter { userService.isInChat(it, chatId) && it.isValidUnderdog() }
+            .filter { userService.isInChat(it) && it.isValidUnderdog() }
     }
 
     /**

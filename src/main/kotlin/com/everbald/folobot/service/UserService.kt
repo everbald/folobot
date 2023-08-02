@@ -7,8 +7,10 @@ import com.everbald.folobot.model.dto.FoloPidorDto
 import com.everbald.folobot.model.dto.FoloUserDto
 import mu.KLogging
 import org.springframework.stereotype.Component
+import org.telegram.telegrambots.meta.api.methods.groupadministration.BanChatMember
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatAdministrators
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember
+import org.telegram.telegrambots.meta.api.methods.groupadministration.UnbanChatMember
 import org.telegram.telegrambots.meta.api.objects.MemberStatus
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember
@@ -153,11 +155,33 @@ class UserService(
     /**
      * Проверка, что пользователь состоит в чате
      * @param foloPidorDto [FoloPidorDto]
-     * @param chatId [Long]
      * @return [Boolean]
      */
-    fun isInChat(foloPidorDto: FoloPidorDto, chatId: Long): Boolean =
-        getChatMember(foloPidorDto.id.userId, chatId)
+    fun isInChat(foloPidorDto: FoloPidorDto): Boolean =
+        getChatMember(foloPidorDto.id.userId, foloPidorDto.id.chatId)
             ?.let { !(it.status == MemberStatus.LEFT || it.status == MemberStatus.KICKED) }
             ?: false
+
+    fun kickFromChat(foloPidorDto: FoloPidorDto) {
+        try {
+            BanChatMember
+                .builder()
+                .chatId(foloPidorDto.id.chatId)
+                .userId(foloPidorDto.id.userId)
+                .build()
+                .let { foloBot.execute(it) }
+            UnbanChatMember
+                .builder()
+                .chatId(foloPidorDto.id.chatId)
+                .userId(foloPidorDto.id.userId)
+                .onlyIfBanned(true)
+                .build()
+                .let { foloBot.execute(it) }
+            logger.warn { "Kicked deleted user ${foloPidorDto.id.userId} for chat ${foloPidorDto.id.chatId}" }
+        } catch (e: TelegramApiException) {
+            logger.warn("Can't kick user ${foloPidorDto.id.userId} for chat ${foloPidorDto.id.chatId}")
+        }
+    }
+
+    fun isBotAdmin(chatId: Long): Boolean = getChatMember(foloBot.me.id, chatId)?.status == MemberStatus.ADMINISTRATOR
 }
