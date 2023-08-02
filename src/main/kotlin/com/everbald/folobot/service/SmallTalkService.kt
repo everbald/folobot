@@ -16,6 +16,7 @@ import com.everbald.folobot.extensions.telegramEscape
 import io.ktor.client.network.sockets.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KLogging
 import okio.source
@@ -44,15 +45,20 @@ class SmallTalkService(
     }
 
     @OptIn(BetaOpenAI::class)
-    fun transcription(update: Update) {
-        val fileSource: FileSource? = when {
-            update.message.hasVoice() || update.message.hasVideoNote() -> {
-                val target = fileService.downloadFileAsStream(update)
-                target?.let { FileSource(name = "file", source = it.source()) }
-            }
+    fun transcription(update: Update): Job? =
+        when {
+            update.message.hasVoice() -> "ogg"
+            update.message.hasVideoNote() -> "mp4"
             else -> null
-        }
-        fileSource?.let {
+        }?.let { extension ->
+            fileService.downloadFileAsStream(update)
+                ?.let {
+                    FileSource(
+                        name = "file.$extension",
+                        source = it.source()
+                    )
+                }
+        }?.let { fileSource ->
             val request = TranscriptionRequest(
                 audio = fileSource,
                 model = ModelId("whisper-1"),
@@ -60,15 +66,12 @@ class SmallTalkService(
             )
             makeRequest(request, update)
         }
-    }
 
-    private fun buildPrompt(message: Message): String? {
-        return when {
+    private fun buildPrompt(message: Message): String? =
+        when {
             message.hasAudio() -> null // TODO text from audio
             else -> message.preparePrompt()
         }
-
-    }
 
     @OptIn(DelicateCoroutinesApi::class, BetaOpenAI::class)
     private fun makeRequest(request: ChatCompletionRequest, update: Update) = GlobalScope.launch {
