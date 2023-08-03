@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.JdbcUserDetailsManager
@@ -15,32 +16,37 @@ import javax.sql.DataSource
 
 @Configuration
 @EnableWebSecurity
-class WebSecurityConfig(
-    private val dataSource: DataSource
-) {
+class WebSecurityConfig {
     @Bean
-    fun getFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http
-            .authorizeHttpRequests()
-                .requestMatchers("/admin/**").hasAuthority(Authority.ROLE_ADMIN.name)
-                .requestMatchers("/**").permitAll()
-                .anyRequest().authenticated()
-            .and()
-                .csrf()
-                .ignoringRequestMatchers("/telegram-hook")
-            .and()
-                .formLogin().loginPage("/login").permitAll()
-                .failureUrl("/login?error=true")
-            .and()
-                .logout().permitAll().deleteCookies("JSESSIONID")
-            .and()
-                .rememberMe().key("rm-key");
-       return http.build()
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http {
+            authorizeHttpRequests {
+                authorize("/admin/**", hasAuthority(Authority.ROLE_ADMIN.name))
+                authorize("/**", permitAll)
+                authorize(anyRequest, authenticated)
+            }
+            csrf {
+                ignoringRequestMatchers("/telegram-hook")
+            }
+            formLogin {
+                loginPage = "/login"
+                permitAll = true
+                failureUrl = "/login?error=true"
+            }
+            logout {
+                permitAll = true
+                deleteCookies("JSESSIONID")
+            }
+            rememberMe {
+                key = "rm-key"
+            }
+        }
+        return http.build()
     }
 
     @Bean
     fun getUserDetailsManager(dataSource: DataSource): UserDetailsManager {
-        return JdbcUserDetailsManager(dataSource);
+        return JdbcUserDetailsManager(dataSource)
     }
 
     @Bean
