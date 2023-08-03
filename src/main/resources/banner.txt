@@ -1,0 +1,8 @@
+${AnsiColor.RED}______ _____ _     ___________  _____ _____
+${AnsiColor.RED}|  ___|  _  | |   |  _  | ___ \|  _  |_   _|
+${AnsiColor.RED}| |_  | | | | |   | | | | |_/ /| | | | | |
+${AnsiColor.RED}|  _| | | | | |   | | | | ___ \| | | | | |
+${AnsiColor.RED}| |   \ \_/ / |___\ \_/ / |_/ /\ \_/ / | |
+${AnsiColor.RED}\_|    \___/\_____/\___/\____/  \___/  \_/
+
+Powered by Spring Boot ${spring-boot.version}

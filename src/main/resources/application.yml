@@ -11,9 +11,8 @@ server:
       charset: UTF-8
       force: true
 
-logging:
-  level:
-    net.bramp.ffmpeg: WARN
+#logging:
+#  level:
 #    tomcat: OFF
 #  group:
 #    tomcat: org.apache.catalina, org.apache.coyote, org.apache.tomcat
@@ -46,6 +45,3 @@ openai:
 
 text-razor:
   token: ${TEXTRAZOR_TOKEN}
-
-ffmpeg:
-  path: 'ffmpeg/ffmpeg'

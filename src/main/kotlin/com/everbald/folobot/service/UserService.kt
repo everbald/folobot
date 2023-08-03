@@ -105,17 +105,16 @@ class UserService(
     fun getCustomAdminTitle(userId: Long, chatId: Long): String? =
         getChatAdminTitles(chatId)[userId]
 
-    fun getCustomName(user: User, chatId: Long): String =
+    fun getCustomNamePrefix(user: User, chatId: Long): String =
         (getCustomAdminTitle(user.id, chatId)
             ?.let { "ваше фолопидрейшество $it " }
-            ?: user.getPremiumPrefix()) +
-                getFoloUserName(user)
+            ?: user.getPremiumPrefix())
+
+    fun getCustomName(user: User, chatId: Long): String =
+        getCustomNamePrefix(user, chatId) + getFoloUserName(user)
 
     fun getCustomNameLinked(user: User, chatId: Long): String =
-        (getCustomAdminTitle(user.id, chatId)
-            ?.let { "ваше фолопидрейшество $it " }
-            ?: user.getPremiumPrefix()) +
-                getFoloUserNameLinked(user)
+        getCustomNamePrefix(user, chatId) + getFoloUserNameLinked(user)
 
     /**
      * Получение кликабельного имени пользователя
