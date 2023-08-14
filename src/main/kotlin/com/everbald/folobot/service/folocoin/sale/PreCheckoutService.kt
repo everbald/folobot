@@ -3,10 +3,9 @@ package com.everbald.folobot.service.folocoin.sale
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.extensions.addOutdatedInvoiceCheckout
 import com.everbald.folobot.extensions.getName
+import com.everbald.folobot.extensions.toObject
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.model.InvoicePayload
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery
@@ -16,13 +15,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 @Service
 class PreCheckoutService(
     private val foloBot: FoloBot,
-    private val foloCoinService: FoloCoinService,
-    private val objectMapper: ObjectMapper
+    private val foloCoinService: FoloCoinService
 ) : KLogging() {
     fun confirmOrder(update: Update) {
-        val invoicePrice: InvoicePayload = objectMapper.readValue(update.preCheckoutQuery.invoicePayload)
+        val invoicePayload: InvoicePayload = update.preCheckoutQuery.invoicePayload.toObject()
         val price = foloCoinService.getPrice()
-        val isValid = invoicePrice.price == price
+        val isValid = invoicePayload.price == price
         sendConfirmation(update, isValid)
     }
 
