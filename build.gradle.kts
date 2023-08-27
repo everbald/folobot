@@ -13,7 +13,7 @@ plugins {
     id("com.autonomousapps.dependency-analysis") version "1.20.0"
 }
 
-group = "com.telegram"
+group = "com.everbald"
 version = "5.0.0"
 description = "folobot"
 
@@ -49,7 +49,7 @@ dependencies {
     // telegram api
     implementation("org.telegram:telegrambots:6.7.0")
     // open api
-    implementation("com.aallam.openai:openai-client:3.2.5")
+    implementation("com.aallam.openai:openai-client:3.4.0")
     // serialisation
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     // logging

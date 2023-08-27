@@ -1,9 +1,6 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.extensions.getChatIdentity
-import com.everbald.folobot.extensions.isFolochat
-import com.everbald.folobot.extensions.isLikesToDelete
-import com.everbald.folobot.extensions.isNotUserJoin
+import com.everbald.folobot.extensions.*
 import com.everbald.folobot.model.dto.MessageQueueDto
 import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import mu.KLogging
@@ -28,7 +25,7 @@ class MessageQueueService(
                 MessageQueueDto(
                     LocalDateTime.now(),
                     message,
-                    if (message.chat.isFolochat() && message.from.isLikesToDelete())
+                    if (message.chat.isFolochat()) //&& message.from.isLikesToDelete()
                         messageService.silentForwardMessage(MESSAGE_QUEUE_ID, message)
                     else null
                 )
@@ -61,6 +58,7 @@ class MessageQueueService(
             .forEach { queueMessage ->
                 queueMessage.backupMessage?.let {
                     if (messageService.checkIfMessageDeleted(queueMessage.message)) {
+                        messageService.sendMessage("${queueMessage.message.from.getName()} удолил сообщение:", queueMessage.message.chatId)
                         if (messageService.forwardMessage(queueMessage.message.chatId, it)) {
                             messageService.deleteMessage(MESSAGE_QUEUE_ID, it.messageId)
                             queueMessage.restored = true
