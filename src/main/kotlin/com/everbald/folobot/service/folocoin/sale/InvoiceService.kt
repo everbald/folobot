@@ -4,11 +4,11 @@ import com.everbald.folobot.FoloBot
 import com.everbald.folobot.config.BotCredentialsConfig
 import com.everbald.folobot.extensions.chatId
 import com.everbald.folobot.extensions.isUserMessage
+import com.everbald.folobot.extensions.toJson
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.model.InvoicePayload
 import com.everbald.folobot.service.folocoin.model.Product
-import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.invoices.SendInvoice
@@ -22,8 +22,7 @@ class InvoiceService(
     private val foloBot: FoloBot,
     private val botCredentials: BotCredentialsConfig,
     private val foloCoinService: FoloCoinService,
-    private val messageService: MessageService,
-    private val objectMapper: ObjectMapper
+    private val messageService: MessageService
 ) : KLogging() {
     private val issuedInvoices: MutableList<Message> = mutableListOf()
 
@@ -52,7 +51,7 @@ class InvoiceService(
             .chatId(update.chatId)
             .title(Product.FOLOCOIN.label)
             .description(description)
-            .payload(objectMapper.writeValueAsString(payload))
+            .payload(payload.toJson())
             .providerToken(botCredentials.botProviderToken)
             .currency("RUB")
             .prices(labeledPrice)
