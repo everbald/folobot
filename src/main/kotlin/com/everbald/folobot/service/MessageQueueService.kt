@@ -50,6 +50,7 @@ class MessageQueueService(
 
 
     fun restoreMessages() {
+        return
         messageStack.addAll(messageQueue)
         messageQueue.clear()
         messageStack.removeIf { it.recievedAt < LocalDateTime.now().minusDays(1) }
