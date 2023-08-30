@@ -29,7 +29,11 @@ data class VacanciesVacanciesResponse(
 
     @get:JsonProperty("arguments") val arguments: List<VacanciesArgumentItem>? = null,
 
-    @get:JsonProperty("alternate_url") val alternateUrl: String? = null
+    @get:JsonProperty("alternate_url") val alternateUrl: String? = null,
+
+    @get:JsonProperty("fixes") val fixes: VacanciesFixes? = null,
+
+    @get:JsonProperty("suggests") val suggests: VacanciesSuggests? = null
 ) {
 
 }
