@@ -50,7 +50,7 @@ class MessageQueueService(
 
 
     fun restoreMessages() {
-        return
+        return //FIXME при накоплении большого количества сообщений в стаке тг начинает выдвавать ошибку что слишком много запросов
         messageStack.addAll(messageQueue)
         messageQueue.clear()
         messageStack.removeIf { it.recievedAt < LocalDateTime.now().minusDays(1) }

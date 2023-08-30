@@ -110,7 +110,11 @@ data class VacanciesVacanciesItem(
 
     @get:JsonProperty("employment") val employment: VacancyEmploymentOutput? = null,
 
-    @get:JsonProperty("experience") val experience: VacancyExperienceOutput? = null
+    @get:JsonProperty("experience") val experience: VacancyExperienceOutput? = null,
+
+    @get:JsonProperty("show_logo_in_search") val showLogoInSearch: Boolean? = null,
+
+    @get:JsonProperty("is_adv_vacancy") val isAdvVacancy: Boolean? = null
 ) {
 
 }
