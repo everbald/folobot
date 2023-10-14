@@ -27,7 +27,7 @@ class KeyboardService(
     fun getFoloCoinKeyboard(isUserMessage: Boolean): InlineKeyboardMarkup = InlineKeyboardMarkup.builder()
         .keyboardRow(
             listOf(
-                buildCallbackButton(CallbackCommand.BUYCOIN, true),
+//                buildCallbackButton(CallbackCommand.BUYCOIN, true),
                 buildTransferCoinButton(isUserMessage)
             )
         )
