@@ -50,7 +50,7 @@ dependencies {
     // telegram api
     implementation("org.telegram:telegrambots:6.8.0")
     // open api
-    implementation("com.aallam.openai:openai-client:3.4.0")
+    implementation("com.aallam.openai:openai-client:3.5.0")
     // serialisation
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     // logging
