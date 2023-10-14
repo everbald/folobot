@@ -42,6 +42,7 @@ dependencies {
     // db
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.liquibase:liquibase-core:4.20.0")
+    implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.43.0")
     // HTTP client engine
     implementation("io.ktor:ktor-client-apache:2.2.4")
     // feign
