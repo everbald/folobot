@@ -45,7 +45,7 @@ class CommandHandler(
             BotCommand.SILENTSTREAM -> messageService.sendSticker(messageService.randomSticker, update)
                 .also { logger.info { "Sent sticker to ${getChatIdentity(update.message.chatId)}" } }
 
-            BotCommand.SMALLTALK -> smallTalkHandler.handle(update)
+            BotCommand.SMALLTALK -> smallTalkHandler.handle(update, true)
             BotCommand.FREELANCE -> commandService.freelanceTimer(update)
             BotCommand.NOFAP -> commandService.nofapTimer(update)
             BotCommand.FOLOPIDOR -> commandService.foloPidor(update)

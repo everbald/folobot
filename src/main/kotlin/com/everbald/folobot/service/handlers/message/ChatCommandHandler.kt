@@ -31,7 +31,7 @@ class ChatCommandHandler(
     override fun handle(update: Update) {
         val message = update.message
         when {
-            message.isSmallTalk() -> smallTalkHandler.handle(update)
+            message.isSmallTalk() -> smallTalkHandler.handle(update, true)
             message.isNoFap() -> commandService.nofapTimer(update)
             message.isFolopidor() -> commandService.foloPidor(update)
             message.isCoin() -> commandService.foloCoin(update)

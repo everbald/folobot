@@ -3,6 +3,7 @@ package com.everbald.folobot.service.handlers.message
 import com.everbald.folobot.extensions.addActionReceived
 import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.isFromFoloSwarm
+import com.everbald.folobot.extensions.isTextMessage
 import com.everbald.folobot.model.Action
 import com.everbald.folobot.service.CommandService
 import com.everbald.folobot.service.FreelanceService
@@ -27,7 +28,8 @@ class SmallTalkHandler(
 ) : AbstractMessageHandler() {
     private var smallTalkStatus: MutableMap<Long?, Boolean> = mutableMapOf()
 
-    fun Message.isSmallTalk() = isUserMessage || userService.isSelf(this.replyToMessage?.from)
+    fun Message.isSmallTalk() = this.isTextMessage()
+        .and(isUserMessage.or(userService.isSelf(this.replyToMessage?.from)))
 
     override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isSmallTalk())
             .also { if (it) logger.addActionReceived(Action.SMALLTALK, update.message.chatId) }
