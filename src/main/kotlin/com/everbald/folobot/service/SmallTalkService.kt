@@ -1,11 +1,10 @@
 package com.everbald.folobot.service
 
-import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.audio.TranscriptionRequest
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
-import com.aallam.openai.api.exception.OpenAIHttpException
+import com.aallam.openai.api.exception.OpenAIException
 import com.aallam.openai.api.file.FileSource
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
@@ -31,19 +30,22 @@ class SmallTalkService(
     private val messageQueueService: MessageQueueService,
     private val fileService: FileService
 ) : KLogging() {
-    @OptIn(BetaOpenAI::class)
     fun smallTalk(update: Update, withInit: Boolean = false) {
         val messageStack = buildChatMessageStack(update.message)
         if (messageStack.isNotEmpty()) {
-            val chatCompletionRequest = ChatCompletionRequest(
-                model = ModelId("gpt-3.5-turbo"),
-                messages = buildChatCompletionSetup(withInit).plus(messageStack),
-            )
-            makeRequest(chatCompletionRequest, update)
+            buildChatCompletionSetup(withInit)
+                .plus(messageStack)
+                .let {
+                    ChatCompletionRequest(
+                        model = ModelId("gpt-3.5-turbo"),
+                        messages = it
+                    )
+                }.let {
+                    makeRequest(it, update)
+                }
         } else logger.info { "Cancelling small talk BC message stack does not contain any relevant messages" }
     }
 
-    @OptIn(BetaOpenAI::class)
     fun transcription(update: Update) {
         when {
             update.message.hasVoice() -> "ogg"
@@ -58,12 +60,13 @@ class SmallTalkService(
                     )
                 }
         }?.let { fileSource ->
-            val request = TranscriptionRequest(
+            TranscriptionRequest(
                 audio = fileSource,
                 model = ModelId("whisper-1"),
                 prompt = "фолофан фолопидор фолостайл фоложурнал"
-            )
-            makeRequest(request, update)
+            ).let {
+                makeRequest(it, update)
+            }
         }
     }
 
@@ -73,7 +76,7 @@ class SmallTalkService(
             else -> message.preparePrompt()
         }
 
-    @OptIn(DelicateCoroutinesApi::class, BetaOpenAI::class)
+    @OptIn(DelicateCoroutinesApi::class)
     private fun makeRequest(request: ChatCompletionRequest, update: Update) = GlobalScope.launch {
         try {
             openAI.chatCompletion(request).choices.firstOrNull()?.message?.content?.let {
@@ -90,18 +93,23 @@ class SmallTalkService(
             }
         } catch (ex: SocketTimeoutException) {
             logger.warn { "Request to OpenAI API finished with socket timeout" }
-        } catch (ex: OpenAIHttpException) {
+        } catch (ex: OpenAIException) {
+            messageQueueService.sendAndAddToQueue(
+                text = "Нет настроения общаться сегодня. Осеннее обострение",
+                update = update,
+                reply = true
+            )
             logger.error(ex) { "Request to OpenAI API finished with error" }
         }
     }
 
-    @OptIn(BetaOpenAI::class, DelicateCoroutinesApi::class)
+    @OptIn(DelicateCoroutinesApi::class)
     private fun makeRequest(request: TranscriptionRequest, update: Update) = GlobalScope.launch {
         try {
             val transcription = openAI.transcription(request).text
             messageQueueService.sendAndAddToQueue(
-                transcription.telegramEscape(),
-                update,
+                text = transcription.telegramEscape(),
+                update = update,
                 parseMode = ParseMode.MARKDOWNV2,
                 reply = true
             )
@@ -111,12 +119,16 @@ class SmallTalkService(
             }
         } catch (ex: SocketTimeoutException) {
             logger.warn { "Request to OpenAI API finished with socket timeout" }
-        } catch (ex: OpenAIHttpException) {
+        } catch (ex: OpenAIException) {
+            messageQueueService.sendAndAddToQueue(
+                text = "Нет настроения общаться сегодня. Осеннее обострение",
+                update = update,
+                reply = true
+            )
             logger.error(ex) { "Request to OpenAI API finished with error" }
         }
     }
 
-    @OptIn(BetaOpenAI::class)
     private fun buildChatCompletionSetup(withInit: Boolean): List<ChatMessage> {
         return listOf(
             ChatMessage(
@@ -149,7 +161,6 @@ class SmallTalkService(
         )
     }
 
-    @OptIn(BetaOpenAI::class)
     private fun buildChatMessageStack(message: Message): List<ChatMessage> {
         return messageQueueService.getStack(message)
             .takeLast(5)
