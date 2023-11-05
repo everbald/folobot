@@ -4,13 +4,13 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 tasks.getByName<BootJar>("bootJar") { enabled = true; archiveBaseName.set(rootProject.name) }
 tasks.getByName<Jar>("jar") { enabled = false }
 plugins {
-    id("org.springframework.boot") version "3.1.2"
+    id("org.springframework.boot") version "3.1.5"
     id("io.spring.dependency-management") version "1.1.0"
-    kotlin("plugin.jpa") version "1.8.10"
-    kotlin("plugin.allopen") version "1.8.10"
-    kotlin("jvm") version "1.8.10"
-    kotlin("plugin.spring") version "1.8.10"
-    id("com.autonomousapps.dependency-analysis") version "1.20.0"
+    kotlin("plugin.jpa") version "1.9.20"
+    kotlin("plugin.noarg") version "1.9.20"
+    kotlin("plugin.allopen") version "1.9.20"
+    kotlin("jvm") version "1.9.20"
+    kotlin("plugin.spring") version "1.9.20"
 }
 
 group = "com.everbald"
@@ -40,7 +40,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect")
     // db
-    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.postgresql:postgresql:42.5.4")
     runtimeOnly("org.liquibase:liquibase-core:4.20.0")
 //    implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.43.0")
     // HTTP client engine
@@ -50,7 +50,7 @@ dependencies {
     // telegram api
     implementation("org.telegram:telegrambots:6.8.0")
     // open api
-    implementation("com.aallam.openai:openai-client:3.5.0")
+    implementation("com.aallam.openai:openai-client:3.5.1")
     // serialisation
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     // logging
