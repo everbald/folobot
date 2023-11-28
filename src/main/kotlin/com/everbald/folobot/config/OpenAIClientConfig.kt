@@ -27,7 +27,7 @@ class OpenAIClientConfig() {
             timeout = Timeout(socket = 1.minutes)
         ).let { config ->
             OpenAI(config)
-                .also { logger.info { "OpenAI config: $config" } }
+                .also { logger.info { "OpenAI config: ${config.token}" } }
         }
 
 }
