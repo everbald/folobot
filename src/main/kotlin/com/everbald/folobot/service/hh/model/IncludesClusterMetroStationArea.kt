@@ -1,5 +1,6 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param name Название региона
  * @param url Ссылка на информацию о регионе
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class IncludesClusterMetroStationArea(
 
     @get:JsonProperty("id", required = true) val id: String,

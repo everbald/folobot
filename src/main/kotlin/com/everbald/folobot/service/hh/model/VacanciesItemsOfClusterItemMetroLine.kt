@@ -1,5 +1,6 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param hexColor Цвет линии в HEX-формате `RRGGBB` (от `000000` до `FFFFFF`)
  * @param id Идентификатор линии
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class VacanciesItemsOfClusterItemMetroLine(
 
     @get:JsonProperty("area", required = true) val area: IncludesClusterMetroLineArea,

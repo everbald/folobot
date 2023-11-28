@@ -4,13 +4,14 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 tasks.getByName<BootJar>("bootJar") { enabled = true; archiveBaseName.set(rootProject.name) }
 tasks.getByName<Jar>("jar") { enabled = false }
 plugins {
-    id("org.springframework.boot") version "3.1.2"
+    id("org.springframework.boot") version "3.1.5"
     id("io.spring.dependency-management") version "1.1.0"
-    kotlin("plugin.jpa") version "1.8.10"
-    kotlin("plugin.allopen") version "1.8.10"
-    kotlin("jvm") version "1.8.10"
-    kotlin("plugin.spring") version "1.8.10"
-    id("com.autonomousapps.dependency-analysis") version "1.20.0"
+    kotlin("jvm") version "1.9.21"
+    kotlin("plugin.jpa") version "1.9.21"
+    kotlin("plugin.noarg") version "1.9.21"
+    kotlin("plugin.allopen") version "1.9.21"
+    kotlin("plugin.serialization") version "1.9.21"
+    kotlin("plugin.spring") version "1.9.21"
 }
 
 group = "com.everbald"
@@ -27,20 +28,20 @@ buildscript {
 
 dependencies {
     // spring
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-mustache")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework:spring-core") {
+    implementation("org.springframework.boot:spring-boot-starter-web:3.1.0")
+    implementation("org.springframework.boot:spring-boot-starter-mustache:3.0.7")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.0.4")
+    implementation("org.springframework.boot:spring-boot-starter-security:3.0.4")
+    implementation("org.springframework.boot:spring-boot-starter-validation:3.0.4")
+    implementation("org.springframework:spring-core:6.0.6") {
         exclude("commons-logging", "commons-logging")
     }
-    runtimeOnly("org.springframework.boot:spring-boot-devtools")
+    runtimeOnly("org.springframework.boot:spring-boot-devtools:3.0.4")
     // kotlin
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect")
     // db
-    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.postgresql:postgresql:42.5.4")
     runtimeOnly("org.liquibase:liquibase-core:4.20.0")
 //    implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.43.0")
     // HTTP client engine
@@ -50,9 +51,9 @@ dependencies {
     // telegram api
     implementation("org.telegram:telegrambots:6.8.0")
     // open api
-    implementation("com.aallam.openai:openai-client:3.5.0")
+    implementation("com.aallam.openai:openai-client:3.6.1")
     // serialisation
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
     // logging
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     // testing

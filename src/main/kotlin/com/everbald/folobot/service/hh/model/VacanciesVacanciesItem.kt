@@ -1,5 +1,6 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -40,6 +41,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param employment 
  * @param experience 
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class VacanciesVacanciesItem(
 
     @get:JsonProperty("accept_incomplete_resumes", required = true) val acceptIncompleteResumes: Boolean,

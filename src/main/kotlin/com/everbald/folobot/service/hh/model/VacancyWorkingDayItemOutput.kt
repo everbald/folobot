@@ -1,5 +1,6 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param id рабочие дни из [справочника working_days](#tag/Obshie-spravochniki/operation/get-dictionaries)
  * @param name название рабочего дня
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class VacancyWorkingDayItemOutput(
 
     @get:JsonProperty("id") val id: String? = null,

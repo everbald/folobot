@@ -1,5 +1,6 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param name Имя контакта
  * @param phones Список телефонов для связи
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class VacancyContactsOutput(
 
     @get:JsonProperty("call_tracking_enabled") val callTrackingEnabled: Boolean? = null,

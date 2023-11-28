@@ -1,5 +1,6 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param id Идентификатор интервью
  * @param url Адрес страницы, содержащей интервью
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class VacanciesStandardVacancyFieldsInsiderInterview(
 
     @get:JsonProperty("id", required = true) val id: String,

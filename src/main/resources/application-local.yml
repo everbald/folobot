@@ -38,9 +38,9 @@ spring:
     servlet:
       expose-request-attributes: true
 bot:
-  username: ShurkaGurmanychBot
-  token: 5306754558:AAGLFdpVE-VQJ3-Ym0uvLq5fbAU9q98cg-I
-  provider.token: 401643678:TEST:dfc5c1d7-9398-43aa-8df9-ae52cb992e12
+  username: ${FOLO_BOT_USERNAME}
+  token: ${FOLO_BOT_TOKEN}
+  provider.token: ${FOLO_BOT_PROVIDER_TOKEN}
 
 openai:
   token: ${OPENAI_TOKEN}

@@ -1,5 +1,6 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param formatted телефонный номер
  * @param number телефон
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class VacancyPhoneItem(
 
     @get:JsonProperty("city") val city: String? = null,

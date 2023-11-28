@@ -1,5 +1,6 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param gross Признак что границы зарплаты указаны до вычета налогов
  * @param to Верхняя граница зарплаты
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class VacancySalary(
 
     @get:JsonProperty("currency") val currency: String? = null,

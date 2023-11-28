@@ -1,5 +1,6 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param metroStation 
  * @param type Тип значения, связанного с группой
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class VacanciesItemsOfClusterItem(
 
     @get:JsonProperty("count", required = true) val count: java.math.BigDecimal,
