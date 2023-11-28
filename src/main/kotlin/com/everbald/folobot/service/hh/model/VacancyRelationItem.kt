@@ -1,11 +1,13 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
 * 
 * Values: FAVORITED,GOT_RESPONSE,GOT_INVITATION,GOT_REJECTION,BLACKLISTED,NULL
 */
+@JsonIgnoreProperties(ignoreUnknown = true)
 enum class VacancyRelationItem(val value: kotlin.String) {
 
     @JsonProperty("favorited") FAVORITED("favorited"),

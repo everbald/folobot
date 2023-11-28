@@ -1,5 +1,6 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param stationId идентификатор станции метро
  * @param stationName название станции метро
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class IncludesMetroStation(
 
     @get:JsonProperty("lat", required = true) val lat: java.math.BigDecimal,

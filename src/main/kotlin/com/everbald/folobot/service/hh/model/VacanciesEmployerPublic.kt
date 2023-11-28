@@ -1,5 +1,6 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param url URL, на который нужно сделать GET-запрос, чтобы получить информацию о компании
  * @param vacanciesUrl ссылка на поисковую выдачу вакансий данной компании
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class VacanciesEmployerPublic(
 
     @get:JsonProperty("name", required = true) val name: String,
@@ -30,7 +32,5 @@ data class VacanciesEmployerPublic(
     @get:JsonProperty("url") val url: String? = null,
 
     @get:JsonProperty("vacancies_url") val vacanciesUrl: String? = null
-) {
-
-}
+)
 

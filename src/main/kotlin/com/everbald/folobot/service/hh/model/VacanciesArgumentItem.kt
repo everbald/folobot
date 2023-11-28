@@ -1,5 +1,6 @@
 package com.everbald.folobot.service.hh.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param name Название значения
  * @param valueDescription Описание параметра
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class VacanciesArgumentItem(
 
     @get:JsonProperty("argument", required = true) val argument: String,

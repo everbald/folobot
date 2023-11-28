@@ -15,13 +15,14 @@ import kotlin.time.Duration.Companion.minutes
 class OpenAIClientConfig() {
     @Value("\${openai.token}")
     private val token: String = ""
+
     @Bean
-    fun openAI(): OpenAI {
-        return OpenAI(
+    fun openAI(): OpenAI =
+        OpenAI(
             OpenAIConfig(
                 token = token,
                 logging = LoggingConfig(LogLevel.None, Logger.Default),
-                timeout = Timeout(socket = 1.minutes))
+                timeout = Timeout(socket = 1.minutes)
+            )
         )
-    }
 }
