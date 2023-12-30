@@ -2,7 +2,7 @@ package com.everbald.folobot.service.handlers.message
 
 import com.everbald.folobot.extensions.addActionReceived
 import com.everbald.folobot.extensions.isAndrew
-import com.everbald.folobot.model.Action
+import com.everbald.folobot.domain.type.Action
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.TextService
 import com.everbald.folobot.utils.FoloId.POC_ID

@@ -1,10 +1,12 @@
 package com.everbald.folobot.service.folocoin
 
-import com.everbald.folobot.extensions.*
-import com.everbald.folobot.model.dto.FoloCoinDto
-import com.everbald.folobot.model.dto.toEntity
-import com.everbald.folobot.persistence.entity.toDto
-import com.everbald.folobot.persistence.repos.FoloCoinRepo
+import com.everbald.folobot.domain.FoloCoin
+import com.everbald.folobot.extensions.getName
+import com.everbald.folobot.extensions.isAboutFo
+import com.everbald.folobot.extensions.isFolochat
+import com.everbald.folobot.extensions.isFromFoloSwarm
+import com.everbald.folobot.extensions.round
+import com.everbald.folobot.persistence.repo.FoloCoinRepo
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.UserService
 import com.everbald.folobot.utils.FoloId.FOLOMKIN_ID
@@ -21,7 +23,7 @@ class FoloCoinService(
     private val foloCoinRepo: FoloCoinRepo,
     private val userService: UserService,
     private val foloIndexService: FoloIndexService,
-    private val messageService: MessageService
+    private val messageService: MessageService,
 ) : KLogging() {
     private val THRESHOLD_MULTIPLIER = 10
     private val COIN_MULTIPLIER = 3
@@ -29,17 +31,14 @@ class FoloCoinService(
     private val coinThreshold get() = ((foloCoinRepo.getSumCoins() ?: 0) + 1) * THRESHOLD_MULTIPLIER
     private val coinPrice get() = 100 + (foloCoinRepo.getSumCoins() ?: 0) * COIN_MULTIPLIER
 
-    private val averageIndex get() =
-        (foloIndexService.getAverageIndex(FOLO_CHAT_ID, LocalDate.now().minusDays(1)))
-            .run { if (this != 0.0) this else 100.0 }
+    private val averageIndex
+        get() =
+            (foloIndexService.getAverageIndex(FOLO_CHAT_ID, LocalDate.now().minusDays(1)))
+                .run { if (this != 0.0) this else 100.0 }
 
-    fun getById(userId: Long): FoloCoinDto {
-        return foloCoinRepo.findCoinByUserId(userId)?.toDto() ?: FoloCoinDto(userId)
-    }
+    fun getById(userId: Long): FoloCoin = foloCoinRepo.findCoinByUserId(userId) ?: FoloCoin(userId)
 
-    fun getTop(): List<FoloCoinDto> {
-        return foloCoinRepo.findTop10ByOrderByCoinsDescPointsDesc().map { it.toDto() }
-    }
+    fun getTop(): List<FoloCoin> = foloCoinRepo.findTop10ByOrderByCoinsDescPointsDesc()
 
     fun addCoinPoints(update: Update) {
         if (update.message.chat.isFolochat()) {
@@ -47,13 +46,15 @@ class FoloCoinService(
             val receiver =
                 if (update.message.isFromFoloSwarm() || update.message.isAutomaticForward == true) FOLOMKIN_ID
                 else update.message.from.id
-            foloCoinRepo.save(getById(receiver).addPoints(points).toEntity())
+            getById(receiver)
+                .addPoints(points)
+                .let { foloCoinRepo.save(it) }
             logger.trace { "Added $points folocoin points to ${userService.getFoloUserName(receiver)}" }
         }
     }
 
-    private fun getValidForCoinIssue(threshold: Int): List<FoloCoinDto> {
-        return foloCoinRepo.findByPointsGreaterThanEqual(threshold).map { it.toDto() }
+    private fun getValidForCoinIssue(threshold: Int): List<FoloCoin> {
+        return foloCoinRepo.findByPointsGreaterThanEqual(threshold)
     }
 
     fun issueCoins() {
@@ -62,7 +63,7 @@ class FoloCoinService(
             logger.trace { "Current coin threshold is $threshold" }
             getValidForCoinIssue(threshold).forEach {
                 it.calcCoins(threshold)
-                foloCoinRepo.save(it.toEntity())
+                foloCoinRepo.save(it)
                 logger.info { "Issued folocoin to ${userService.getFoloUserName(it.userId)}" }
             }
         } else {
@@ -73,8 +74,9 @@ class FoloCoinService(
     fun getPrice(): Double = maxOf((coinPrice / 100.0 * averageIndex).round(), 100.0)
 
     fun issueCoins(userId: Long, amount: Int) {
-        val coin = foloCoinRepo.findCoinByUserId(userId)?.toDto() ?: FoloCoinDto(userId)
-        foloCoinRepo.save(coin.addCoins(amount).toEntity())
+        getById(userId)
+            .addCoins(amount)
+            .let { foloCoinRepo.save(it) }
     }
 
     fun transferCoin(update: Update) {

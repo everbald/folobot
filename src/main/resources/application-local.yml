@@ -20,23 +20,9 @@ logging:
 
 
 spring:
-  main:
-    allow-circular-references: true
   datasource:
     url: jdbc:postgresql://localhost:5432/folodb?user=folo&password=folo
-  jpa:
-    properties:
-      hibernate:
-        ddl-auto: update
-        jdbc:
-          time_zone: Europe/Moscow
-    generate-ddl: true
-  liquibase:
-    enabled: true
-    change-log: 'classpath:db/changelog/changelog-master.yml'
-  mustache:
-    servlet:
-      expose-request-attributes: true
+
 bot:
   username: ${FOLO_BOT_USERNAME}
   token: ${FOLO_BOT_TOKEN}

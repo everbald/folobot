@@ -1,7 +1,6 @@
 package com.everbald.folobot.service.folocoin
 
-import com.everbald.folobot.persistence.entity.toDto
-import com.everbald.folobot.persistence.repos.FoloIndexRepo
+import com.everbald.folobot.persistence.repo.FoloIndexRepo
 import mu.KLogging
 import org.jfree.chart.ChartUtilities
 import org.jfree.chart.JFreeChart
@@ -28,7 +27,6 @@ import java.awt.Paint
 import java.io.ByteArrayInputStream
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-
 
 @Component
 class FoloIndexChartService(
@@ -58,10 +56,9 @@ class FoloIndexChartService(
         val series = TimeSeries("index")
         val dataset = TimeSeriesCollection()
         val weeklyIndex =
-            foloIndexRepo.findByIdChatIdAndIdDateBetweenOrderByIdDate(chatId, startDate, endDate)
-                .map { it.toDto() }
+            foloIndexRepo.findByChatIdAndDate(chatId, startDate, endDate)
         weeklyIndex.forEach {
-            series.add(Day(it.id.date.dayOfMonth, it.id.date.monthValue, it.id.date.year ), it.index?: 0)
+            series.add(Day(it.date.dayOfMonth, it.date.monthValue, it.date.year ), it.index?: 0)
         }
         dataset.addSeries(series)
         return dataset

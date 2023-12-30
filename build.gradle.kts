@@ -7,9 +7,6 @@ plugins {
     id("org.springframework.boot") version "3.1.5"
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("jvm") version "1.9.21"
-    kotlin("plugin.jpa") version "1.9.21"
-    kotlin("plugin.noarg") version "1.9.21"
-    kotlin("plugin.allopen") version "1.9.21"
     kotlin("plugin.serialization") version "1.9.21"
     kotlin("plugin.spring") version "1.9.21"
 }
@@ -30,20 +27,18 @@ dependencies {
     // spring
     implementation("org.springframework.boot:spring-boot-starter-web:3.1.0")
     implementation("org.springframework.boot:spring-boot-starter-mustache:3.0.7")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.0.4")
     implementation("org.springframework.boot:spring-boot-starter-security:3.0.4")
     implementation("org.springframework.boot:spring-boot-starter-validation:3.0.4")
     implementation("org.springframework:spring-core:6.0.6") {
         exclude("commons-logging", "commons-logging")
     }
     runtimeOnly("org.springframework.boot:spring-boot-devtools:3.0.4")
-    // kotlin
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect")
     // db
-    runtimeOnly("org.postgresql:postgresql:42.5.4")
+    implementation("org.postgresql:postgresql")
     runtimeOnly("org.liquibase:liquibase-core:4.20.0")
-//    implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.43.0")
+    implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.43.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.43.0")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.43.0")
     // HTTP client engine
     implementation("io.ktor:ktor-client-apache:2.2.4")
     // feign
@@ -64,12 +59,6 @@ dependencies {
     implementation("jfree:jfreechart:1.0.13")
     // NLP
     implementation("com.textrazor:textrazor:1.0.12")
-}
-
-allOpen {
-    annotation("javax.persistence.Entity")
-    annotation("javax.persistence.MappedSuperclass")
-    annotation("javax.persistence.Embeddable")
 }
 
 tasks.withType<KotlinCompile> {

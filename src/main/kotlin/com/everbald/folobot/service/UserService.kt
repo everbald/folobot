@@ -3,8 +3,8 @@ package com.everbald.folobot.service
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.extensions.getName
 import com.everbald.folobot.extensions.getPremiumPrefix
-import com.everbald.folobot.model.dto.FoloPidorDto
-import com.everbald.folobot.model.dto.FoloUserDto
+import com.everbald.folobot.domain.FoloPidor
+import com.everbald.folobot.domain.FoloUser
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.MemberStatus
@@ -23,7 +23,7 @@ class UserService(
      * @return Имя пользователя
      */
     fun getFoloUserName(user: User): String {
-        val foloUser: FoloUserDto = foloUserService.findById(user.id)
+        val foloUser: FoloUser = foloUserService.find(user.id)
         // По тэгу
         var userName: String = foloUser.tag
         // Получение динамически
@@ -42,7 +42,7 @@ class UserService(
      * @return Имя пользователя
      */
     fun getFoloUserName(userId: Long): String {
-        val foloUser: FoloUserDto = foloUserService.findById(userId)
+        val foloUser: FoloUser = foloUserService.find(userId)
         // По тэгу
         var userName: String = foloUser.getTagName()
         // Если не удалось определить
@@ -53,16 +53,16 @@ class UserService(
     /**
      * Получение имени фолопидора
      *
-     * @param foloPidorDto [FoloPidorDto]
+     * @param foloPidor [FoloPidor]
      * @return Имя фолопидора
      */
-    fun getFoloUserName(foloPidorDto: FoloPidorDto, chatId: Long): String {
+    fun getFoloUserName(foloPidor: FoloPidor, chatId: Long): String {
         // По тэгу
-        var userName: String = foloPidorDto.getTag()
+        var userName: String = foloPidor.getTag()
         // По пользователю
-        if (userName.isEmpty()) userName = chatService.getChatMember(foloPidorDto.id.userId, chatId)?.user?.getName() ?: ""
+        if (userName.isEmpty()) userName = chatService.getChatMember(foloPidor.user.userId, chatId)?.user?.getName() ?: ""
         // По сохраненному имени
-        if (userName.isEmpty()) userName = foloPidorDto.getName()
+        if (userName.isEmpty()) userName = foloPidor.getName()
         // Если не удалось определить
         if (userName.isEmpty()) userName = "Загадочный незнакомец"
         return userName
@@ -98,16 +98,16 @@ class UserService(
      * @return Имя пользователя
      */
     fun getFoloUserNameLinked(userId: Long): String =
-        "[" + foloUserService.findById(userId).getTagName() + "](tg://user?id=" + userId + ")"
+        "[" + foloUserService.find(userId).getTagName() + "](tg://user?id=" + userId + ")"
 
     /**
      * Получение кликабельного имени фолопидора
      *
-     * @param foloPidor [FoloPidorDto]
+     * @param foloPidor [FoloPidor]
      * @return Имя фолопидора
      */
-    fun getFoloUserNameLinked(foloPidor: FoloPidorDto, chatId: Long): String =
-        "[" + getFoloUserName(foloPidor, chatId) + "](tg://user?id=" + foloPidor.id.userId + ")"
+    fun getFoloUserNameLinked(foloPidor: FoloPidor, chatId: Long): String =
+        "[" + getFoloUserName(foloPidor, chatId) + "](tg://user?id=" + foloPidor.user.userId + ")"
 
     /**
      * Проверка, что [User] это этот бот
@@ -119,11 +119,11 @@ class UserService(
 
     /**
      * Проверка, что пользователь состоит в чате
-     * @param foloPidorDto [FoloPidorDto]
+     * @param foloPidor [FoloPidor]
      * @return [Boolean]
      */
-    fun isInChat(foloPidorDto: FoloPidorDto): Boolean =
-        chatService.getChatMember(foloPidorDto.id.userId, foloPidorDto.id.chatId)
+    fun isInChat(foloPidor: FoloPidor): Boolean =
+        chatService.getChatMember(foloPidor.user.userId, foloPidor.chatId)
             ?.let { !(it.status == MemberStatus.LEFT || it.status == MemberStatus.KICKED) }
             ?: false
 }

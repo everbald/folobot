@@ -1,7 +1,8 @@
 package com.everbald.folobot.service
 
+import com.everbald.folobot.domain.FoloBail
 import com.everbald.folobot.extensions.*
-import com.everbald.folobot.model.PluralType
+import com.everbald.folobot.domain.type.PluralType
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.FoloIndexService.Companion.FOLO_STOCK_IMAGE
 import com.everbald.folobot.service.hh.HHService
@@ -22,9 +23,10 @@ class CommandService(
     private val messageQueueService: MessageQueueService,
     private val keyboardService: KeyboardService,
     private val foloCoinService: FoloCoinService,
+    private val foloBailService: FoloBailService,
     private val hhService: HHService,
-    private val userService: UserService
-): KLogging() {
+    private val userService: UserService,
+) : KLogging() {
     /**
      * Подсчет времени прошедшего с дня F
      *
@@ -160,4 +162,6 @@ class CommandService(
             )
         }
     }
+
+    fun foloBail(update: Update) = foloBailService.sendTodayBails(update)
 }

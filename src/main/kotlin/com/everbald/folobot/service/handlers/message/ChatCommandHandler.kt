@@ -4,8 +4,8 @@ import com.everbald.folobot.extensions.addActionReceived
 import com.everbald.folobot.extensions.from
 import com.everbald.folobot.extensions.getName
 import com.everbald.folobot.extensions.isAboutBot
-import com.everbald.folobot.model.Action
-import com.everbald.folobot.model.BotCommand
+import com.everbald.folobot.domain.type.Action
+import com.everbald.folobot.domain.type.BotCommand
 import com.everbald.folobot.service.CommandService
 import com.everbald.folobot.service.MessageService
 import jakarta.annotation.Priority

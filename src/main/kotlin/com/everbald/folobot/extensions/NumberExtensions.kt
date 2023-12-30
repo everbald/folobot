@@ -1,6 +1,6 @@
 package com.everbald.folobot.extensions
 
-import com.everbald.folobot.model.PluralType
+import com.everbald.folobot.domain.type.PluralType
 import com.everbald.folobot.utils.PluralUtils
 import com.ibm.icu.text.RuleBasedNumberFormat
 import java.util.*

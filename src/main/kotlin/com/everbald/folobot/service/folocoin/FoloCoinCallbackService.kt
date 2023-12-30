@@ -1,7 +1,7 @@
 package com.everbald.folobot.service.folocoin
 
 import com.everbald.folobot.extensions.*
-import com.everbald.folobot.model.PluralType
+import com.everbald.folobot.domain.type.PluralType
 import com.everbald.folobot.service.CommandService
 import com.everbald.folobot.service.KeyboardService
 import com.everbald.folobot.service.MessageService

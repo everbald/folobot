@@ -1,8 +1,8 @@
 package com.everbald.folobot.extensions
 
-import com.everbald.folobot.model.Action
-import com.everbald.folobot.model.BotCommand
-import com.everbald.folobot.model.CallbackCommand
+import com.everbald.folobot.domain.type.Action
+import com.everbald.folobot.domain.type.BotCommand
+import com.everbald.folobot.domain.type.CallbackCommand
 import mu.KLogger
 import org.telegram.telegrambots.meta.api.objects.Message
 

@@ -1,7 +1,7 @@
 package com.everbald.folobot.controller
 
-import com.everbald.folobot.model.ControllerCommand
-import com.everbald.folobot.model.dto.FoloUserDto
+import com.everbald.folobot.domain.type.ControllerCommand
+import com.everbald.folobot.domain.FoloUser
 import com.everbald.folobot.service.FoloUserService
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -41,19 +41,19 @@ class FoloUserController(private val foloUserService: FoloUserService) {
         if (!Objects.isNull(userId)) {
             when (ControllerCommand.valueOf(action.uppercase())) {
                 ControllerCommand.ADD ->
-                    if (!foloUserService.existsById(userId)) {
-                        foloUserService.save(FoloUserDto(userId, mainId, anchor, tag))
+                    if (!foloUserService.exists(userId)) {
+                        foloUserService.save(FoloUser(userId, mainId, anchor, tag))
                     }
                 ControllerCommand.UPDATE ->
-                    if (foloUserService.existsById(userId)) {
+                    if (foloUserService.exists(userId)) {
                         foloUserService.save(
-                            foloUserService.findById(userId)
+                            foloUserService.find(userId)
                             .setMainId(mainId)
                             .setAnchor(anchor)
                             .setTag(tag)
                         )
                     }
-                ControllerCommand.DELETE -> foloUserService.delete(FoloUserDto(userId))
+                ControllerCommand.DELETE -> foloUserService.delete(FoloUser(userId))
                 else -> {}
             }
         }

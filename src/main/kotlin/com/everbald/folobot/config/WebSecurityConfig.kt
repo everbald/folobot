@@ -1,6 +1,6 @@
 package com.everbald.folobot.config
 
-import com.everbald.folobot.model.Authority
+import com.everbald.folobot.domain.type.Authority
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
