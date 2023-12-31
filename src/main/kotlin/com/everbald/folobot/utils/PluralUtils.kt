@@ -1,6 +1,6 @@
 package com.everbald.folobot.utils
 
-import com.everbald.folobot.model.PluralType
+import com.everbald.folobot.domain.type.PluralType
 import com.ibm.icu.text.MessageFormat
 import com.ibm.icu.util.ULocale
 import java.time.Period
@@ -18,7 +18,8 @@ class PluralUtils {
             PluralType.YEARISH to arrayOf("годик", "годика", "годиков"),
             PluralType.MESSAGE to arrayOf("сообщение", "сообщения", "сообщений"),
             PluralType.PERCENT to arrayOf("процент", "процента", "процентов"),
-            PluralType.COIN to arrayOf("фолокойн", "фолокойна", "фолокойнов")
+            PluralType.COIN to arrayOf("фолокойн", "фолокойна", "фолокойнов"),
+            PluralType.BAIL to arrayOf("слив", "слива", "сливов")
         )
 
         private fun buildPattern(pluralType: PluralType): String =

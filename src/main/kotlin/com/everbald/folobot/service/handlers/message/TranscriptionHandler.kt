@@ -1,7 +1,7 @@
 package com.everbald.folobot.service.handlers.message
 
 import com.everbald.folobot.extensions.addActionReceived
-import com.everbald.folobot.model.Action
+import com.everbald.folobot.domain.type.Action
 import com.everbald.folobot.service.SmallTalkService
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component

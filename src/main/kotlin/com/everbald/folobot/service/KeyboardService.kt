@@ -1,8 +1,8 @@
 package com.everbald.folobot.service
 
 import com.everbald.folobot.config.BotCredentialsConfig
-import com.everbald.folobot.model.BotCommand
-import com.everbald.folobot.model.CallbackCommand
+import com.everbald.folobot.domain.type.BotCommand
+import com.everbald.folobot.domain.type.CallbackCommand
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup

@@ -1,7 +1,7 @@
 package com.everbald.folobot.service
 
 import com.everbald.folobot.extensions.*
-import com.everbald.folobot.model.dto.MessageQueueDto
+import com.everbald.folobot.domain.MessageQueue
 import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import mu.KLogging
 import org.springframework.stereotype.Service
@@ -16,13 +16,13 @@ class MessageQueueService(
     private val messageService: MessageService,
     private val userService: UserService
 ) : KLogging() {
-    private val messageQueue: MutableList<MessageQueueDto> = mutableListOf()
-    val messageStack: MutableList<MessageQueueDto> = mutableListOf()
+    private val messageQueue: MutableList<MessageQueue> = mutableListOf()
+    val messageStack: MutableList<MessageQueue> = mutableListOf()
 
     fun addToQueue(message: Message) {
         if (message.isNotUserJoin() && !message.isCommand) {
             messageQueue.add(
-                MessageQueueDto(
+                MessageQueue(
                     LocalDateTime.now(),
                     message,
                     if (message.chat.isFolochat()) //&& message.from.isLikesToDelete()
@@ -41,10 +41,11 @@ class MessageQueueService(
         update: Update,
         replyMarkup: ReplyKeyboard? = null,
         reply: Boolean = false,
+        disablePreview: Boolean = false,
         parseMode: String = ParseMode.MARKDOWN
     ) {
-        messageService.sendMessage(text, update, replyMarkup, reply, parseMode)?.let {
-            messageQueue.add(MessageQueueDto(LocalDateTime.now(), it))
+        messageService.sendMessage(text, update, replyMarkup, reply, disablePreview, parseMode)?.let {
+            messageQueue.add(MessageQueue(LocalDateTime.now(), it))
         }
     }
 
@@ -82,7 +83,7 @@ class MessageQueueService(
         return stack.ifEmpty { flattenMessage(message) }
     }
 
-    private fun flattenStack(messageId: Int?, fullStack: Map<Int, MessageQueueDto>): MutableList<Message> {
+    private fun flattenStack(messageId: Int?, fullStack: Map<Int, MessageQueue>): MutableList<Message> {
         val messages = mutableListOf<Message>()
         messageId?.let { id ->
             fullStack[id]?.message?.let { stackMessage ->

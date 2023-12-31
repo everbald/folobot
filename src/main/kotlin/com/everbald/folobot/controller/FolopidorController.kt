@@ -1,7 +1,7 @@
 package com.everbald.folobot.controller
 
-import com.everbald.folobot.model.ControllerCommand
-import com.everbald.folobot.model.dto.FoloPidorDto
+import com.everbald.folobot.domain.type.ControllerCommand
+import com.everbald.folobot.domain.FoloPidor
 import com.everbald.folobot.service.FoloPidorService
 import com.everbald.folobot.service.FoloUserService
 import com.everbald.folobot.service.FoloVarService.Companion.COMMON_CHATID
@@ -54,23 +54,23 @@ class FolopidorController(
         model: MutableMap<String, Any>
     ): String {
         when (ControllerCommand.valueOf(action.uppercase())) {
-            ControllerCommand.ADD -> if (foloUserService.existsById(userId!!) &&
-                !foloPidorService.existsById(chatId, userId)
+            ControllerCommand.ADD -> if (foloUserService.exists(userId!!) &&
+                !foloPidorService.exists(chatId, userId)
             ) {
-                foloPidorService.save(FoloPidorDto(chatId, userId))
+                foloPidorService.save(FoloPidor(chatId, userId))
             }
-            ControllerCommand.UPDATE -> if (foloPidorService.existsById(chatId, userId!!)) {
-                val foloPidor = foloPidorService.findById(chatId, userId)
+            ControllerCommand.UPDATE -> if (foloPidorService.exists(chatId, userId!!)) {
+                val foloPidor = foloPidorService.find(chatId, userId)
                 foloPidor.score = score!!
                 foloPidor.lastWinDate = LocalDate.parse(lastWinDate)
                 foloPidor.lastActiveDate = LocalDate.parse(lastActiveDate)
                 foloPidor.messagesPerDay = messagesPerDay!!
                 foloPidorService.save(foloPidor)
             }
-            ControllerCommand.DELETE -> foloPidorService.delete(FoloPidorDto(chatId, userId!!))
+            ControllerCommand.DELETE -> foloPidorService.delete(FoloPidor(chatId, userId!!))
             ControllerCommand.FILTER -> {
                 model["folopidors"] =
-                    if (!Objects.isNull(chatId)) foloPidorService.findByIdChatId(chatId)
+                    if (!Objects.isNull(chatId)) foloPidorService.findByChatId(chatId)
                     else foloPidorService.findAll()
                 return "folopidor"
             }

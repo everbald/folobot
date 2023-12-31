@@ -1,7 +1,7 @@
 package com.everbald.folobot.service
 
 import com.everbald.folobot.FoloBot
-import com.everbald.folobot.model.dto.FoloPidorDto
+import com.everbald.folobot.domain.FoloPidor
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.methods.groupadministration.*
@@ -42,24 +42,24 @@ class ChatService(
             .filter { it is ChatMemberAdministrator && it.customTitle != null }
             .associate { it.user.id to (it as ChatMemberAdministrator).customTitle }
 
-    fun kickFromChat(foloPidorDto: FoloPidorDto) {
+    fun kickFromChat(foloPidor: FoloPidor) {
         try {
             BanChatMember
                 .builder()
-                .chatId(foloPidorDto.id.chatId)
-                .userId(foloPidorDto.id.userId)
+                .chatId(foloPidor.chatId)
+                .userId(foloPidor.user.userId)
                 .build()
                 .let { foloBot.execute(it) }
             UnbanChatMember
                 .builder()
-                .chatId(foloPidorDto.id.chatId)
-                .userId(foloPidorDto.id.userId)
+                .chatId(foloPidor.chatId)
+                .userId(foloPidor.user.userId)
                 .onlyIfBanned(true)
                 .build()
                 .let { foloBot.execute(it) }
-            logger.warn { "Kicked deleted user ${foloPidorDto.id.userId} for chat ${foloPidorDto.id.chatId}" }
+            logger.warn { "Kicked deleted user ${foloPidor.user.userId} for chat ${foloPidor.chatId}" }
         } catch (e: TelegramApiException) {
-            logger.warn("Can't kick user ${foloPidorDto.id.userId} for chat ${foloPidorDto.id.chatId}")
+            logger.warn("Can't kick user ${foloPidor.user.userId} for chat ${foloPidor.chatId}")
         }
     }
 

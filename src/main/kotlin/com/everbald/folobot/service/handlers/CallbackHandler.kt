@@ -1,8 +1,8 @@
 package com.everbald.folobot.service.handlers
 
 import com.everbald.folobot.extensions.*
-import com.everbald.folobot.model.Action
-import com.everbald.folobot.model.CallbackCommand
+import com.everbald.folobot.domain.type.Action
+import com.everbald.folobot.domain.type.CallbackCommand
 import com.everbald.folobot.service.*
 import com.everbald.folobot.service.folocoin.FoloCoinCallbackService
 import com.everbald.folobot.service.folopidor.FoloPidorCallbackService
@@ -10,7 +10,6 @@ import jakarta.annotation.Priority
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.Update
-import java.util.*
 
 @Component
 @Priority(1)

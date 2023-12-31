@@ -1,11 +1,11 @@
 package com.everbald.folobot.service.folocoin
 
-import com.everbald.folobot.extensions.*
-import com.everbald.folobot.model.dto.FoloIndexDto
-import com.everbald.folobot.model.dto.toEntity
-import com.everbald.folobot.persistence.entity.FoloIndexId
-import com.everbald.folobot.persistence.entity.toDto
-import com.everbald.folobot.persistence.repos.FoloIndexRepo
+import com.everbald.folobot.domain.FoloIndex
+import com.everbald.folobot.extensions.getChatIdentity
+import com.everbald.folobot.extensions.isAboutFo
+import com.everbald.folobot.extensions.isFo
+import com.everbald.folobot.extensions.round
+import com.everbald.folobot.persistence.repo.FoloIndexRepo
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.UserService
 import mu.KLogging
@@ -45,10 +45,7 @@ class FoloIndexService(
         const val FOLO_STOCK_IMAGE = "/static/images/foloStock.png"
     }
 
-    fun getById(chatId: Long, date: LocalDate): FoloIndexDto {
-        return foloIndexRepo.findIndexById(FoloIndexId(chatId, date))?.toDto()
-            ?: FoloIndexDto(chatId, date)
-    }
+    fun getById(chatId: Long, date: LocalDate): FoloIndex = foloIndexRepo.find(chatId, date) ?: FoloIndex(chatId, date)
 
     fun addActivityPoints(update: Update) {
         if (update.hasMessage()) {
@@ -56,7 +53,7 @@ class FoloIndexService(
                 if (update.message.from.isFo()) 3
                 else if (update.message.isAboutFo()) 2
                 else 1
-            foloIndexRepo.save(getById(update.message.chatId, LocalDate.now()).addPoints(points).toEntity())
+            foloIndexRepo.save(getById(update.message.chatId, LocalDate.now()).addPoints(points))
             logger.trace {
                 "Added $points activity points to chat ${getChatIdentity(update.message.chatId)} " +
                         "thanks to ${userService.getFoloUserName(update.message.from)}"
@@ -65,17 +62,17 @@ class FoloIndexService(
     }
 
     fun getAveragePoints(chatId: Long, date: LocalDate): Double =
-       foloIndexRepo.getAveragePointsByIdChatId(chatId, date.minusYears(1), date) ?: 0.0
+       foloIndexRepo.getAveragePointsByChatId(chatId, date.minusYears(1), date) ?: 0.0
 
     fun getAverageIndex(chatId: Long, date: LocalDate): Double =
-        foloIndexRepo.getAverageIndexByIdChatId(chatId, date.minusMonths(1), date) ?: 0.0
+        foloIndexRepo.getAverageIndexByChatId(chatId, date.minusMonths(1), date) ?: 0.0
 
 
     fun calcAndSaveIndex(chatId: Long, date: LocalDate): Double {
         val foloIndex = getById(chatId, date)
         val average = getAveragePoints(chatId, date)
         foloIndex.index = if (average > 0) foloIndex.points / average * 100 else 0.0
-        foloIndexRepo.save(foloIndex.toEntity())
+        foloIndexRepo.save(foloIndex)
         return foloIndex.index!!
     }
 

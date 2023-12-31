@@ -1,6 +1,6 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.extensions.getMsg
+import com.everbald.folobot.extensions.msg
 import com.everbald.folobot.extensions.isNotCommand
 import com.everbald.folobot.service.nlp.TextRazorService
 import org.springframework.stereotype.Service
@@ -15,7 +15,7 @@ class FreelanceService(
     }
 
     fun isAboutFreelance(update: Update): Boolean =
-        update.getMsg().isNotCommand
+        update.msg.isNotCommand
             .and(
                 listOf(
                     "работ",
@@ -42,9 +42,9 @@ class FreelanceService(
                     "GUI", "многопоточность", "баг", "рефакторинг", "агрегация данных", "буфер обмена",
                     "платформа разработки"
                 ).any {
-                    update.getMsg().text?.contains(it, true) == true
+                    update.msg.text?.contains(it, true) == true
                 }.or(
-                    (textRazorService.textAnalysis(update.getMsg().text)?.response?.categories
+                    (textRazorService.textAnalysis(update.msg.text)?.response?.categories
                         ?.any { it.categoryId == TEXT_CATEGORY } == true
                             )
                 )

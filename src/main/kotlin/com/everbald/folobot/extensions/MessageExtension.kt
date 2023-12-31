@@ -1,6 +1,6 @@
 package com.everbald.folobot.extensions
 
-import com.everbald.folobot.model.BotCommand
+import com.everbald.folobot.domain.type.BotCommand
 import com.everbald.folobot.utils.FoloId.FOLOMKIN_ID
 import com.everbald.folobot.utils.FoloId.FOLO_SWARM
 import org.telegram.telegrambots.meta.api.objects.EntityType

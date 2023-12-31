@@ -1,10 +1,7 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.model.dto.FoloUserDto
-import com.everbald.folobot.model.dto.toEntity
-import com.everbald.folobot.persistence.entity.FoloUserEntity
-import com.everbald.folobot.persistence.entity.toDto
-import com.everbald.folobot.persistence.repos.FoloUserRepo
+import com.everbald.folobot.domain.FoloUser
+import com.everbald.folobot.persistence.repo.FoloUserRepo
 import org.springframework.stereotype.Component
 
 @Component
@@ -13,41 +10,31 @@ class FoloUserService(private val foloUserRepo: FoloUserRepo) {
      * Прочитать все
      * @return [<]
      */
-    fun findAll(): List<FoloUserDto> {
-        return foloUserRepo.findAll().map { it.toDto() }
-    }
+    fun findAll(): List<FoloUser> = foloUserRepo.getAll()
 
     /**
      * Чтение по Id
      * @param userId [Long] Id
-     * @return [FoloUserDto]
+     * @return [FoloUser]
      */
-    fun findById(userId: Long): FoloUserDto {
-        return foloUserRepo.findUserByUserId(userId)?.toDto() ?: FoloUserEntity(userId).toDto()
-    }
+    fun find(userId: Long): FoloUser = foloUserRepo.find(userId) ?: FoloUser(userId)
 
     /**
      * Проверка наличия
      * @param userId Id пользователя
      * @return да/нет
      */
-    fun existsById(userId: Long): Boolean {
-        return foloUserRepo.existsById(userId)
-    }
+    fun exists(userId: Long): Boolean = foloUserRepo.exists(userId)
 
     /**
      * Сохранение
-     * @param dto [FoloUserDto]
+     * @param user [FoloUser]
      */
-    fun save(dto: FoloUserDto) {
-        foloUserRepo.save(dto.toEntity())
-    }
+    fun save(user: FoloUser) = foloUserRepo.save(user)
 
     /**
      * Удаление
-     * @param dto [FoloUserDto]
+     * @param user [FoloUser]
      */
-    fun delete(dto: FoloUserDto) {
-        foloUserRepo.delete(dto.toEntity())
-    }
+    fun delete(user: FoloUser) = foloUserRepo.delete(user.userId)
 }

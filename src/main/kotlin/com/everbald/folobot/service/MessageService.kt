@@ -3,7 +3,7 @@ package com.everbald.folobot.service
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.extensions.chatId
 import com.everbald.folobot.extensions.getChatIdentity
-import com.everbald.folobot.extensions.getMsg
+import com.everbald.folobot.extensions.msg
 import com.everbald.folobot.extensions.messageId
 import com.everbald.folobot.utils.FoloId
 import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
@@ -38,12 +38,14 @@ class MessageService(
         update: Update,
         replyMarkup: ReplyKeyboard? = null,
         reply: Boolean = false,
+        disablePreview: Boolean = false,
         parseMode: String = ParseMode.MARKDOWN
     ) = SendMessage.builder()
         .parseMode(parseMode)
         .chatId(update.chatId)
         .text(text)
         .also { if (reply) it.replyToMessageId(update.message.messageId) }
+        .disableWebPagePreview(disablePreview)
         .also { sendMessage -> replyMarkup?.let<ReplyKeyboard, Unit> { sendMessage.replyMarkup(it) } }
         .build()
 
@@ -68,11 +70,12 @@ class MessageService(
         update: Update,
         replyMarkup: ReplyKeyboard? = null,
         reply: Boolean = false,
+        disablePreview: Boolean = false,
         parseMode: String = ParseMode.MARKDOWN
     ): Message? =
         try {
-            foloBot.execute(buildMessage(text, update, replyMarkup, reply, parseMode))
-                .also { if (update.getMsg().isUserMessage) forwardMessage(FoloId.POC_ID, it) }
+            foloBot.execute(buildMessage(text, update, replyMarkup, reply, disablePreview, parseMode))
+                .also { if (update.msg.isUserMessage) forwardMessage(FoloId.POC_ID, it) }
         } catch (e: TelegramApiException) {
             logger.error(e) { "Message text was: $text" }
             null
@@ -256,8 +259,8 @@ class MessageService(
         text: String? = null,
         replyMarkup: ReplyKeyboard? = null,
         parseMode: String = ParseMode.MARKDOWN
-    ): SendPhoto {
-        return buildPhoto(
+    ): SendPhoto =
+        buildPhoto(
             InputFile(
                 this::class.java.getResourceAsStream(photoPath),
                 photoPath.substringAfterLast("/")
@@ -267,7 +270,6 @@ class MessageService(
             replyMarkup,
             parseMode
         )
-    }
 
     fun sendPhoto(
         photo: InputFile,
@@ -275,14 +277,13 @@ class MessageService(
         text: String? = null,
         replyMarkup: ReplyKeyboard? = null,
         parseMode: String = ParseMode.MARKDOWN
-    ): Message? {
-        return try {
-            return foloBot.execute(buildPhoto(photo, chatId, text, replyMarkup, parseMode))
+    ): Message? =
+        try {
+            foloBot.execute(buildPhoto(photo, chatId, text, replyMarkup, parseMode))
         } catch (e: TelegramApiException) {
             logger.error { e }
             null
         }
-    }
 
     fun sendPhoto(
         photoPath: String,
@@ -290,14 +291,13 @@ class MessageService(
         text: String? = null,
         replyMarkup: ReplyKeyboard? = null,
         parseMode: String = ParseMode.MARKDOWN
-    ): Message? {
-        return try {
+    ): Message? =
+        try {
             foloBot.execute(buildPhoto(photoPath, chatId, text, replyMarkup, parseMode))
         } catch (e: Exception) {
             logger.error { e }
             null
         }
-    }
 
     private fun buildVoice(
         voiceId: String,
@@ -316,33 +316,30 @@ class MessageService(
         text: String? = null,
         chatId: Long,
         parseMode: String = ParseMode.MARKDOWN
-    ): Message? {
-        return try {
-            return foloBot.execute(buildVoice(voiceId, text, chatId, parseMode))
+    ): Message? =
+        try {
+            foloBot.execute(buildVoice(voiceId, text, chatId, parseMode))
         } catch (e: TelegramApiException) {
             logger.error { e }
             null
         }
-    }
 
 
-    fun deleteMessage(update: Update): Boolean {
-        return try {
+    fun deleteMessage(update: Update): Boolean =
+        try {
             foloBot.execute(DeleteMessage(update.message.chatId.toString(), update.message.messageId))
         } catch (e: TelegramApiException) {
             logger.error { e }
             false
         }
-    }
 
-    fun deleteMessage(chatId: Long, messageId: Int): Boolean {
-        return try {
-            return foloBot.execute(DeleteMessage(chatId.toString(), messageId))
+    fun deleteMessage(chatId: Long, messageId: Int): Boolean =
+        try {
+            foloBot.execute(DeleteMessage(chatId.toString(), messageId))
         } catch (e: TelegramApiException) {
             logger.error { e }
             false
         }
-    }
 
     fun substituteMessage(update: Update) {
         forwardMessage(update.message.chatId, update)

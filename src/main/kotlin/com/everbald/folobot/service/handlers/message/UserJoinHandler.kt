@@ -1,7 +1,7 @@
 package com.everbald.folobot.service.handlers.message
 
 import com.everbald.folobot.extensions.*
-import com.everbald.folobot.model.Action
+import com.everbald.folobot.domain.type.Action
 import com.everbald.folobot.service.MessageService
 import com.everbald.folobot.service.UserService
 import jakarta.annotation.Priority

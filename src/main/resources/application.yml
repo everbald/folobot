@@ -18,24 +18,16 @@ server:
 #    tomcat: org.apache.catalina, org.apache.coyote, org.apache.tomcat
 
 spring:
-  main:
-    allow-circular-references: true
   datasource:
     url: jdbc:postgresql://db:5432/${DB_NAME}?user=${DB_USER}&password=${DB_PASS}
-  jpa:
-    properties:
-      hibernate:
-        ddl-auto: update
-        jdbc:
-          time_zone: Europe/Moscow
-    generate-ddl: true
-    open-in-view: false
+    driver-class-name: org.postgresql.Driver
   liquibase:
     enabled: true
     change-log: 'classpath:db/changelog/changelog-master.yml'
   mustache:
     servlet:
       expose-request-attributes: true
+
 bot:
   username: ${BOT_USERNAME}
   token: ${BOT_TOKEN}

@@ -2,8 +2,8 @@ package com.everbald.folobot.service.handlers.message
 
 import com.everbald.folobot.config.BotCredentialsConfig
 import com.everbald.folobot.extensions.*
-import com.everbald.folobot.model.Action
-import com.everbald.folobot.model.BotCommand
+import com.everbald.folobot.domain.type.Action
+import com.everbald.folobot.domain.type.BotCommand
 import com.everbald.folobot.service.CommandService
 import com.everbald.folobot.service.MessageService
 import jakarta.annotation.Priority
@@ -53,6 +53,7 @@ class CommandHandler(
             BotCommand.FOLOCOIN -> commandService.foloCoin(update)
             BotCommand.FOLOCOINTRANSFER -> commandService.foloCoinTransfer(update)
             BotCommand.IT -> commandService.aboutIt(update)
+            BotCommand.FOLOBAIL -> commandService.foloBail(update)
             else -> {}
         }
     }

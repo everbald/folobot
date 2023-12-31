@@ -1,7 +1,7 @@
 package com.everbald.folobot.service.folopidor
 
 import com.everbald.folobot.extensions.*
-import com.everbald.folobot.model.PluralType
+import com.everbald.folobot.domain.type.PluralType
 import com.everbald.folobot.service.*
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -37,9 +37,9 @@ class FoloPidorCallbackService(
                 logger.debug { "Updated $foloPidor score" }
 
                 //Обновляем текущего победителя
-                foloVarService.setLastFolopidorWinner(update.chatId, foloPidor.id.userId)
+                foloVarService.setLastFolopidorWinner(update.chatId, foloPidor.user.userId)
                 foloVarService.setLastFolopidorDate(update.chatId, LocalDate.now())
-                logger.info { "Updated foloPidor winner ${foloPidor.foloUser.getTagName()} and win date ${LocalDate.now()}" }
+                logger.info { "Updated foloPidor winner ${foloPidor.user.getTagName()} and win date ${LocalDate.now()}" }
 
                 //Поздравляем
                 messageService.editMessageCaption(
@@ -55,7 +55,7 @@ class FoloPidorCallbackService(
                 messageService.editMessageCaption(
                     "Фолопидор дня уже выбран, это *" +
                             userService.getFoloUserName(
-                                foloPidorService.findById(update.chatId, lastWinner),
+                                foloPidorService.find(update.chatId, lastWinner),
                                 update.chatId
                             ) +
                             "*. Пойду лучше лампово попержу в диван",

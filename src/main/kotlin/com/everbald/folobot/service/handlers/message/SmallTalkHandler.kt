@@ -4,7 +4,7 @@ import com.everbald.folobot.extensions.addActionReceived
 import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.isFromFoloSwarm
 import com.everbald.folobot.extensions.isTextMessage
-import com.everbald.folobot.model.Action
+import com.everbald.folobot.domain.type.Action
 import com.everbald.folobot.service.CommandService
 import com.everbald.folobot.service.FreelanceService
 import com.everbald.folobot.service.SmallTalkService

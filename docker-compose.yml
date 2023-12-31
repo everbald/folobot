@@ -21,7 +21,7 @@ services:
       - TEXTRAZOR_TOKEN
       - TZ=Europe/Moscow
   db:
-    image: postgres:latest
+    image: postgres:15.5-alpine
     container_name: db
     restart: unless-stopped
 #    ports:
@@ -57,7 +57,7 @@ services:
     environment:
       - TZ=Europe/Moscow
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    command: certonly --webroot -w /var/www/certbot --force-renewal --email aravin.roman@yandex.ru --expand -d folomkin.ru -d mail.folomkin.ru -d folobot.ru --agree-tos
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email aravin.roman@yandex.ru --expand -d folomkin.ru -d --agree-tos
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower

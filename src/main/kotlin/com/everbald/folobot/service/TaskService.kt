@@ -2,7 +2,7 @@ package com.everbald.folobot.service
 
 import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.toText
-import com.everbald.folobot.model.PluralType
+import com.everbald.folobot.domain.type.PluralType
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.FoloIndexService
 import mu.KLogging

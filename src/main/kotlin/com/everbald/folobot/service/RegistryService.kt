@@ -17,7 +17,8 @@ class RegistryService(
     private val messageService: MessageService,
     private val foloIndexService: FoloIndexService,
     private val foloCoinService: FoloCoinService,
-    private val messageQueueService: MessageQueueService
+    private val messageQueueService: MessageQueueService,
+    private val foloBailService: FoloBailService,
 ) : KLogging() {
     fun register(update: Update) {
         if (update.hasMessage()) {
@@ -27,6 +28,8 @@ class RegistryService(
             forwardPrivate(update)
             //Добавление очков активности
             addActivityPoints(update)
+            //Зарегистрировать слив
+            registerBail(update)
             //Добавить в очередь
             addToMessageQueue(update)
         }
@@ -37,20 +40,24 @@ class RegistryService(
      *
      * @param update [Update]
      */
-    private fun saveFoloUser(update: Update) {
-        val message = update.message
-        if (message.isAutomaticForward != true) {
-            (message.from ?: message.newChatMembers?.firstOrNull())?.run {
-                // Фолопользователь
-                foloUserService.save(foloUserService.findById(this.id).setName(this.getName()))
-                // И фолопидор
-                if (!message.isUserMessage && message.isNotUserJoin()) {
-                    foloPidorService.save(foloPidorService.findById(message.chatId, this.id).updateMessagesPerDay())
+    private fun saveFoloUser(update: Update) =
+        update.message
+            .let { message ->
+                if (message.isAutomaticForward != true) {
+                    (message.from ?: message.newChatMembers?.firstOrNull())
+                        ?.let {
+                        // Фолопользователь
+                        foloUserService.save(foloUserService.find(it.id).setName(it.getName()))
+                        // И фолопидор
+                        if (!message.isUserMessage && message.isNotUserJoin()) {
+                            foloPidorService.save(
+                                foloPidorService.find(message.chatId, it.id).updateMessagesPerDay()
+                            )
+                        }
+                        logger.trace { "Saved foloUser ${it.getName()}" }
+                    }
                 }
-                logger.trace { "Saved foloUser ${this.getName()}" }
             }
-        }
-    }
 
     /**
      * Пересылка личных сообщений
@@ -80,4 +87,6 @@ class RegistryService(
     }
 
     private fun addToMessageQueue(update: Update) = messageQueueService.addToQueue(update.message)
+
+    private fun registerBail(update: Update) = foloBailService.register(update)
 }

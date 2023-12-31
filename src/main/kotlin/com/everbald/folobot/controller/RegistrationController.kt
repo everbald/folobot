@@ -1,6 +1,6 @@
 package com.everbald.folobot.controller
 
-import com.everbald.folobot.model.Authority
+import com.everbald.folobot.domain.type.Authority
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.UserDetailsManager
