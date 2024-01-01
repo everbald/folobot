@@ -11,9 +11,9 @@ import org.telegram.telegrambots.meta.api.objects.Update
 class UserSharedHandler(
     private val foloCoinService: FoloCoinService
 ) : AbstractMessageHandler() {
-    override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isUserShared())
+    override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isUserShared)
         .also {
-            if (it) logger.addUserSharedReceived(getChatIdentity(update.message.chatId), update.message.from.getName())
+            if (it) logger.addUserSharedReceived(getChatIdentity(update.message.chatId), update.message.from.name)
         }
 
     override fun handle(update: Update) = foloCoinService.transferCoin(update)

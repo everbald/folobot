@@ -9,7 +9,7 @@ import com.aallam.openai.api.file.FileSource
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.everbald.folobot.extensions.getChatIdentity
-import com.everbald.folobot.extensions.getName
+import com.everbald.folobot.extensions.name
 import com.everbald.folobot.extensions.isAboutBot
 import com.everbald.folobot.extensions.telegramEscape
 import io.ktor.client.network.sockets.*
@@ -88,7 +88,7 @@ class SmallTalkService(
                 )
             }
             logger.info {
-                "Had a small talk with ${update.message.from.getName()} " +
+                "Had a small talk with ${update.message.from.name} " +
                         "in chat ${getChatIdentity(update.message.chatId)}"
             }
         } catch (ex: SocketTimeoutException) {
@@ -114,7 +114,7 @@ class SmallTalkService(
                 reply = true
             )
             logger.info {
-                "Transcribed file for ${update.message.from.getName()} " +
+                "Transcribed file for ${update.message.from.name} " +
                         "in chat ${getChatIdentity(update.message.chatId)}"
             }
         } catch (ex: SocketTimeoutException) {
@@ -178,7 +178,7 @@ class SmallTalkService(
     private fun Message?.preparePrompt(): String? {
         val request = this?.text?.preparePrompt() ?: this?.caption?.preparePrompt()
         return request?.let {
-            val prefix = if (!userService.isSelf(this?.from) && !this.isAboutBot()) "Гурманыч, " else ""
+            val prefix = if (!userService.isSelf(this?.from) && !this.isAboutBot) "Гурманыч, " else ""
             prefix + it
         }
     }

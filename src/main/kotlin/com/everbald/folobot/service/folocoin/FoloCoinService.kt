@@ -1,7 +1,7 @@
 package com.everbald.folobot.service.folocoin
 
 import com.everbald.folobot.domain.FoloCoin
-import com.everbald.folobot.extensions.getName
+import com.everbald.folobot.extensions.name
 import com.everbald.folobot.extensions.isAboutFo
 import com.everbald.folobot.extensions.isFolochat
 import com.everbald.folobot.extensions.isFromFoloSwarm
@@ -42,7 +42,7 @@ class FoloCoinService(
 
     fun addCoinPoints(update: Update) {
         if (update.message.chat.isFolochat()) {
-            val points = if (update.message.isAboutFo()) 3 else 1
+            val points = if (update.message.isAboutFo) 3 else 1
             val receiver =
                 if (update.message.isFromFoloSwarm() || update.message.isAutomaticForward == true) FOLOMKIN_ID
                 else update.message.from.id
@@ -84,7 +84,7 @@ class FoloCoinService(
         if (coinBalance > 0) {
             issueCoins(update.message.userShared.userId, 1)
             issueCoins(update.message.from.id, -1)
-            val sourceName = update.message.from.getName()
+            val sourceName = update.message.from.name
             val targetName = userService.getFoloUserName(update.message.userShared.userId)
             logger.info { "Successfully transferred folocoin from $sourceName to $targetName" }
             messageService.sendMessage(

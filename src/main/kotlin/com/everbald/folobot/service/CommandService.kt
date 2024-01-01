@@ -1,8 +1,12 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.domain.FoloBail
-import com.everbald.folobot.extensions.*
 import com.everbald.folobot.domain.type.PluralType
+import com.everbald.folobot.extensions.addMessage
+import com.everbald.folobot.extensions.chatId
+import com.everbald.folobot.extensions.from
+import com.everbald.folobot.extensions.isFo
+import com.everbald.folobot.extensions.spellOut
+import com.everbald.folobot.extensions.toTextWithNumber
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.FoloIndexService.Companion.FOLO_STOCK_IMAGE
 import com.everbald.folobot.service.hh.HHService
@@ -37,7 +41,7 @@ class CommandService(
             """
                 18 ноября 2019 года я уволился с завода по своему желанию.
                 С тех пор я стремительно вхожу в IT вот уже
-                *${Period.between(LocalDate.of(2019, 11, 18), LocalDate.now()).toText()}*!
+                *${Period.between(LocalDate.of(2019, 11, 18), LocalDate.now()).toTextWithNumber()}*!
             """.trimIndent(),
             update
         ).also { logger.addMessage(it) }
@@ -50,7 +54,7 @@ class CommandService(
         val noFapDate: LocalDate
         var noFapCount = 0
         // Фо устанавливает дату
-        if (update.message.from.isFo()) {
+        if (update.message.from.isFo) {
             noFapDate = LocalDate.now()
             foloVarService.setLastFapDate(noFapDate)
         } else {
@@ -68,8 +72,8 @@ class CommandService(
         } else {
             messageService.sendMessage(
                 "Для особо озабоченных в *${noFapCount.spellOut()}* раз повторяю тут Вам, что я с " +
-                        "*${noFapDate.toText()}* и до сих пор вот уже *${
-                            Period.between(noFapDate, LocalDate.now()).toText()
+                        "*${noFapDate.toTextWithNumber()}* и до сих пор вот уже *${
+                            Period.between(noFapDate, LocalDate.now()).toTextWithNumber()
                         }* " +
                         "твёрдо и уверенно держу \"Но Фап\".",
                 update
@@ -106,14 +110,14 @@ class CommandService(
             messageService.sendMessage(
                 "Поздравляю моего хорошего друга и главного фолопидора " +
                         "[Андрея](tg://user?id=$ANDREW_ID) с днем рождения!\nСегодня ему исполнилось " +
-                        "*${Period.between(alfaBirthday, nextAlphaBirthday).years.toText(PluralType.YEARISH)}*!",
+                        "*${Period.between(alfaBirthday, nextAlphaBirthday).years.toTextWithNumber(PluralType.YEARISH)}*!",
                 update
             )
         } else {
             messageService.sendMessage(
                 "День рождения моего хорошего друга и главного фолопидора " +
-                        "[Андрея](tg://user?id=$ANDREW_ID) *${alfaBirthday.toText()}* через " +
-                        "*${Period.between(LocalDate.now(), nextAlphaBirthday).toText()}*",
+                        "[Андрея](tg://user?id=$ANDREW_ID) *${alfaBirthday.toTextWithNumber()}* через " +
+                        "*${Period.between(LocalDate.now(), nextAlphaBirthday).toTextWithNumber()}*",
                 update
             )
         }.also { logger.addMessage(it) }
@@ -163,5 +167,10 @@ class CommandService(
         }
     }
 
-    fun foloBail(update: Update) = foloBailService.sendTodayBails(update)
+    fun foloBail(update: Update) =
+        messageService.sendPhoto(
+            chatId = update.chatId,
+            photoPath = "/static/images/skibidiBoba.jpg",
+            text = foloBailService.buildTodayBailText(update.chatId)
+        )
 }

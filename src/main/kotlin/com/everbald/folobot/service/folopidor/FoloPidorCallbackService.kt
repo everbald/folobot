@@ -86,7 +86,7 @@ class FoloPidorCallbackService(
                 val foloPidor = foloPidors[i]
                 top.add(
                     place + userService.getFoloUserName(foloPidor, update.chatId) + " — _" +
-                            foloPidor.score.toText(PluralType.COUNT) + "_"
+                            foloPidor.score.toTextWithNumber(PluralType.COUNT) + "_"
                 )
             }
             top.toString()
@@ -112,7 +112,7 @@ class FoloPidorCallbackService(
                     transform = {
                         "\u2004*${it.index + 1}*.\u2004${
                             userService.getFoloUserName(it.value, update.chatId)
-                        } — бездельничает _${it.value.getPassiveDays().toText(PluralType.DAY)}_"
+                        } — бездельничает _${it.value.getPassiveDays().toTextWithNumber(PluralType.DAY)}_"
                     }
                 )
             } else "Все *фолопидоры* были активны в последнее время! Но иногда можно и в диван попердеть..."

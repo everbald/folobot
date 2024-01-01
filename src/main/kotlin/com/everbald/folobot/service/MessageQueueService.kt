@@ -20,7 +20,7 @@ class MessageQueueService(
     val messageStack: MutableList<MessageQueue> = mutableListOf()
 
     fun addToQueue(message: Message) {
-        if (message.isNotUserJoin() && !message.isCommand) {
+        if (message.isNotUserJoin && !message.isCommand) {
             messageQueue.add(
                 MessageQueue(
                     LocalDateTime.now(),
@@ -60,7 +60,7 @@ class MessageQueueService(
             .forEach { queueMessage ->
                 queueMessage.backupMessage?.let {
                     if (messageService.checkIfMessageDeleted(queueMessage.message)) {
-                        messageService.sendMessage("${queueMessage.message.from.getName()} удолил сообщение:", queueMessage.message.chatId)
+                        messageService.sendMessage("${queueMessage.message.from.name} удолил сообщение:", queueMessage.message.chatId)
                         if (messageService.forwardMessage(queueMessage.message.chatId, it)) {
                             messageService.deleteMessage(MESSAGE_QUEUE_ID, it.messageId)
                             queueMessage.restored = true

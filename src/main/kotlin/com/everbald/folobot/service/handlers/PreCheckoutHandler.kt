@@ -13,7 +13,7 @@ class PreCheckoutHandler(
     private val preCheckoutService: PreCheckoutService,
 ) : Handler, KLogging() {
     override fun canHandle(update: Update) = update.hasPreCheckoutQuery()
-        .also { if (it) logger.addPreCheckoutQueryReceived(update.preCheckoutQuery.from.getName()) }
+        .also { if (it) logger.addPreCheckoutQueryReceived(update.preCheckoutQuery.from.name) }
 
     override fun handle(update: Update) = preCheckoutService.confirmOrder(update)
 }

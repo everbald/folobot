@@ -16,13 +16,13 @@ class UserJoinHandler(
     private val userService: UserService
 ) : AbstractMessageHandler() {
     override fun canHandle(update: Update) = (super.canHandle(update) &&
-        (update.message.isUserJoin() || update.message.isUserLeft()))
+        (update.message.isUserJoin || update.message.isUserLeft))
             .also { if (it) logger.addActionReceived(Action.USERNEW, update.message.chatId) }
 
     override fun handle(update: Update) {
         when {
-            update.message.isUserJoin() -> handleJoin(update)
-            update.message.isUserLeft() -> handleLeft(update)
+            update.message.isUserJoin -> handleJoin(update)
+            update.message.isUserLeft -> handleLeft(update)
         }
     }
 
@@ -34,10 +34,10 @@ class UserJoinHandler(
      */
     fun handleJoin(update: Update) {
         val user = update.message.newChatMembers[0]
-        if (user.isAndrew()) {
+        if (user.isAndrew) {
             messageService
                 .sendMessage("Наконец то ты вернулся, мой сладкий пирожочек Андрюша!", update, reply = true)
-        } else if (user.isVitalik()) {
+        } else if (user.isVitalik) {
             messageService.sendMessage("Как же я горю сейчас", update)
             messageService.sendMessage("Слово мужчини", update)
         } else if (userService.isSelf(user)) {
@@ -59,7 +59,7 @@ class UserJoinHandler(
                 messageService.sendMessage("настоящий тут: \nt.me/alexfolomkin", update)
             }
         }
-        logger.info { "Greeted user ${user.getName()} in chat ${getChatIdentity(update.message.chatId)}" }
+        logger.info { "Greeted user ${user.name} in chat ${getChatIdentity(update.message.chatId)}" }
     }
 
     /**
@@ -70,11 +70,11 @@ class UserJoinHandler(
      */
     fun handleLeft(update: Update) {
         val user = update.message.leftChatMember
-        if (user.isAndrew()) {
+        if (user.isAndrew) {
             messageService.sendMessage("Сладкая бориспольская булочка покинула чат", update)
         } else {
             messageService
                 .sendMessage("Куда же ты, " + userService.getFoloUserName(user) + "! Не уходи!", update)
-        }.also { logger.info { "Said goodbye to ${user.getName()} in chat ${getChatIdentity(update.message.chatId)}" } }
+        }.also { logger.info { "Said goodbye to ${user.name} in chat ${getChatIdentity(update.message.chatId)}" } }
     }
 }
