@@ -9,7 +9,7 @@ fun UpsertStatement<Long>.toFoloCoinUpsert(coin: FoloCoin) =
     this.apply {
         this[FoloCoinTable.userId] = coin.userId
         this[FoloCoinTable.points] = coin.points
-        this[FoloCoinTable.coins] = coin.points
+        this[FoloCoinTable.coins] = coin.coins
     }
 
 fun ResultRow.toFoloCoin(): FoloCoin = FoloCoin(
