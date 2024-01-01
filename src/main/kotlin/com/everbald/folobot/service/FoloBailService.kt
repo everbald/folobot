@@ -36,8 +36,8 @@ class FoloBailService(
             .let { bails ->
                 if (bails.isNotEmpty()) {
                     "*Сегодня ${bails.size.toText(PluralType.BAIL_COUNTED)} " +
-                            "${bails.size.toTextWithNumber(PluralType.BAIL)}:*" +
-                            if (fullList) " \n${bails.buildBailText()}" else ""
+                            "${bails.size.toTextWithNumber(PluralType.BAIL)}*" +
+                            if (fullList) "*:*\n${bails.buildBailText()}" else ""
                 }
                 else "*Сегодня без сливов, но не стоит расслабляться!*"
             }
