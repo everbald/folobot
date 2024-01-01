@@ -1,9 +1,15 @@
 package com.everbald.folobot.service
 
+import com.everbald.folobot.extensions.addMessageForward
+import com.everbald.folobot.extensions.name
+import com.everbald.folobot.extensions.isAndrew
+import com.everbald.folobot.extensions.isFo
+import com.everbald.folobot.extensions.isNotSuccessfulPayment
+import com.everbald.folobot.extensions.isNotUserJoin
+import com.everbald.folobot.extensions.isNotUserShared
 import com.everbald.folobot.utils.FoloId.ANDREWSLEGACY_ID
 import com.everbald.folobot.utils.FoloId.FO_LEGACY_ID
 import com.everbald.folobot.utils.FoloId.POC_ID
-import com.everbald.folobot.extensions.*
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.FoloIndexService
 import mu.KLogging
@@ -47,14 +53,14 @@ class RegistryService(
                     (message.from ?: message.newChatMembers?.firstOrNull())
                         ?.let {
                         // Фолопользователь
-                        foloUserService.save(foloUserService.find(it.id).setName(it.getName()))
+                        foloUserService.save(foloUserService.find(it.id).setName(it.name))
                         // И фолопидор
-                        if (!message.isUserMessage && message.isNotUserJoin()) {
+                        if (!message.isUserMessage && message.isNotUserJoin) {
                             foloPidorService.save(
                                 foloPidorService.find(message.chatId, it.id).updateMessagesPerDay()
                             )
                         }
-                        logger.trace { "Saved foloUser ${it.getName()}" }
+                        logger.trace { "Saved foloUser ${it.name}" }
                     }
                 }
             }
@@ -66,14 +72,14 @@ class RegistryService(
      */
     private fun forwardPrivate(update: Update) {
         if (
-            update.hasMessage() && update.message.isNotUserJoin() &&
-            update.message.isNotSuccessfulPayment() &&
-            update.message.isNotUserShared()
+            update.hasMessage() && update.message.isNotUserJoin &&
+            update.message.isNotSuccessfulPayment &&
+            update.message.isNotUserShared
         ) {
             when {
                 update.message.isUserMessage -> POC_ID
-                update.message.from.isFo() -> FO_LEGACY_ID
-                update.message.from.isAndrew() -> ANDREWSLEGACY_ID
+                update.message.from.isFo -> FO_LEGACY_ID
+                update.message.from.isAndrew -> ANDREWSLEGACY_ID
                 else -> null
             }?.let {
                 messageService.forwardMessage(it, update)

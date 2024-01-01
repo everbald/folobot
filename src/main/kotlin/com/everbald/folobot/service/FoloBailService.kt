@@ -2,10 +2,11 @@ package com.everbald.folobot.service
 
 import com.everbald.folobot.domain.FoloBail
 import com.everbald.folobot.domain.type.PluralType
-import com.everbald.folobot.extensions.chatId
+import com.everbald.folobot.extensions.isNotForward
 import com.everbald.folobot.extensions.isNotUserMessage
 import com.everbald.folobot.extensions.msg
 import com.everbald.folobot.extensions.toText
+import com.everbald.folobot.extensions.toTextWithNumber
 import com.everbald.folobot.mapper.toFoloBail
 import com.everbald.folobot.persistence.repo.FoloBailRepo
 import org.springframework.stereotype.Service
@@ -18,10 +19,9 @@ import java.time.ZoneId
 class FoloBailService(
     private val repo: FoloBailRepo,
     private val userService: UserService,
-    private val messageService: MessageService
 ) {
     fun register(update: Update) {
-        if (update.isNotUserMessage && update.msg.text.isBail()) {
+        if (update.isNotUserMessage && update.msg.isNotForward && update.msg.text.isBail()) {
             update.msg.toFoloBail()
                 .let { repo.save(it) }
         }
@@ -30,20 +30,17 @@ class FoloBailService(
     fun getTodayBails(chatId: Long) =
         repo.getInInterval(chatId, LocalDate.now().toOffsetAtStartOfDay(), LocalDate.now().toOffsetAtEndOfDay())
 
-    fun sendTodayBails(update: Update) {
-        getTodayBails(update.chatId)
+    fun buildTodayBailText(chatId: Long, fullList: Boolean = true) =
+        getTodayBails(chatId)
             .sortedByDescending { it.message.isReply }
             .let { bails ->
-                messageService.sendPhoto(
-                    chatId = update.chatId,
-                    photoPath = "/static/images/skibidiBoba.jpg",
-                    text =
-                    if (bails.isNotEmpty())
-                        "*Сегодня зафиксировано ${bails.size.toText(PluralType.BAIL)}:* \n${bails.buildBailText()}"
-                    else "*Сегодня без сливов, но не стоит расслабляться!*"
-                )
+                if (bails.isNotEmpty()) {
+                    "*Сегодня ${bails.size.toText(PluralType.BAIL_COUNTED)} " +
+                            "${bails.size.toTextWithNumber(PluralType.BAIL)}:*" +
+                            if (fullList) " \n${bails.buildBailText()}" else ""
+                }
+                else "*Сегодня без сливов, но не стоит расслабляться!*"
             }
-    }
 
     private fun String?.isBail(): Boolean =
         this?.let { it.contains("слив", true) && it.contains("засчит", true) }

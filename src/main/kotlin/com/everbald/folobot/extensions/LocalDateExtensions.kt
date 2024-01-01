@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
 
-fun LocalDate.toText() =
+fun LocalDate.toTextWithNumber() =
     DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
         .withLocale(Locale.forLanguageTag("ru"))
         .format(this).toString()

@@ -28,7 +28,7 @@ class SmallTalkHandler(
 ) : AbstractMessageHandler() {
     private var smallTalkStatus: MutableMap<Long?, Boolean> = mutableMapOf()
 
-    fun Message.isSmallTalk() = this.isTextMessage()
+    fun Message.isSmallTalk() = this.isTextMessage
         .and(isUserMessage.or(userService.isSelf(this.replyToMessage?.from)))
 
     override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isSmallTalk())

@@ -2,7 +2,7 @@ package com.everbald.folobot.service.handlers.message
 
 import com.everbald.folobot.extensions.addActionReceived
 import com.everbald.folobot.extensions.from
-import com.everbald.folobot.extensions.getName
+import com.everbald.folobot.extensions.name
 import com.everbald.folobot.extensions.isAboutBot
 import com.everbald.folobot.domain.type.Action
 import com.everbald.folobot.domain.type.BotCommand
@@ -44,22 +44,22 @@ class ChatCommandHandler(
         "Перевод фолокойна отменен",
         update,
         ReplyKeyboardRemove.builder().removeKeyboard(true).build()
-    ).also { logger.info { "Folocoin transfer canceled by user ${update.from.getName()}" } }
+    ).also { logger.info { "Folocoin transfer canceled by user ${update.from.name}" } }
 
-    private fun Message.isSmallTalk() = this.isAboutBot() &&
+    private fun Message.isSmallTalk() = this.isAboutBot &&
             (this.text?.contains("адекватно", true) == true &&
                     this.text?.contains("общ", true) == true)
 
-    private fun Message.isFolopidor() = this.isAboutBot() &&
+    private fun Message.isFolopidor() = this.isAboutBot &&
             (this.text?.contains("фолопидор", true) == true &&
                     (this.text?.contains("дня", true) == true ||
                             this.text?.contains("сегодня", true) == true))
 
-    private fun Message.isNoFap() = this.isAboutBot() &&
+    private fun Message.isNoFap() = this.isAboutBot &&
             (this.text?.contains("но фап", true) == true ||
                     this.text?.contains("дрочишь", true) == true)
 
-    private fun Message.isCoin() = this.isAboutBot() &&
+    private fun Message.isCoin() = this.isAboutBot &&
             this.text?.contains("фолобирж", true) == true
 
     private fun Message.isTransferCancel() =

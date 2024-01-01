@@ -1,8 +1,8 @@
 package com.everbald.folobot.service
 
 import com.everbald.folobot.FoloBot
-import com.everbald.folobot.extensions.getName
-import com.everbald.folobot.extensions.getPremiumPrefix
+import com.everbald.folobot.extensions.name
+import com.everbald.folobot.extensions.premiumPrefix
 import com.everbald.folobot.domain.FoloPidor
 import com.everbald.folobot.domain.FoloUser
 import mu.KLogging
@@ -27,7 +27,7 @@ class UserService(
         // По тэгу
         var userName: String = foloUser.tag
         // Получение динамически
-        if (userName.isEmpty()) userName = user.getName()
+        if (userName.isEmpty()) userName = user.name
         // По сохраненному имени
         if (userName.isEmpty()) userName = foloUser.name
         // Если не удалось определить
@@ -60,7 +60,7 @@ class UserService(
         // По тэгу
         var userName: String = foloPidor.getTag()
         // По пользователю
-        if (userName.isEmpty()) userName = chatService.getChatMember(foloPidor.user.userId, chatId)?.user?.getName() ?: ""
+        if (userName.isEmpty()) userName = chatService.getChatMember(foloPidor.user.userId, chatId)?.user?.name ?: ""
         // По сохраненному имени
         if (userName.isEmpty()) userName = foloPidor.getName()
         // Если не удалось определить
@@ -74,7 +74,7 @@ class UserService(
     fun getCustomNamePrefix(user: User, chatId: Long): String =
         (getCustomAdminTitle(user.id, chatId)
             ?.let { "ваше фолопидрейшество $it " }
-            ?: user.getPremiumPrefix())
+            ?: user.premiumPrefix)
 
     fun getCustomName(user: User, chatId: Long): String =
         getCustomNamePrefix(user, chatId) + getFoloUserName(user)

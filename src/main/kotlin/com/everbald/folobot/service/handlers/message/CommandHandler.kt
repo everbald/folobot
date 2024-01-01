@@ -21,7 +21,7 @@ class CommandHandler(
     private val botCredentials: BotCredentialsConfig
 ) : AbstractMessageHandler() {
     fun Message.isMyCommand() =
-        this.isCommand && this.isNotForward() &&
+        this.isCommand && this.isNotForward &&
                 (this.chat.isUserChat ||
                         this.entities.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text
                             ?.contains(botCredentials.botUsername) == true)
@@ -35,7 +35,7 @@ class CommandHandler(
                 logger.addCommandReceived(
                     it,
                     getChatIdentity(update.message.chatId),
-                    update.from.getName()
+                    update.from.name
                 )
             }
         ) {

@@ -15,14 +15,14 @@ class ReplyHandler(
     private val userService: UserService,
     private val messageService: MessageService
 ) : AbstractMessageHandler() {
-    fun Message.isGreetMe() = this.isNotForward() && this.isAboutBot() &&
+    fun Message.isGreetMe() = this.isNotForward && this.isAboutBot &&
             this.text?.contains("привет", ignoreCase = true) == true
 
     override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isGreetMe())
             .also { if (it) logger.addActionReceived(Action.REPLY, update.message.chatId) }
 
     override fun handle(update: Update) {
-        if (update.message.from.isAndrew()) {
+        if (update.message.from.isAndrew) {
             messageService
                 .sendMessage("Привет, моя сладкая бориспольская булочка!", update, reply = true)
         } else {

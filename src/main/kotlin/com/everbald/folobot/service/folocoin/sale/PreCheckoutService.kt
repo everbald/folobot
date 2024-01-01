@@ -2,7 +2,7 @@ package com.everbald.folobot.service.folocoin.sale
 
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.extensions.addOutdatedInvoiceCheckout
-import com.everbald.folobot.extensions.getName
+import com.everbald.folobot.extensions.name
 import com.everbald.folobot.extensions.toObject
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.model.InvoicePayload
@@ -39,7 +39,7 @@ class PreCheckoutService(
             .ok(isValid)
         if (!isValid) {
             answer.errorMessage("Цена фолокойна изменилась, запросите у бота новый счет")
-            logger.addOutdatedInvoiceCheckout(update.preCheckoutQuery.from.getName())
+            logger.addOutdatedInvoiceCheckout(update.preCheckoutQuery.from.name)
         }
         return answer.build()
     }

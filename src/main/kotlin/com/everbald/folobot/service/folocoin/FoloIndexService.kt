@@ -50,8 +50,8 @@ class FoloIndexService(
     fun addActivityPoints(update: Update) {
         if (update.hasMessage()) {
             val points =
-                if (update.message.from.isFo()) 3
-                else if (update.message.isAboutFo()) 2
+                if (update.message.from.isFo) 3
+                else if (update.message.isAboutFo) 2
                 else 1
             foloIndexRepo.save(getById(update.message.chatId, LocalDate.now()).addPoints(points))
             logger.trace {
