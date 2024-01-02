@@ -28,6 +28,7 @@ class CommandService(
     private val keyboardService: KeyboardService,
     private val foloCoinService: FoloCoinService,
     private val foloBailService: FoloBailService,
+    private val smallTalkService: SmallTalkService,
     private val hhService: HHService,
     private val userService: UserService,
 ) : KLogging() {
@@ -173,4 +174,7 @@ class CommandService(
             photoPath = "/static/images/skibidiBoba.jpg",
             text = foloBailService.buildTodayBailText(update.chatId)
         )
+
+    fun createImage(update: Update) =
+        smallTalkService.createImage(update)
 }

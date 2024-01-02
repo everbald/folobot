@@ -6,6 +6,7 @@ import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.ParseMode
+import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard
@@ -44,9 +45,19 @@ class MessageQueueService(
         disablePreview: Boolean = false,
         parseMode: String = ParseMode.MARKDOWN
     ) {
-        messageService.sendMessage(text, update, replyMarkup, reply, disablePreview, parseMode)?.let {
-            messageQueue.add(MessageQueue(LocalDateTime.now(), it))
-        }
+        messageService.sendMessage(text, update, replyMarkup, reply, disablePreview, parseMode)
+            ?.let { messageQueue.add(MessageQueue(LocalDateTime.now(), it)) }
+    }
+
+    fun sendAndAddToQueue(
+        photo: InputFile,
+        chatId: Long,
+        text: String? = null,
+        replyMarkup: ReplyKeyboard? = null,
+        parseMode: String = ParseMode.MARKDOWN
+    ) {
+        messageService.sendPhoto(photo, chatId, text, replyMarkup, parseMode)
+            ?.let { messageQueue.add(MessageQueue(LocalDateTime.now(), it)) }
     }
 
 

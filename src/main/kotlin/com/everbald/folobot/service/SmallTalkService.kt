@@ -6,11 +6,15 @@ import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.exception.OpenAIException
 import com.aallam.openai.api.file.FileSource
+import com.aallam.openai.api.image.ImageCreation
+import com.aallam.openai.api.image.ImageSize
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import com.everbald.folobot.extensions.chatId
 import com.everbald.folobot.extensions.getChatIdentity
-import com.everbald.folobot.extensions.name
 import com.everbald.folobot.extensions.isAboutBot
+import com.everbald.folobot.extensions.msg
+import com.everbald.folobot.extensions.name
 import com.everbald.folobot.extensions.telegramEscape
 import io.ktor.client.network.sockets.*
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -18,17 +22,22 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KLogging
 import okio.source
+import okio.use
+import org.apache.commons.codec.binary.Base64
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.ParseMode
+import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import java.io.ByteArrayInputStream
+
 
 @Service
 class SmallTalkService(
     private val openAI: OpenAI,
     private val userService: UserService,
     private val messageQueueService: MessageQueueService,
-    private val fileService: FileService
+    private val fileService: FileService,
 ) : KLogging() {
     fun smallTalk(update: Update, withInit: Boolean = false) {
         val messageStack = buildChatMessageStack(update.message)
@@ -68,6 +77,16 @@ class SmallTalkService(
                 makeRequest(it, update)
             }
         }
+    }
+
+    fun createImage(update: Update) {
+        ImageCreation(
+            prompt = update.msg.text,
+            model = ModelId("dall-e-3"),
+            n = 1,
+            size = ImageSize.is1024x1024
+        )
+            .let { makeRequest(it, update) }
     }
 
     private fun buildPrompt(message: Message): String? =
@@ -115,6 +134,38 @@ class SmallTalkService(
             )
             logger.info {
                 "Transcribed file for ${update.message.from.name} " +
+                        "in chat ${getChatIdentity(update.message.chatId)}"
+            }
+        } catch (ex: SocketTimeoutException) {
+            logger.warn { "Request to OpenAI API finished with socket timeout" }
+        } catch (ex: OpenAIException) {
+            messageQueueService.sendAndAddToQueue(
+                text = "Нет настроения общаться сегодня. Осеннее обострение",
+                update = update,
+                reply = true
+            )
+            logger.error(ex) { "Request to OpenAI API finished with error" }
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun makeRequest(request: ImageCreation, update: Update) = GlobalScope.launch {
+        try {
+            openAI.imageJSON(request).firstOrNull()
+                ?.b64JSON
+                ?.let { ByteArrayInputStream(Base64.decodeBase64(it)) }
+                ?.use {
+                    InputFile(it, "folo_image.png")
+                        .let {
+                            messageQueueService.sendAndAddToQueue(
+                                photo = it,
+                                chatId = update.chatId,
+                                text = "Результат творческой, неординарной, высокохудожественной генерации по запросу: ${request.prompt}"
+                            )
+                        }
+                }
+            logger.info {
+                "Generated image for ${update.message.from.name} " +
                         "in chat ${getChatIdentity(update.message.chatId)}"
             }
         } catch (ex: SocketTimeoutException) {
