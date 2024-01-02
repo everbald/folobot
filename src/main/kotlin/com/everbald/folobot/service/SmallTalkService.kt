@@ -11,6 +11,7 @@ import com.aallam.openai.api.image.ImageSize
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.everbald.folobot.extensions.chatId
+import com.everbald.folobot.extensions.extractCommandText
 import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.isAboutBot
 import com.everbald.folobot.extensions.msg
@@ -80,13 +81,19 @@ class SmallTalkService(
     }
 
     fun createImage(update: Update) {
-        ImageCreation(
-            prompt = update.msg.text,
-            model = ModelId("dall-e-2"),
-            n = 1,
-            size = ImageSize.is1024x1024
-        )
-            .let { makeRequest(it, update) }
+        update.msg.extractCommandText().orEmpty()
+            .let { messageText ->
+                if (messageText.isNotEmpty()) {
+                    ImageCreation(
+                        prompt = messageText,
+                        model = ModelId("dall-e-2"),
+                        n = 1,
+                        size = ImageSize.is1024x1024
+                    )
+                        .let { makeRequest(it, update) }
+                } else messageQueueService.sendAndAddToQueue("A где?", update)
+            }
+
     }
 
     private fun buildPrompt(message: Message): String? =
