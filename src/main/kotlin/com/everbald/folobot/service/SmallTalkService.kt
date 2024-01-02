@@ -151,6 +151,10 @@ class SmallTalkService(
     @OptIn(DelicateCoroutinesApi::class)
     private fun makeRequest(request: ImageCreation, update: Update) = GlobalScope.launch {
         try {
+            logger.info {
+                "Making image generation request for ${update.message.from.name} " +
+                        "in chat \${getChatIdentity(update.message.chatId)"
+            }
             openAI.imageJSON(request).firstOrNull()
                 ?.b64JSON
                 ?.let { ByteArrayInputStream(Base64.decodeBase64(it)) }
