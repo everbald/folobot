@@ -54,6 +54,7 @@ class CommandHandler(
             BotCommand.FOLOCOINTRANSFER -> commandService.foloCoinTransfer(update)
             BotCommand.IT -> commandService.aboutIt(update)
             BotCommand.FOLOBAIL -> commandService.foloBail(update)
+            BotCommand.IMAGE -> commandService.createImage(update)
             else -> {}
         }
     }
