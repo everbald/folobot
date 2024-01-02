@@ -91,7 +91,11 @@ class SmallTalkService(
                         size = ImageSize.is1024x1024
                     )
                         .let { makeRequest(it, update) }
-                } else messageQueueService.sendAndAddToQueue("A где?", update)
+                } else messageQueueService.sendAndAddToQueue(
+                    text = "A где?",
+                    update = update,
+                    reply = true
+                )
             }
 
     }
