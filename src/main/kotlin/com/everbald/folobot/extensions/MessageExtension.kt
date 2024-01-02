@@ -38,12 +38,24 @@ val Message?.isAboutBot: Boolean get() = listOf("гурманыч", "шурка"
 }
 
 fun Message?.getBotCommand(): String? {
-    var command = this?.entities?.firstOrNull { it.type == "bot_command" }?.text?.substringBefore("@")
+    var command = this?.entities?.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text?.substringBefore("@")
     if (command == BotCommand.START.command) {
         command = this?.text?.substringAfter(BotCommand.START.command)?.trimIndent().orEmpty()
             .ifEmpty { BotCommand.START.command }
     }
     return command
 }
+
+fun Message?.extractCommandText(): String? =
+    this?.entities
+        ?.firstOrNull { it.type == EntityType.BOTCOMMAND }
+        ?.text
+        ?.let { this.text?.replace(it, "") }
+        ?.trimIndent()
+        ?: this?.text
+
+
+
+
 
 
