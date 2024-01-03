@@ -61,14 +61,14 @@ class FoloPidorCallbackService(
                             "*. Пойду лучше лампово попержу в диван",
                     update,
                     keyboardService.getFoloPidorKeyboard()
-                ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with folopidor of the day" } }
+                ).also { logger.debug { "Replied to ${update.chatId.chatIdentity} with folopidor of the day" } }
             }
         } else {
             messageService.editMessageCaption(
                 "Для меня вы все фолопидоры, ${userService.getFoloUserName(update.chatId)}",
                 update,
                 keyboardService.getFoloPidorKeyboard()
-            ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with folopidor of the day" } }
+            ).also { logger.debug { "Replied to ${update.chatId.chatIdentity} with folopidor of the day" } }
         }
     }
 
@@ -92,7 +92,7 @@ class FoloPidorCallbackService(
             top.toString()
         } else "Андрей - почетный фолопидор на все времена!"
         messageService.editMessageCaption(text, update, keyboardService.getFoloPidorKeyboard()).also {
-            logger.debug { "Replied to ${getChatIdentity(update.chatId)} with folopidor top" }
+            logger.debug { "Replied to ${update.chatId.chatIdentity} with folopidor top" }
         }
     }
 
@@ -118,7 +118,7 @@ class FoloPidorCallbackService(
             } else "Все *фолопидоры* были активны в последнее время! Но иногда можно и в диван попердеть..."
         } else "Предавайтесь фоломании хотя бы 10 минут в день!"
         messageService.editMessageCaption(text, update, keyboardService.getFoloPidorKeyboard()).also {
-            logger.debug { "Replied to ${getChatIdentity(update.chatId)} with foloslackers" }
+            logger.debug { "Replied to ${update.chatId.chatIdentity} with foloslackers" }
         }
     }
 
@@ -138,7 +138,7 @@ class FoloPidorCallbackService(
             } else "Все *фолопидоры* хотя бы раз побывали *фолопидорами дня*, это потрясающе!"
         } else "Для меня вы все фолопидоры, ${userService.getFoloUserName(update.chatId)}"
         messageService.editMessageCaption(text, update, keyboardService.getFoloPidorKeyboard()).also {
-            logger.debug { "Replied to ${getChatIdentity(update.chatId)} with folounderdogs" }
+            logger.debug { "Replied to ${update.chatId.chatIdentity} with folounderdogs" }
         }
     }
 }

@@ -40,7 +40,7 @@ class FoloCoinCallbackService(
             text,
             update,
             keyboardService.getFoloCoinKeyboard(update.isUserMessage)
-        ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with coin balance" } }
+        ).also { logger.debug { "Replied to ${update.chatId.chatIdentity} with coin balance" } }
     }
 
     fun coinPrice(update: Update) {
@@ -52,7 +52,7 @@ class FoloCoinCallbackService(
                     update,
                     keyboardService.getFoloCoinKeyboard(update.isUserMessage)
                 )
-            }.also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with coin price" } }
+            }.also { logger.debug { "Replied to ${update.chatId.chatIdentity} with coin price" } }
     }
 
     fun foloMillionaire(update: Update) {
@@ -69,7 +69,7 @@ class FoloCoinCallbackService(
             ),
             update,
             keyboardService.getFoloCoinKeyboard(update.isUserMessage)
-        ).also { "Replied to ${getChatIdentity(update.chatId)} with folomillionaire chart" }
+        ).also { "Replied to ${update.chatId.chatIdentity} with folomillionaire chart" }
     }
 
     fun buyCoin(update: Update) {
@@ -78,7 +78,7 @@ class FoloCoinCallbackService(
             "Создан счет на оплату",
             update,
             keyboardService.getFoloCoinKeyboard(update.isUserMessage)
-        ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with coin invoice" } }
+        ).also { logger.debug { "Replied to ${update.chatId.chatIdentity} with coin invoice" } }
         invoiceService.sendInvoice(update)
     }
 
@@ -88,7 +88,7 @@ class FoloCoinCallbackService(
             "Выбор фолопидора для перевода",
             update,
             keyboardService.getFoloCoinKeyboard(update.isUserMessage)
-        ).also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with folotransfer keyboard" } }
+        ).also { logger.debug { "Replied to ${update.chatId.chatIdentity} with folotransfer keyboard" } }
         commandService.foloCoinTransfer(update)
     }
 
@@ -107,7 +107,7 @@ class FoloCoinCallbackService(
                     update,
                     keyboardService.getFoloCoinKeyboard(update.isUserMessage)
                 )
-            }.also { logger.debug { "Replied to ${getChatIdentity(update.chatId)} with foloindex" } }
+            }.also { logger.debug { "Replied to ${update.chatId.chatIdentity} with foloindex" } }
     }
 
     private fun buildTitlePhotoFile() =

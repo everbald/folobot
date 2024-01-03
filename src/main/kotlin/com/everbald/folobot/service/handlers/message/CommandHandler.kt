@@ -34,16 +34,16 @@ class CommandHandler(
             BotCommand.fromCommand(update.message.getBotCommand()).also {
                 logger.addCommandReceived(
                     it,
-                    getChatIdentity(update.message.chatId),
+                    update.message.chatId.chatIdentity,
                     update.from.name
                 )
             }
         ) {
             BotCommand.START -> messageService.sendSticker(messageService.randomSticker, update)
-                .also { logger.info { "Sent sticker to ${getChatIdentity(update.message.chatId)}" } }
+                .also { logger.info { "Sent sticker to ${update.message.chatId.chatIdentity}" } }
 
             BotCommand.SILENTSTREAM -> messageService.sendSticker(messageService.randomSticker, update)
-                .also { logger.info { "Sent sticker to ${getChatIdentity(update.message.chatId)}" } }
+                .also { logger.info { "Sent sticker to ${update.message.chatId.chatIdentity}" } }
 
             BotCommand.SMALLTALK -> smallTalkHandler.handle(update, true)
             BotCommand.FREELANCE -> commandService.freelanceTimer(update)

@@ -1,7 +1,7 @@
 package com.everbald.folobot.service.handlers.message
 
 import com.everbald.folobot.extensions.addSuccessfulPaymentReceived
-import com.everbald.folobot.extensions.getChatIdentity
+import com.everbald.folobot.extensions.chatIdentity
 import com.everbald.folobot.extensions.name
 import com.everbald.folobot.extensions.isSuccessfulPayment
 import com.everbald.folobot.service.folocoin.sale.SuccessfulPaymentService
@@ -17,7 +17,7 @@ class SuccessfulPaymentHandler(
     override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isSuccessfulPayment)
         .also {
             if (it) logger.addSuccessfulPaymentReceived(
-                getChatIdentity(update.message.chatId),
+                update.message.chatId.chatIdentity,
                 update.message.from.name
             )
         }

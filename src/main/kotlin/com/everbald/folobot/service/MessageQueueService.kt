@@ -26,7 +26,7 @@ class MessageQueueService(
                 MessageQueue(
                     LocalDateTime.now(),
                     message,
-                    if (message.chat.isFolochat()) //&& message.from.isLikesToDelete()
+                    if (message.chat.isFolochat) //&& message.from.isLikesToDelete()
                         messageService.silentForwardMessage(MESSAGE_QUEUE_ID, message)
                     else null
                 )
@@ -67,7 +67,7 @@ class MessageQueueService(
         messageQueue.clear()
         messageStack.removeIf { it.recievedAt < LocalDateTime.now().minusDays(1) }
 
-        messageStack.filter { it.message.chat.isFolochat() && !it.restored }
+        messageStack.filter { it.message.chat.isFolochat && !it.restored }
             .forEach { queueMessage ->
                 queueMessage.backupMessage?.let {
                     if (messageService.checkIfMessageDeleted(queueMessage.message)) {
@@ -77,7 +77,7 @@ class MessageQueueService(
                             queueMessage.restored = true
                             logger.info {
                                 "Restored message from ${userService.getFoloUserName(queueMessage.message.from)} " +
-                                        "in chat ${getChatIdentity(queueMessage.message.chatId)}"
+                                        "in chat ${queueMessage.message.chatId.chatIdentity}"
                             }
                         }
                     }

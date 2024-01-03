@@ -2,7 +2,7 @@ package com.everbald.folobot.service
 
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.extensions.chatId
-import com.everbald.folobot.extensions.getChatIdentity
+import com.everbald.folobot.extensions.chatIdentity
 import com.everbald.folobot.extensions.msg
 import com.everbald.folobot.extensions.messageId
 import com.everbald.folobot.utils.FoloId
@@ -354,7 +354,7 @@ class MessageService(
         } else {
             logger.info {
                 "Found deleted message from ${userService.getFoloUserName(message.from)} " +
-                        "in chat ${getChatIdentity(message.chatId)}"
+                        "in chat ${message.chatId.chatIdentity}"
             }
             true
         }

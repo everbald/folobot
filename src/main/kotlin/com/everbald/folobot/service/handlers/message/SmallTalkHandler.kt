@@ -1,10 +1,10 @@
 package com.everbald.folobot.service.handlers.message
 
 import com.everbald.folobot.extensions.addActionReceived
-import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.isFromFoloSwarm
 import com.everbald.folobot.extensions.isTextMessage
 import com.everbald.folobot.domain.type.Action
+import com.everbald.folobot.extensions.chatIdentity
 import com.everbald.folobot.service.CommandService
 import com.everbald.folobot.service.FreelanceService
 import com.everbald.folobot.service.SmallTalkService
@@ -45,7 +45,7 @@ class SmallTalkHandler(
                     smallTalkService.smallTalk(update, withInit)
                     suspend(update, 30.seconds)
                 } else {
-                    logger.info { "Canceling small talk BC it's suspended in ${getChatIdentity(update.message.chatId)}" }
+                    logger.info { "Canceling small talk BC it's suspended in ${update.message.chatId.chatIdentity}" }
                 }
             } else smallTalkService.smallTalk(update, withInit)
         }
@@ -55,11 +55,11 @@ class SmallTalkHandler(
         smallTalkStatus[update.message.chatId] = false
         logger.info {
             "Small talk on repost is suspended for ${duration.inWholeSeconds} seconds in " +
-                    getChatIdentity(update.message.chatId)
+                    update.message.chatId.chatIdentity
         }
         Timer().schedule(duration.inWholeMilliseconds) {
             smallTalkStatus[update.message.chatId] = true
-            logger.info { "Small talk on repost is resumed in ${getChatIdentity(update.message.chatId)}" }
+            logger.info { "Small talk on repost is resumed in ${update.message.chatId.chatIdentity}" }
         }
     }
 }

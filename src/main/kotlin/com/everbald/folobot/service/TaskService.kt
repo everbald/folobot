@@ -1,8 +1,8 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.toTextWithNumber
 import com.everbald.folobot.domain.type.PluralType
+import com.everbald.folobot.extensions.chatIdentity
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.FoloIndexService
 import mu.KLogging
@@ -33,7 +33,7 @@ class TaskService(
                 }
             ),
             chatId
-        ).also { logger.info { "Sent day stats to ${getChatIdentity(chatId)}" } }
+        ).also { logger.info { "Sent day stats to ${chatId.chatIdentity}" } }
     }
 
     fun dayBails(chatId: Long) {

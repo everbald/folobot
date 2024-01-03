@@ -1,7 +1,7 @@
 package com.everbald.folobot.service.folocoin
 
 import com.everbald.folobot.domain.FoloIndex
-import com.everbald.folobot.extensions.getChatIdentity
+import com.everbald.folobot.extensions.chatIdentity
 import com.everbald.folobot.extensions.isAboutFo
 import com.everbald.folobot.extensions.isFo
 import com.everbald.folobot.extensions.round
@@ -55,7 +55,7 @@ class FoloIndexService(
                 else 1
             foloIndexRepo.save(getById(update.message.chatId, LocalDate.now()).addPoints(points))
             logger.trace {
-                "Added $points activity points to chat ${getChatIdentity(update.message.chatId)} " +
+                "Added $points activity points to chat ${update.message.chatId.chatIdentity} " +
                         "thanks to ${userService.getFoloUserName(update.message.from)}"
             }
         }
@@ -101,7 +101,7 @@ class FoloIndexService(
             photoPath, chatId,
             "Индекс фолоактивности *$indexText на ${indexChange.absoluteValue}%* " +
                     "и на сегодня составляет *$todayIndex%* от среднегодового значения\n#фолоиндекс"
-        ).also { logger.info { "Sent foloindex to ${getChatIdentity(chatId)}" } }
+        ).also { logger.info { "Sent foloindex to ${chatId.chatIdentity}" } }
     }
 
     fun monthlyIndex(chatId: Long) {
