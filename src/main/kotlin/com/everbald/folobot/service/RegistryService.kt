@@ -1,12 +1,14 @@
 package com.everbald.folobot.service
 
 import com.everbald.folobot.extensions.addMessageForward
+import com.everbald.folobot.extensions.from
 import com.everbald.folobot.extensions.name
 import com.everbald.folobot.extensions.isAndrew
 import com.everbald.folobot.extensions.isFo
 import com.everbald.folobot.extensions.isNotSuccessfulPayment
 import com.everbald.folobot.extensions.isNotUserJoin
 import com.everbald.folobot.extensions.isNotUserShared
+import com.everbald.folobot.extensions.isVIP
 import com.everbald.folobot.utils.FoloId.ANDREWSLEGACY_ID
 import com.everbald.folobot.utils.FoloId.FO_LEGACY_ID
 import com.everbald.folobot.utils.FoloId.POC_ID
@@ -72,6 +74,7 @@ class RegistryService(
      */
     private fun forwardPrivate(update: Update) {
         if (
+            !update.from.isVIP &&
             update.hasMessage() && update.message.isNotUserJoin &&
             update.message.isNotSuccessfulPayment &&
             update.message.isNotUserShared
