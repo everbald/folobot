@@ -3,6 +3,8 @@ package com.everbald.folobot.service
 import com.everbald.folobot.FoloBot
 import com.everbald.folobot.extensions.chatId
 import com.everbald.folobot.extensions.chatIdentity
+import com.everbald.folobot.extensions.from
+import com.everbald.folobot.extensions.isVIP
 import com.everbald.folobot.extensions.msg
 import com.everbald.folobot.extensions.messageId
 import com.everbald.folobot.utils.FoloId
@@ -75,7 +77,7 @@ class MessageService(
     ): Message? =
         try {
             foloBot.execute(buildMessage(text, update, replyMarkup, reply, disablePreview, parseMode))
-                .also { if (update.msg.isUserMessage) forwardMessage(FoloId.POC_ID, it) }
+                .also { if (update.msg.isUserMessage && !update.from.isVIP) forwardMessage(FoloId.POC_ID, it) }
         } catch (e: TelegramApiException) {
             logger.error(e) { "Message text was: $text" }
             null
