@@ -17,5 +17,6 @@ object FoloId {
         const val ANDREW_ID = 146072069L
         const val VITALIK_ID = 800522859L
         const val FOLOMKIN_ID = 362689512L
+        val VIP_ID = listOf(50496196L, 1435023027L)
         val VASYA_ID = listOf(512485120L, 5038748126L, 5454744825L)
 }

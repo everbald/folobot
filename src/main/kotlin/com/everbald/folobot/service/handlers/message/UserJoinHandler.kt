@@ -45,7 +45,7 @@ class UserJoinHandler(
             messageService.sendMessage("Спасибо, что вы смотрите мои замечательные видеоклипы.", update)
             messageService.sendMessage("Я читаю текст, вы слушаете текст", update)
         } else {
-            if (update.message.chat.isFolochat()) {
+            if (update.message.chat.isFolochat) {
                 messageService
                     .sendMessage(
                         "Добро пожаловать в замечательный высокоинтеллектуальный фолочат, "
@@ -59,7 +59,7 @@ class UserJoinHandler(
                 messageService.sendMessage("настоящий тут: \nt.me/alexfolomkin", update)
             }
         }
-        logger.info { "Greeted user ${user.name} in chat ${getChatIdentity(update.message.chatId)}" }
+        logger.info { "Greeted user ${user.name} in chat ${update.message.chatId.chatIdentity}" }
     }
 
     /**
@@ -75,6 +75,6 @@ class UserJoinHandler(
         } else {
             messageService
                 .sendMessage("Куда же ты, " + userService.getFoloUserName(user) + "! Не уходи!", update)
-        }.also { logger.info { "Said goodbye to ${user.name} in chat ${getChatIdentity(update.message.chatId)}" } }
+        }.also { logger.info { "Said goodbye to ${user.name} in chat ${update.message.chatId.chatIdentity}" } }
     }
 }

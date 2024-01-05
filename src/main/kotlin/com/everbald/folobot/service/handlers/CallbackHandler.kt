@@ -27,7 +27,7 @@ class CallbackHandler(
             CallbackCommand.fromCommand(update.callbackQuery.data).also {
                 logger.addCallbackCommandReceived(
                     it,
-                    getChatIdentity(update.chatId),
+                    update.chatId.chatIdentity,
                     update.from.name
                 )
             }

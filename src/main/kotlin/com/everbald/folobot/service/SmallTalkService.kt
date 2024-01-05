@@ -11,8 +11,8 @@ import com.aallam.openai.api.image.ImageSize
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.everbald.folobot.extensions.chatId
+import com.everbald.folobot.extensions.chatIdentity
 import com.everbald.folobot.extensions.extractCommandText
-import com.everbald.folobot.extensions.getChatIdentity
 import com.everbald.folobot.extensions.isAboutBot
 import com.everbald.folobot.extensions.msg
 import com.everbald.folobot.extensions.name
@@ -119,7 +119,7 @@ class SmallTalkService(
             }
             logger.info {
                 "Had a small talk with ${update.message.from.name} " +
-                        "in chat ${getChatIdentity(update.message.chatId)}"
+                        "in chat ${update.message.chatId.chatIdentity}"
             }
         } catch (ex: SocketTimeoutException) {
             logger.warn { "Request to OpenAI API finished with socket timeout" }
@@ -145,7 +145,7 @@ class SmallTalkService(
             )
             logger.info {
                 "Transcribed file for ${update.message.from.name} " +
-                        "in chat ${getChatIdentity(update.message.chatId)}"
+                        "in chat ${update.message.chatId.chatIdentity}"
             }
         } catch (ex: SocketTimeoutException) {
             logger.warn { "Request to OpenAI API finished with socket timeout" }
@@ -177,7 +177,7 @@ class SmallTalkService(
                 }
             logger.info {
                 "Generated image for ${update.message.from.name} " +
-                        "in chat ${getChatIdentity(update.message.chatId)}"
+                        "in chat ${update.message.chatId.chatIdentity}"
             }
         } catch (ex: SocketTimeoutException) {
             logger.warn { "Request to OpenAI API finished with socket timeout" }

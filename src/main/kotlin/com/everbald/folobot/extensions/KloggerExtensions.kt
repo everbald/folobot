@@ -7,13 +7,13 @@ import mu.KLogger
 import org.telegram.telegrambots.meta.api.objects.Message
 
 fun KLogger.addMessage(message: Message?) =
-    message?.let { this.debug { "Replied to ${getChatIdentity(it.chatId)} with ${it.text ?: "pic"}" } }
+    message?.let { this.debug { "Replied to ${it.chatId.chatIdentity} with ${it.text ?: "pic"}" } }
 
 fun KLogger.addMessageForward(message: Message?) =
-    message?.let { this.info { "Forwarded message to ${getChatIdentity(it.chatId)}" } }
+    message?.let { this.info { "Forwarded message to ${it.chatId.chatIdentity}" } }
 
 fun KLogger.addActionReceived(action: Action, chatId: Long) =
-    this.info { "Received request with action $action in chat ${getChatIdentity(chatId)}" }
+    this.info { "Received request with action $action in chat ${chatId.chatIdentity}" }
 
 fun KLogger.addCallbackCommandReceived(callbackCommand: CallbackCommand?, chatIdentity: String, userIdentity: String) =
     this.info { "Received callback command ${callbackCommand ?: "UNDEFINED"} from $userIdentity in chat $chatIdentity" }
