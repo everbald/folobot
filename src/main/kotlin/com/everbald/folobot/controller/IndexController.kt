@@ -17,7 +17,7 @@ class IndexController() : KLogging() {
                 "runforun.mp4",
             ).random()
         }"
-        return "index"
-//        return "redirect:/frontpage";
+//        return "index"
+        return "redirect:/releases";
     }
 }
