@@ -43075,6 +43075,7 @@ a.u-link.u-text-hover-grey-90:hover {
 
 .u-section-1 .u-container-layout-1 {
   padding-left: 20px;
+  margin-bottom: 20px;
 }
 
 .u-section-1 .u-text-1 {
@@ -43085,7 +43086,7 @@ a.u-link.u-text-hover-grey-90:hover {
 
 .u-section-1 .u-text-2 {
   font-size: 0.875rem;
-  margin: 20px 166px 20px 0;
+  margin: 20px 166px 0 0;
 }
 
 .u-section-1 .u-layout-cell-2 {
