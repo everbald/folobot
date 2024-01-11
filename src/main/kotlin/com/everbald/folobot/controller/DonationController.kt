@@ -11,7 +11,6 @@ class DonationController(messageService: MessageService) : KLogging() {
     @GetMapping(value = ["/donation", "/donate"])
     fun donate(request: HttpServletRequest): String = "redirect:https://www.tinkoff.ru/cf/9luWBGcAtE1"
         .also {
-            request.parameterMap.flatMap { (key, values) -> values.associateBy { key }.toList() }
             logger.info {
                 "Donation request:\n" +
                         "   header:\n" +
