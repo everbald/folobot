@@ -48,7 +48,8 @@ class SmallTalkService(
                 .let {
                     ChatCompletionRequest(
                         model = ModelId("gpt-3.5-turbo"),
-                        messages = it
+                        messages = it,
+                        maxTokens = 2024
                     )
                 }.let {
                     makeRequest(it, update)
