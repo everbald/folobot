@@ -50,9 +50,7 @@ class SmallTalkService(
                         model = ModelId("gpt-3.5-turbo"),
                         messages = it
                     )
-                }.let {
-                    makeRequest(it, update)
-                }
+                }.let { makeRequest(it, update) }
         } else logger.info { "Cancelling small talk BC message stack does not contain any relevant messages" }
     }
 
