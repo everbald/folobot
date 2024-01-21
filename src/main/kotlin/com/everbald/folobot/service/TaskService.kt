@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.OffsetDateTime
 
 @Service
 class TaskService(
@@ -21,19 +22,25 @@ class TaskService(
     private val foloBailService: FoloBailService,
     private val messageQueueService: MessageQueueService
 ) : KLogging() {
+
     fun dayStats(chatId: Long) {
-        messageService.sendMessage(
-            foloPidorService.getTopActive(chatId).withIndex().joinToString(
-                separator = "\n",
-                prefix = "*Самые активные фолопидоры сегодня*:\n\n",
-                transform = {
-                    "\u2004*${it.index + 1}*.\u2004${
-                        userService.getFoloUserName(it.value, chatId)
-                    } — ${it.value.messagesPerDay.toTextWithNumber(PluralType.MESSAGE)}"
-                }
-            ),
-            chatId
-        ).also { logger.info { "Sent day stats to ${chatId.chatIdentity}" } }
+        messageService.sendMessage("*Фолостатистика ${LocalDate.now().toTextWithNumber()}:*", chatId)
+        topActive(chatId)
+        dayBails(chatId)
+        foloIndex(chatId)
+    }
+
+    fun topActive(chatId: Long) {
+        foloPidorService.getTopActive(chatId, 3).withIndex().joinToString(
+            separator = "\n",
+            prefix = "*Самые активные фолопидоры*:\n",
+            transform = {
+                "\u2004*${it.index + 1}*.\u2004${
+                    userService.getFoloUserName(it.value, chatId)
+                } — ${it.value.messagesPerDay.toTextWithNumber(PluralType.MESSAGE)}"
+            }
+        ).let {messageService.sendMessage(it, chatId) }
+            .also { logger.info { "Sent day stats to ${chatId.chatIdentity}" } }
     }
 
     fun dayBails(chatId: Long) {
@@ -50,4 +57,6 @@ class TaskService(
 
     @Async
     fun restoreMessages() = messageQueueService.restoreMessages()
+
+    fun deleteOutdatedMessages() = messageService.deleteBefore(OffsetDateTime.now().minusMonths(1))
 }

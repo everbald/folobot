@@ -1,34 +1,23 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.domain.FoloBail
+import com.everbald.folobot.domain.FoloMessage
 import com.everbald.folobot.domain.type.PluralType
-import com.everbald.folobot.extensions.isNotForward
-import com.everbald.folobot.extensions.isNotUserMessage
-import com.everbald.folobot.extensions.msg
 import com.everbald.folobot.extensions.toText
 import com.everbald.folobot.extensions.toTextWithNumber
-import com.everbald.folobot.mapper.toFoloBail
-import com.everbald.folobot.persistence.repo.FoloBailRepo
+import com.everbald.folobot.persistence.repo.MessageRepo
 import org.springframework.stereotype.Service
-import org.telegram.telegrambots.meta.api.objects.Update
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
 
 @Service
 class FoloBailService(
-    private val repo: FoloBailRepo,
+    private val repo: MessageRepo,
     private val userService: UserService,
 ) {
-    fun register(update: Update) {
-        if (update.isNotUserMessage && update.msg.isNotForward && update.msg.text.isBail()) {
-            update.msg.toFoloBail()
-                .let { repo.save(it) }
-        }
-    }
-
-    fun getTodayBails(chatId: Long) =
+    fun getTodayBails(chatId: Long): List<FoloMessage> =
         repo.getInInterval(chatId, LocalDate.now().toOffsetAtStartOfDay(), LocalDate.now().toOffsetAtEndOfDay())
+            .filter { it.message.text.isBail() }
 
     fun buildTodayBailText(chatId: Long, fullList: Boolean = true) =
         getTodayBails(chatId)
@@ -46,7 +35,7 @@ class FoloBailService(
         this?.let { it.contains("слив", true) && it.contains("засчит", true) }
             ?: false
 
-    private fun List<FoloBail>.buildBailText(): String =
+    private fun List<FoloMessage>.buildBailText(): String =
         this.withIndex()
             .joinToString(
                 separator = "\n",

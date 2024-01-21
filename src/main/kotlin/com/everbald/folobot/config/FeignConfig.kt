@@ -11,9 +11,8 @@ import java.util.concurrent.TimeUnit
 @EnableFeignClients(basePackages = ["com.everbald.folobot"])
 class FeignConfig {
     @Bean
-    fun feignLoggerLevel(): Logger.Level {
-        return Logger.Level.BASIC
-    }
+    fun feignLoggerLevel(): Logger.Level = Logger.Level.BASIC
+
     @Bean
     fun requestOptions(): Request.Options {
         return Request.Options(

@@ -87,3 +87,11 @@ databaseChangeLog:
             encoding: utf8
             path: 20231230-01-folo_bail.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: 20240125-01
+      author: everbald
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: 20240125-01-folo_message.sql
+            relativeToChangelogFile: true

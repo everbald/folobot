@@ -1,7 +1,7 @@
 package com.everbald.folobot.service.folocoin.sale
 
 import com.everbald.folobot.FoloBot
-import com.everbald.folobot.config.BotCredentialsConfig
+import com.everbald.folobot.config.bot.BotCredentialsConfig
 import com.everbald.folobot.extensions.chatId
 import com.everbald.folobot.extensions.isUserMessage
 import com.everbald.folobot.extensions.toJson

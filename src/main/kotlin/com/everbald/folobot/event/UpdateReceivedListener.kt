@@ -1,6 +1,7 @@
 package com.everbald.folobot.event
 
 import com.everbald.folobot.service.MessageService
+import com.everbald.folobot.service.ReactionService
 import com.everbald.folobot.service.RegistryService
 import com.everbald.folobot.service.handlers.Handler
 import com.everbald.folobot.utils.FoloId
@@ -13,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Update
 @Service
 class UpdateReceivedListener(
     private val registryService: RegistryService,
+    private val reactionService: ReactionService,
     private val messageService: MessageService,
     private val handlers: List<Handler>
 ) : KLogging() {
@@ -23,6 +25,8 @@ class UpdateReceivedListener(
                 .let {
                     //Выполнение независящих от контекста действий
                     registryService.register(it)
+                    //Реакция на сообщение
+                    reactionService.react(it)
                     //Действие в зависимости от содержимого update
                     onAction(it)
                 }
