@@ -26,7 +26,7 @@ class TaskService(
 ) : KLogging() {
 
     fun dayStats(chatId: Long) {
-        messageService.sendMessage("*Фолостатистика ${LocalDate.now().toTextWithNumber()}*:", chatId)
+        messageService.sendMessage("*#фолостатистика ${LocalDate.now().toTextWithNumber()}*:", chatId)
             .also { logger.info { "Sent day stats to ${chatId.chatIdentity}" } }
         topActive(chatId)
         topLikedMessages(chatId)
