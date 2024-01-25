@@ -1,6 +1,6 @@
 package com.everbald.folobot.service.handlers.message
 
-import com.everbald.folobot.config.BotCredentialsConfig
+import com.everbald.folobot.config.bot.BotCredentialsConfig
 import com.everbald.folobot.extensions.*
 import com.everbald.folobot.domain.type.Action
 import com.everbald.folobot.domain.type.BotCommand

@@ -1,4 +1,4 @@
-package com.everbald.folobot.config
+package com.everbald.folobot.config.bot
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration

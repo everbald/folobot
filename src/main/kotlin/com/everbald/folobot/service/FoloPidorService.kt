@@ -91,11 +91,11 @@ class FoloPidorService(
      * @param chatId Id чата
      * @return [<]
      */
-    fun getTopActive(chatId: Long): List<FoloPidor> =
+    fun getTopActive(chatId: Long, top: Int): List<FoloPidor> =
         foloPidorRepo.findByChatId(chatId)
             .filter { it.lastActiveDate == LocalDate.now() }
             .sortedByDescending { it.messagesPerDay }
-            .take(10)
+            .take(top)
 
     /**
      * Сохранение

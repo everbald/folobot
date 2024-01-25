@@ -7,6 +7,8 @@ import com.everbald.folobot.extensions.from
 import com.everbald.folobot.extensions.isVIP
 import com.everbald.folobot.extensions.msg
 import com.everbald.folobot.extensions.messageId
+import com.everbald.folobot.mapper.toFoloMessage
+import com.everbald.folobot.persistence.repo.MessageRepo
 import com.everbald.folobot.utils.FoloId
 import com.everbald.folobot.utils.FoloId.MESSAGE_QUEUE_ID
 import mu.KLogging
@@ -29,12 +31,26 @@ import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
+import java.time.OffsetDateTime
 
 @Component
 class MessageService(
+    private val repo: MessageRepo,
     private val userService: UserService,
     private val foloBot: FoloBot
 ) : KLogging() {
+
+    fun register(update: Update) {
+        if (update.hasMessage()) {
+            update.msg.toFoloMessage()
+                .let { repo.save(it) }
+        }
+    }
+
+    fun deleteBefore(dateTime: OffsetDateTime) = repo.deleteBefore(dateTime)
+
+    fun updateReactionCount(chatId: Long, messageId: Int, count: Int) = repo.updateReactionCount(chatId, messageId, count)
+
     private fun buildMessage(
         text: String,
         update: Update,

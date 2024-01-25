@@ -1,12 +1,13 @@
 package com.everbald.folobot.mapper
 
-import com.everbald.folobot.domain.FoloBail
+import com.everbald.folobot.domain.FoloMessage
 import org.telegram.telegrambots.meta.api.objects.Message
 import java.time.OffsetDateTime
 
-fun Message.toFoloBail(): FoloBail =
-    FoloBail(
+fun Message.toFoloMessage(): FoloMessage =
+    FoloMessage(
         chatId = this.chatId,
+        messageId = this.messageId,
         dateTime = OffsetDateTime.now(),
         message = this
     )

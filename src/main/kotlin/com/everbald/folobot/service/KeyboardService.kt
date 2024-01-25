@@ -1,6 +1,6 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.config.BotCredentialsConfig
+import com.everbald.folobot.config.bot.BotCredentialsConfig
 import com.everbald.folobot.domain.type.BotCommand
 import com.everbald.folobot.domain.type.CallbackCommand
 import mu.KLogging
