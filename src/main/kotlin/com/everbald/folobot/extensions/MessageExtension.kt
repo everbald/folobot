@@ -20,6 +20,8 @@ val Message.isNotCommand get() = !this.isCommand
 fun Message?.isFromFoloSwarm() =
     FOLO_SWARM.contains(this?.forwardFromChat?.id) || this?.forwardFrom?.id == FOLOMKIN_ID
 
+fun Message.extractText(): String? = this.text ?: this.caption
+
 val Message?.isAboutFo: Boolean get() =
     this?.replyToMessage?.from?.id == FOLOMKIN_ID ||
             this?.entities?.any { it.type == EntityType.TEXTMENTION && it.user.isFo } == true ||
