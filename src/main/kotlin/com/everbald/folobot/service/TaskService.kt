@@ -1,13 +1,15 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.extensions.toTextWithNumber
 import com.everbald.folobot.domain.type.PluralType
 import com.everbald.folobot.extensions.chatIdentity
+import com.everbald.folobot.extensions.extractText
+import com.everbald.folobot.extensions.toTextWithNumber
 import com.everbald.folobot.service.folocoin.FoloCoinService
 import com.everbald.folobot.service.folocoin.FoloIndexService
 import mu.KLogging
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
+import org.telegram.telegrambots.meta.api.objects.Message
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -24,8 +26,10 @@ class TaskService(
 ) : KLogging() {
 
     fun dayStats(chatId: Long) {
-        messageService.sendMessage("*Фолостатистика ${LocalDate.now().toTextWithNumber()}:*", chatId)
+        messageService.sendMessage("*Фолостатистика ${LocalDate.now().toTextWithNumber()}*:", chatId)
+            .also { logger.info { "Sent day stats to ${chatId.chatIdentity}" } }
         topActive(chatId)
+        topLikedMessages(chatId)
         dayBails(chatId)
         foloIndex(chatId)
     }
@@ -40,7 +44,24 @@ class TaskService(
                 } — ${it.value.messagesPerDay.toTextWithNumber(PluralType.MESSAGE)}"
             }
         ).let {messageService.sendMessage(it, chatId) }
-            .also { logger.info { "Sent day stats to ${chatId.chatIdentity}" } }
+    }
+
+    fun topLikedMessages(chatId: Long) {
+        messageService.getTopLiked(chatId, 3)
+            .let { topMessages ->
+                if(topMessages.isNotEmpty()) {
+                    topMessages.withIndex().joinToString(
+                        separator = "\n",
+                        prefix = "*Сообщения не оставившие фолопидоров равнодушными*:\n",
+                        transform = {
+                            "\u2004*${it.index + 1}*.\u2004" +
+                                    it.value.message.getContentEmoji() +
+                                    "[${it.value.message.extractShortText()}]" +
+                                    "(t.me/${it.value.message.chat.userName}/${it.value.message.messageId})"
+                        }
+                    ).let { messageService.sendMessage(it, chatId, true) }
+                }
+            }
     }
 
     fun dayBails(chatId: Long) {
@@ -59,4 +80,15 @@ class TaskService(
     fun restoreMessages() = messageQueueService.restoreMessages()
 
     fun deleteOutdatedMessages() = messageService.deleteBefore(OffsetDateTime.now().minusMonths(1))
+
+    private fun Message.getContentEmoji(): String =
+        if (this.hasPhoto() || this.hasSticker()) "🖼 "
+        else if (this.hasVideo() || this.hasVideoNote() || this.hasAnimation()) "📼 "
+        else if (this.hasAudio() || this.hasVoice()) "🔈 "
+        else "💬 "
+
+    private fun Message.extractShortText() : String =
+        this.extractText()
+            ?.let {it.take(20) + if (it.length > 20) "..." else "" }
+            ?: "сообщение"
 }

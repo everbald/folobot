@@ -13,7 +13,8 @@ enum class BotCommand(val command: String) {
     FOLOCOINTRANSFERCANCEL("Отменить перевод"),
     IT("/it"),
     FOLOBAIL("/folobail"),
-    IMAGE ("/image");
+    IMAGE ("/image"),
+    DAYSTATS("/daystats");
 
     companion object {
         private val map = entries.associateBy(BotCommand::command)

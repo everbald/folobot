@@ -37,7 +37,7 @@ import java.time.OffsetDateTime
 class MessageService(
     private val repo: MessageRepo,
     private val userService: UserService,
-    private val foloBot: FoloBot
+    private val foloBot: FoloBot,
 ) : KLogging() {
 
     fun register(update: Update) {
@@ -49,7 +49,10 @@ class MessageService(
 
     fun deleteBefore(dateTime: OffsetDateTime) = repo.deleteBefore(dateTime)
 
-    fun updateReactionCount(chatId: Long, messageId: Int, count: Int) = repo.updateReactionCount(chatId, messageId, count)
+    fun updateReactionCount(chatId: Long, messageId: Int, count: Int) =
+        repo.updateReactionCount(chatId, messageId, count)
+
+    fun getTopLiked(chatId: Long, top: Int) = repo.getTopLiked(chatId, top)
 
     private fun buildMessage(
         text: String,
@@ -57,7 +60,7 @@ class MessageService(
         replyMarkup: ReplyKeyboard? = null,
         reply: Boolean = false,
         disablePreview: Boolean = false,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ) = SendMessage.builder()
         .parseMode(parseMode)
         .chatId(update.chatId)
@@ -67,7 +70,12 @@ class MessageService(
         .also { sendMessage -> replyMarkup?.let<ReplyKeyboard, Unit> { sendMessage.replyMarkup(it) } }
         .build()
 
-    fun sendMessage(text: String, chatId: Long, parseMode: String = ParseMode.MARKDOWN): Message? {
+    fun sendMessage(
+        text: String,
+        chatId: Long,
+        disablePreview: Boolean = false,
+        parseMode: String = ParseMode.MARKDOWN,
+    ): Message? {
         return try {
             foloBot.execute(
                 SendMessage
@@ -75,6 +83,7 @@ class MessageService(
                     .parseMode(parseMode)
                     .chatId(chatId.toString())
                     .text(text)
+                    .disableWebPagePreview(disablePreview)
                     .build()
             )
         } catch (e: TelegramApiException) {
@@ -89,7 +98,7 @@ class MessageService(
         replyMarkup: ReplyKeyboard? = null,
         reply: Boolean = false,
         disablePreview: Boolean = false,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ): Message? =
         try {
             foloBot.execute(buildMessage(text, update, replyMarkup, reply, disablePreview, parseMode))
@@ -103,7 +112,7 @@ class MessageService(
         text: String,
         update: Update,
         replyMarkup: InlineKeyboardMarkup,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ): EditMessageText = EditMessageText
         .builder()
         .messageId(update.messageId)
@@ -117,7 +126,7 @@ class MessageService(
         text: String,
         update: Update,
         replyMarkup: InlineKeyboardMarkup,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ) {
         try {
             foloBot.execute(buildEditMessageText(text, update, replyMarkup, parseMode))
@@ -130,7 +139,7 @@ class MessageService(
         text: String,
         update: Update,
         replyMarkup: InlineKeyboardMarkup,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ): EditMessageCaption = EditMessageCaption
         .builder()
         .messageId(update.messageId)
@@ -144,7 +153,7 @@ class MessageService(
         text: String,
         update: Update,
         replyMarkup: InlineKeyboardMarkup,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ) {
         try {
             foloBot.execute(buildEditMessageCaption(text, update, replyMarkup, parseMode))
@@ -166,7 +175,7 @@ class MessageService(
         text: String?,
         update: Update,
         replyMarkup: InlineKeyboardMarkup,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ): EditMessageMedia =
         EditMessageMedia
             .builder()
@@ -181,7 +190,7 @@ class MessageService(
         text: String?,
         update: Update,
         replyMarkup: InlineKeyboardMarkup,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ) {
         try {
             foloBot.execute(buildEditMessagePhoto(photo, text, update, replyMarkup, parseMode))
@@ -262,7 +271,7 @@ class MessageService(
         chatId: Long,
         text: String? = null,
         replyMarkup: ReplyKeyboard? = null,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ): SendPhoto = SendPhoto.builder()
         .parseMode(parseMode)
         .chatId(chatId.toString())
@@ -276,7 +285,7 @@ class MessageService(
         chatId: Long,
         text: String? = null,
         replyMarkup: ReplyKeyboard? = null,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ): SendPhoto =
         buildPhoto(
             InputFile(
@@ -294,7 +303,7 @@ class MessageService(
         chatId: Long,
         text: String? = null,
         replyMarkup: ReplyKeyboard? = null,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ): Message? =
         try {
             foloBot.execute(buildPhoto(photo, chatId, text, replyMarkup, parseMode))
@@ -308,7 +317,7 @@ class MessageService(
         chatId: Long,
         text: String? = null,
         replyMarkup: ReplyKeyboard? = null,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ): Message? =
         try {
             foloBot.execute(buildPhoto(photoPath, chatId, text, replyMarkup, parseMode))
@@ -321,7 +330,7 @@ class MessageService(
         voiceId: String,
         text: String? = null,
         chatId: Long,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ) = SendVoice.builder()
         .parseMode(parseMode)
         .chatId(chatId.toString())
@@ -333,7 +342,7 @@ class MessageService(
         voiceId: String,
         text: String? = null,
         chatId: Long,
-        parseMode: String = ParseMode.MARKDOWN
+        parseMode: String = ParseMode.MARKDOWN,
     ): Message? =
         try {
             foloBot.execute(buildVoice(voiceId, text, chatId, parseMode))
