@@ -4,6 +4,8 @@ import com.everbald.folobot.domain.FoloMessage
 import com.everbald.folobot.persistence.mapper.toMessage
 import com.everbald.folobot.persistence.mapper.toMessageInsert
 import com.everbald.folobot.persistence.table.MessageTable
+import com.everbald.folobot.service.toOffsetAtEndOfDay
+import com.everbald.folobot.service.toOffsetAtStartOfDay
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
@@ -15,6 +17,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -51,6 +54,10 @@ class MessageRepo {
     fun getTopLiked(chatId: Long, top: Int) = transaction {
         MessageTable
             .select { MessageTable.chatId eq chatId }
+            .andWhere { MessageTable.dateTime.between(
+                LocalDate.now().toOffsetAtStartOfDay(),
+                LocalDate.now().toOffsetAtEndOfDay())
+            }
             .andWhere { MessageTable.reactionCount greater 0 }
             .orderBy(MessageTable.reactionCount, SortOrder.DESC)
             .limit(top)

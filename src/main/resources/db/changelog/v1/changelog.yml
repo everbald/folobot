@@ -95,3 +95,11 @@ databaseChangeLog:
             encoding: utf8
             path: 20240125-01-folo_message.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: 20240127-01
+      author: everbald
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: 20240127-01-add_user_to_message.sql
+            relativeToChangelogFile: true
