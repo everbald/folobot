@@ -35,7 +35,7 @@ class TaskService(
     }
 
     fun topActive(chatId: Long) {
-        foloPidorService.getTopActive(chatId, 3).withIndex().joinToString(
+        foloPidorService.getTopActive(chatId, 5).withIndex().joinToString(
             separator = "\n",
             prefix = "*Самые активные фолопидоры*:\n",
             transform = {
@@ -47,7 +47,7 @@ class TaskService(
     }
 
     fun topLikedMessages(chatId: Long) {
-        messageService.getTopLiked(chatId, 3)
+        messageService.getTopLiked(chatId, 5)
             .let { topMessages ->
                 if(topMessages.isNotEmpty()) {
                     topMessages.withIndex().joinToString(
