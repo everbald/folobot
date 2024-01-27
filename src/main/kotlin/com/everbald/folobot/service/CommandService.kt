@@ -3,8 +3,10 @@ package com.everbald.folobot.service
 import com.everbald.folobot.domain.type.PluralType
 import com.everbald.folobot.extensions.addMessage
 import com.everbald.folobot.extensions.chatId
+import com.everbald.folobot.extensions.chatIdentity
 import com.everbald.folobot.extensions.from
 import com.everbald.folobot.extensions.isFo
+import com.everbald.folobot.extensions.isUserMessage
 import com.everbald.folobot.extensions.spellOut
 import com.everbald.folobot.extensions.toTextWithNumber
 import com.everbald.folobot.service.folocoin.FoloCoinService
@@ -18,10 +20,12 @@ import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.time.LocalDate
 import java.time.Period
+import java.util.StringJoiner
 
 @Component
 @Priority(1)
 class CommandService(
+    private val foloPidorService: FoloPidorService,
     private val foloVarService: FoloVarService,
     private val messageService: MessageService,
     private val messageQueueService: MessageQueueService,
@@ -82,17 +86,28 @@ class CommandService(
         }.also { logger.addMessage(it) }
     }
 
-    fun foloPidor(update: Update) =
-        messageService.sendPhoto(
-            "/static/images/foloPidors.jpg",
-            update.message.chatId,
-            """
-                МС Фоломкин создал новую религию,
-                Миллионы фанатиков во всём мире слушают мои трэки,
-                Для вас тексты моих песен священны, будто слово Божье в Библии
-            """.trimIndent(),
-            keyboardService.getFoloPidorKeyboard()
-        )
+    fun foloPidorTop(update: Update) {
+        (if (!update.isUserMessage) {
+            val top = StringJoiner("\n").add("Топ 10 *фолопидоров*:\n")
+            val foloPidors = foloPidorService.getTop(update.chatId)
+            for (i in foloPidors.indices) {
+                val place = when (i) {
+                    0 -> "\uD83E\uDD47"
+                    1 -> "\uD83E\uDD48"
+                    2 -> "\uD83E\uDD49"
+                    else -> "\u2004*" + (i + 1) + "*.\u2004"
+                }
+                val foloPidor = foloPidors[i]
+                top.add(
+                    place + userService.getFoloUserName(foloPidor, update.chatId) + " — _" +
+                            foloPidor.score.toTextWithNumber(PluralType.COUNT) + "_"
+                )
+            }
+            top.toString()
+        } else "Андрей - почетный фолопидор на все времена!")
+            .let { messageService.sendMessage(it, update) }
+            .also { logger.debug { "Replied to ${update.chatId.chatIdentity} with folopidor top" } }
+    }
 
     /**
      * Подсчет времени до дня рождения альфы

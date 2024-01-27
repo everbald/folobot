@@ -1,22 +1,23 @@
 package com.everbald.folobot.service
 
 import com.everbald.folobot.domain.FoloPidor
+import com.everbald.folobot.domain.FoloPidorWithMessageCount
 import com.everbald.folobot.persistence.repo.FoloPidorRepo
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 
 @Component
-class FoloPidorService(
-    private val foloPidorRepo: FoloPidorRepo,
-    private val userService: UserService
-) {
+class FoloPidorService(private val repo: FoloPidorRepo) {
+    private val logger: KLogger = KotlinLogging.logger { this::class.java }
 
     /**
      * Прочитать все
      * @return [<]
      */
     fun findAll(): List<FoloPidor> =
-        foloPidorRepo.getAll()
+        repo.getAll()
             .sortedWith(compareBy<FoloPidor> { it.chatId }.thenByDescending { it.score })
 
     /**
@@ -25,7 +26,7 @@ class FoloPidorService(
      * @param userId Id пользователя
      * @return [FoloPidor]
      */
-    fun find(chatId: Long, userId: Long): FoloPidor = foloPidorRepo.find(chatId, userId) ?: FoloPidor(chatId, userId)
+    fun find(chatId: Long, userId: Long): FoloPidor = repo.find(chatId, userId) ?: FoloPidor(chatId, userId)
 
     /**
      * Проверка существования по ключу
@@ -33,7 +34,7 @@ class FoloPidorService(
      * @param userId Id пользователя
      * @return да/нет
      */
-    fun exists(chatId: Long, userId: Long): Boolean = foloPidorRepo.exists(chatId, userId)
+    fun exists(chatId: Long, userId: Long): Boolean = repo.exists(chatId, userId)
 
     /**
      * Получение по Id чата
@@ -41,19 +42,8 @@ class FoloPidorService(
      * @return [<]
      */
     fun findByChatId(chatId: Long): List<FoloPidor> =
-        foloPidorRepo.findByChatId(chatId)
+        repo.findByChatId(chatId)
             .sortedWith(compareBy<FoloPidor> { it.chatId }.thenByDescending { it.score })
-
-    /**
-     * Выбор случайного фолопидора
-     *
-     * @param chatId ID чата
-     * @return [FoloPidor]
-     */
-    fun getRandom(chatId: Long): FoloPidor =
-        foloPidorRepo.findByChatId(chatId)
-            .filter { it.isAnchored() || (it.isValid() && userService.isInChat(it)) }
-            .random()
 
     /**
      * Получение топ 10 фолопидоров чата
@@ -61,51 +51,26 @@ class FoloPidorService(
      * @return [<]
      */
     fun getTop(chatId: Long): List<FoloPidor> =
-        foloPidorRepo.findByChatId(chatId)
+        repo.findByChatId(chatId)
             .filter { it.isValidTop() }
             .sortedWith(compareByDescending<FoloPidor> { it.score }.thenByDescending { it.lastWinDate })
             .take(10)
 
-    /**
-     * Паассивные фолопидоры чата
-     * @param chatId Id чата
-     * @return [<]
-     */
-    fun getSlackers(chatId: Long): List<FoloPidor> =
-        foloPidorRepo.findByChatId(chatId)
-            .filter { userService.isInChat(it) && it.isValidSlacker() }
-            .sortedBy { it.lastActiveDate }
-            .take(10)
+    fun getTopActive(chatId: Long, top: Int): List<FoloPidorWithMessageCount> =
+        repo.getMessageCountInPeriod(
+            chatId,
+            LocalDate.now().toOffsetAtStartOfDay(),
+            LocalDate.now().toOffsetAtEndOfDay(),
+            top
+        )
 
-    /**
-     * Получение списка андердогов
-     * @param chatId Id чата
-     * @return list of [FoloPidor]
-     */
-    fun getUnderdogs(chatId: Long): List<FoloPidor> =
-        foloPidorRepo.findByChatId(chatId)
-            .filter { userService.isInChat(it) && it.isValidUnderdog() }
+    fun getTopLiked(chatId: Long): List<FoloPidor> =
+        repo.getTopLikedInPeriod(chatId,
+            LocalDate.now().toOffsetAtStartOfDay(),
+            LocalDate.now().toOffsetAtEndOfDay()
+        )
 
-    /**
-     * Активные фолопидоры чата
-     * @param chatId Id чата
-     * @return [<]
-     */
-    fun getTopActive(chatId: Long, top: Int): List<FoloPidor> =
-        foloPidorRepo.findByChatId(chatId)
-            .filter { it.lastActiveDate == LocalDate.now() }
-            .sortedByDescending { it.messagesPerDay }
-            .take(top)
+    fun save(foloPidor: FoloPidor): FoloPidor = repo.save(foloPidor)
 
-    /**
-     * Сохранение
-     * @param foloPidor [FoloPidor]
-     */
-    fun save(foloPidor: FoloPidor) = foloPidorRepo.save(foloPidor)
-
-    /**
-     * Удаление
-     * @param foloPidor[FoloPidor]
-     */
-    fun delete(foloPidor: FoloPidor) = foloPidorRepo.delete(foloPidor)
+    fun delete(foloPidor: FoloPidor) = repo.delete(foloPidor)
 }

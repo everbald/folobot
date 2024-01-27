@@ -33,7 +33,7 @@ class ChatCommandHandler(
         when {
             message.isSmallTalk() -> smallTalkHandler.handle(update, true)
             message.isNoFap() -> commandService.nofapTimer(update)
-            message.isFolopidor() -> commandService.foloPidor(update)
+            message.isFolopidor() -> commandService.foloPidorTop(update)
             message.isCoin() -> commandService.foloCoin(update)
             message.isTransferCancel() -> transferCancel(update)
             else -> {}
@@ -53,7 +53,9 @@ class ChatCommandHandler(
     private fun Message.isFolopidor() = this.isAboutBot &&
             (this.text?.contains("фолопидор", true) == true &&
                     (this.text?.contains("дня", true) == true ||
-                            this.text?.contains("сегодня", true) == true))
+                            this.text?.contains("сегодня", true) == true ||
+                            this.text?.contains("топ", true) == true)
+                    )
 
     private fun Message.isNoFap() = this.isAboutBot &&
             (this.text?.contains("но фап", true) == true ||

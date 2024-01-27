@@ -5,6 +5,7 @@ import java.time.OffsetDateTime
 
 data class FoloMessage(
     val chatId: Long,
+    val userId: Long,
     val messageId: Int,
     val dateTime: OffsetDateTime,
     val message: Message,

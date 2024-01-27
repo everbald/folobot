@@ -5,8 +5,8 @@ import com.everbald.folobot.extensions.chatId
 import com.everbald.folobot.extensions.chatIdentity
 import com.everbald.folobot.extensions.from
 import com.everbald.folobot.extensions.isVIP
-import com.everbald.folobot.extensions.msg
 import com.everbald.folobot.extensions.messageId
+import com.everbald.folobot.extensions.msg
 import com.everbald.folobot.mapper.toFoloMessage
 import com.everbald.folobot.persistence.repo.MessageRepo
 import com.everbald.folobot.utils.FoloId

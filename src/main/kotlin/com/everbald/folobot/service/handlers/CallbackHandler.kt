@@ -5,7 +5,6 @@ import com.everbald.folobot.domain.type.Action
 import com.everbald.folobot.domain.type.CallbackCommand
 import com.everbald.folobot.service.*
 import com.everbald.folobot.service.folocoin.FoloCoinCallbackService
-import com.everbald.folobot.service.folopidor.FoloPidorCallbackService
 import jakarta.annotation.Priority
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -15,9 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Update
 @Priority(1)
 class CallbackHandler(
     private val foloCoinCallbackService: FoloCoinCallbackService,
-    private val foloPidorCallbackService: FoloPidorCallbackService,
     private val callbackService: CallbackService,
-    private val messageService: MessageService
 ) : Handler, KLogging() {
     override fun canHandle(update: Update) = CallbackCommand.isMyCommand(update.callbackQuery?.data)
         .also { if (it) logger.addActionReceived(Action.CALLBACKCOMMAND, update.chatId) }
@@ -38,10 +35,6 @@ class CallbackHandler(
             CallbackCommand.BUYCOIN -> foloCoinCallbackService.buyCoin(update)
             CallbackCommand.TRANSFERCOIN -> foloCoinCallbackService.transferCoin(update)
             CallbackCommand.FOLOINDEX -> foloCoinCallbackService.foloIndex(update)
-            CallbackCommand.FOLOPIDOR -> foloPidorCallbackService.foloPidor(update)
-            CallbackCommand.FOLOPIDORTOP -> foloPidorCallbackService.foloPidorTop(update)
-            CallbackCommand.FOLOSLACKERS -> foloPidorCallbackService.foloSlackers(update)
-            CallbackCommand.FOLOUNDERDOGS -> foloPidorCallbackService.foloUnderdogs(update)
             else -> {}
         }
         callbackService.answerCallbackQuery(update)

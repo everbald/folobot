@@ -6,7 +6,7 @@ enum class BotCommand(val command: String) {
     SMALLTALK("/smalltalk"),
     FREELANCE("/freelance"),
     NOFAP("/nofap"),
-    FOLOPIDOR("/folopidor"),
+    FOLOPIDORTOP("/folopidortop"),
     FOLOPIDORALPHA("/folopidoralpha"),
     FOLOCOIN("/folocoin"),
     FOLOCOINTRANSFER("folocointransfer"),

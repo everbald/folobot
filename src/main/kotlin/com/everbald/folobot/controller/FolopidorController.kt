@@ -47,9 +47,7 @@ class FolopidorController(
         @RequestParam chatId: Long = COMMON_CHATID,
         @RequestParam(required = false) userId: Long? = INITIAL_USERID,
         @RequestParam(required = false) score: Int? = 0,
-        @RequestParam(required = false) lastWinDate: String? = LocalDate.of(1900,1,1).toString(),
-        @RequestParam(required = false) lastActiveDate: String? = LocalDate.now().toString(),
-        @RequestParam(required = false) messagesPerDay: Int? = 0,
+        @RequestParam(required = false) lastWinDate: String?,
         @RequestParam action: String,
         model: MutableMap<String, Any>
     ): String {
@@ -63,8 +61,6 @@ class FolopidorController(
                 val foloPidor = foloPidorService.find(chatId, userId)
                 foloPidor.score = score!!
                 foloPidor.lastWinDate = LocalDate.parse(lastWinDate)
-                foloPidor.lastActiveDate = LocalDate.parse(lastActiveDate)
-                foloPidor.messagesPerDay = messagesPerDay!!
                 foloPidorService.save(foloPidor)
             }
             ControllerCommand.DELETE -> foloPidorService.delete(FoloPidor(chatId, userId!!))
