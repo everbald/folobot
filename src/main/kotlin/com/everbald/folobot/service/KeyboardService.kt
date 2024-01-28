@@ -72,19 +72,4 @@ class KeyboardService(
     fun buildFolocoinTransferButton(): KeyboardButton = KeyboardButton.builder()
         .text(BotCommand.FOLOCOINTRANSFERCANCEL.command)
         .build()
-
-    fun getFoloPidorKeyboard(): InlineKeyboardMarkup = InlineKeyboardMarkup.builder()
-        .keyboardRow(
-            listOf(
-                buildCallbackButton(CallbackCommand.FOLOPIDOR),
-                buildCallbackButton(CallbackCommand.FOLOPIDORTOP)
-            )
-        )
-        .keyboardRow(
-            listOf(
-                buildCallbackButton(CallbackCommand.FOLOSLACKERS),
-                buildCallbackButton(CallbackCommand.FOLOUNDERDOGS)
-            )
-        )
-        .build()
 }

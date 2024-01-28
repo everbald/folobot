@@ -54,9 +54,11 @@ class MessageRepo {
     fun getTopLiked(chatId: Long, top: Int) = transaction {
         MessageTable
             .select { MessageTable.chatId eq chatId }
-            .andWhere { MessageTable.dateTime.between(
-                LocalDate.now().toOffsetAtStartOfDay(),
-                LocalDate.now().toOffsetAtEndOfDay())
+            .andWhere {
+                MessageTable.dateTime.between(
+                    LocalDate.now().toOffsetAtStartOfDay(),
+                    LocalDate.now().toOffsetAtEndOfDay()
+                )
             }
             .andWhere { MessageTable.reactionCount greater 0 }
             .orderBy(MessageTable.reactionCount, SortOrder.DESC)

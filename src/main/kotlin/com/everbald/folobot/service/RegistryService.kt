@@ -61,12 +61,6 @@ class RegistryService(
                         ?.let {
                             // Фолопользователь
                             foloUserService.save(foloUserService.find(it.id).setName(it.name))
-                            // И фолопидор
-                            if (!message.isUserMessage && message.isNotUserJoin) {
-                                foloPidorService.save(
-                                    foloPidorService.find(message.chatId, it.id).updateMessagesPerDay()
-                                )
-                            }
                             logger.trace { "Saved foloUser ${it.name}" }
                         }
                 }

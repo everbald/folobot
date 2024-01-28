@@ -50,7 +50,7 @@ class CommandHandler(
             BotCommand.SMALLTALK -> smallTalkHandler.handle(update, true)
             BotCommand.FREELANCE -> commandService.freelanceTimer(update)
             BotCommand.NOFAP -> commandService.nofapTimer(update)
-            BotCommand.FOLOPIDOR -> commandService.foloPidor(update)
+            BotCommand.FOLOPIDORTOP -> commandService.foloPidorTop(update)
             BotCommand.FOLOPIDORALPHA -> commandService.alphaTimer(update)
             BotCommand.FOLOCOIN -> commandService.foloCoin(update)
             BotCommand.FOLOCOINTRANSFER -> commandService.foloCoinTransfer(update)

@@ -1,6 +1,7 @@
 package com.everbald.folobot.service
 
 import com.everbald.folobot.domain.type.PluralType
+import com.everbald.folobot.extensions.addMessage
 import com.everbald.folobot.extensions.chatIdentity
 import com.everbald.folobot.extensions.extractText
 import com.everbald.folobot.extensions.toTextWithNumber
@@ -22,7 +23,8 @@ class TaskService(
     private val foloIndexService: FoloIndexService,
     private val foloCoinService: FoloCoinService,
     private val foloBailService: FoloBailService,
-    private val messageQueueService: MessageQueueService
+    private val messageQueueService: MessageQueueService,
+    private val textService: TextService
 ) : KLogging() {
 
     fun dayStats(chatId: Long) {
@@ -30,6 +32,7 @@ class TaskService(
             .also { logger.info { "Sent day stats to ${chatId.chatIdentity}" } }
         topActive(chatId)
         topLikedMessages(chatId)
+        foloPidorOfTheDay(chatId)
         dayBails(chatId)
         foloIndex(chatId)
     }
@@ -40,8 +43,8 @@ class TaskService(
             prefix = "*Самые активные фолопидоры*:\n",
             transform = {
                 "\u2004*${it.index + 1}*.\u2004${
-                    userService.getFoloUserName(it.value, chatId)
-                } — ${it.value.messagesPerDay.toTextWithNumber(PluralType.MESSAGE)}"
+                    userService.getFoloUserName(it.value.foloPidor, chatId)
+                } — ${it.value.messageCount.toTextWithNumber(PluralType.MESSAGE)}"
             }
         ).let {messageService.sendMessage(it, chatId) }
     }
@@ -62,6 +65,23 @@ class TaskService(
                     ).let { messageService.sendMessage(it, chatId, true) }
                 }
             }
+    }
+
+    fun foloPidorOfTheDay(chatId: Long) {
+        foloPidorService.getTopLiked(chatId)
+            .ifEmpty { foloPidorService.getTopActive(chatId, 30).map { it.foloPidor } }
+            .random()
+            .let {
+                it.apply {
+                    this.score++
+                    this.lastWinDate = LocalDate.now()
+                }
+            }.let { foloPidorService.save(it) }
+            .also { logger.debug { "Updated $it score" } }
+            .also { logger.info { "Updated foloPidor winner ${it.user.getTagName()} and win date ${LocalDate.now()}" } }
+            .let { textService.getPunch(userService.getFoloUserNameLinked(it, chatId)) }
+            .let { messageService.sendMessage(it, chatId) }
+            ?.also { logger.addMessage(it) }
     }
 
     fun dayBails(chatId: Long) {

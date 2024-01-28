@@ -9,6 +9,7 @@ object MessageTable : Table("message") {
     val id = uuid("id").autoGenerate()
     override val primaryKey = PrimaryKey(id)
     val chatId = long("chat_id")
+    val userId = long("user_id")
     val messageId = integer("message_id")
     val dateTime = timestampWithTimeZone("date_time")
     val message = jsonb<Message>("message")
