@@ -72,6 +72,7 @@ class TaskService(
         foloPidorService.getTotalLikesInPeriod(chatId)
             ?.random()
             ?.let {
+                logger.info { "Today foloPidor is ${it.foloPidor.user.getTagName()} with total of ${it.count} reactions" }
                 it.foloPidor.apply {
                     this.score++
                     this.lastWinDate = LocalDate.now()
