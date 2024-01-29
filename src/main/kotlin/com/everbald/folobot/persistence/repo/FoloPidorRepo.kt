@@ -1,10 +1,11 @@
 package com.everbald.folobot.persistence.repo
 
 import com.everbald.folobot.domain.FoloPidor
-import com.everbald.folobot.domain.FoloPidorWithMessageCount
+import com.everbald.folobot.domain.FoloPidorWithCount
 import com.everbald.folobot.persistence.mapper.toFoloPidor
 import com.everbald.folobot.persistence.mapper.toFoloPidorUpsert
 import com.everbald.folobot.persistence.mapper.toFoloPidorWithMessageCount
+import com.everbald.folobot.persistence.mapper.toFoloPidorWithReactionCount
 import com.everbald.folobot.persistence.table.FoloPidorTable
 import com.everbald.folobot.persistence.table.FoloUserTable
 import com.everbald.folobot.persistence.table.MessageTable
@@ -19,6 +20,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.upsert
 import org.springframework.stereotype.Repository
@@ -88,7 +90,7 @@ class FoloPidorRepo {
         startDateTime: OffsetDateTime,
         endDateTime: OffsetDateTime,
         limit: Int,
-    ): List<FoloPidorWithMessageCount> =
+    ): List<FoloPidorWithCount> =
         transaction {
             MessageTable
                 .joinFoloPidorTable()
@@ -126,6 +128,26 @@ class FoloPidorRepo {
                 .map { it.toFoloPidor() }
         }
 
+    fun getTotalLikesInPeriod(
+        chatId: Long,
+        startDateTime: OffsetDateTime,
+        endDateTime: OffsetDateTime,
+    ): List<FoloPidorWithCount> =
+        transaction {
+            MessageTable
+                .joinFoloPidorTable()
+                .slice(
+                    FoloPidorTable.fields
+                        .plus(FoloUserTable.fields)
+                        .plus(MessageTable.reactionCount.sum().over().partitionBy(MessageTable.userId))
+                )
+                .select { MessageTable.chatId eq chatId }
+                .andWhere { MessageTable.dateTime.between(startDateTime, endDateTime) }
+                .withDistinct()
+                .orderBy(MessageTable.reactionCount.sum().over().partitionBy(MessageTable.userId), SortOrder.DESC)
+                .map { it.toFoloPidorWithReactionCount() }
+        }
+
     private fun MessageTable.getMaxLikesInPeriod(
         chatId: Long,
         startDateTime: OffsetDateTime,
@@ -135,6 +157,7 @@ class FoloPidorRepo {
             .select { MessageTable.chatId eq chatId }
             .andWhere { dateTime.between(startDateTime, endDateTime) }
             .single()[MessageTable.reactionCount.max().alias("MaxReactionCount")] ?: 0
+
 
     private fun FoloPidorTable.joinFoloUserTable() =
         this.innerJoin(FoloUserTable)

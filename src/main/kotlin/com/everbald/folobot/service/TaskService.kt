@@ -24,7 +24,7 @@ class TaskService(
     private val foloCoinService: FoloCoinService,
     private val foloBailService: FoloBailService,
     private val messageQueueService: MessageQueueService,
-    private val textService: TextService
+    private val textService: TextService,
 ) : KLogging() {
 
     fun dayStats(chatId: Long) {
@@ -38,49 +38,50 @@ class TaskService(
     }
 
     fun topActive(chatId: Long) {
-        foloPidorService.getTopActive(chatId, 5).withIndex().joinToString(
-            separator = "\n",
-            prefix = "*Самые активные фолопидоры*:\n",
-            transform = {
-                "\u2004*${it.index + 1}*.\u2004${
-                    userService.getFoloUserName(it.value.foloPidor, chatId)
-                } — ${it.value.messageCount.toTextWithNumber(PluralType.MESSAGE)}"
-            }
-        ).let {messageService.sendMessage(it, chatId) }
+        foloPidorService.getTopActive(chatId, 5)
+            ?.withIndex()
+            ?.joinToString(
+                separator = "\n",
+                prefix = "*Самые активные фолопидоры*:\n",
+                transform = {
+                    "\u2004*${it.index + 1}*.\u2004${
+                        userService.getFoloUserName(it.value.foloPidor, chatId)
+                    } — ${it.value.count.toTextWithNumber(PluralType.MESSAGE)}"
+                }
+            )
+            ?.let { messageService.sendMessage(it, chatId) }
     }
 
     fun topLikedMessages(chatId: Long) {
         messageService.getTopLiked(chatId, 5)
-            .let { topMessages ->
-                if(topMessages.isNotEmpty()) {
-                    topMessages.withIndex().joinToString(
-                        separator = "\n",
-                        prefix = "*Сообщения не оставившие фолопидоров равнодушными*:\n",
-                        transform = {
-                            "\u2004*${it.index + 1}*.\u2004" +
-                                    it.value.message.getContentEmoji() +
-                                    "[${it.value.message.extractShortText()}]" +
-                                    "(t.me/${it.value.message.chat.userName}/${it.value.message.messageId})"
-                        }
-                    ).let { messageService.sendMessage(it, chatId, true) }
+            ?.withIndex()
+            ?.joinToString(
+                separator = "\n",
+                prefix = "*Сообщения не оставившие фолопидоров равнодушными*:\n",
+                transform = {
+                    "\u2004*${it.index + 1}*.\u2004" +
+                            it.value.message.getContentEmoji() +
+                            "[${it.value.message.extractShortText()}]" +
+                            "(t.me/${it.value.message.chat.userName}/${it.value.message.messageId})"
                 }
-            }
+            )
+            ?.let { messageService.sendMessage(it, chatId, true) }
     }
 
     fun foloPidorOfTheDay(chatId: Long) {
-        foloPidorService.getTopLiked(chatId)
-            .ifEmpty { foloPidorService.getTopActive(chatId, 30).map { it.foloPidor } }
-            .random()
-            .let {
-                it.apply {
+        foloPidorService.getTotalLikesInPeriod(chatId)
+            ?.random()
+            ?.let {
+                it.foloPidor.apply {
                     this.score++
                     this.lastWinDate = LocalDate.now()
                 }
-            }.let { foloPidorService.save(it) }
-            .also { logger.debug { "Updated $it score" } }
-            .also { logger.info { "Updated foloPidor winner ${it.user.getTagName()} and win date ${LocalDate.now()}" } }
-            .let { textService.getPunch(userService.getFoloUserNameLinked(it, chatId)) }
-            .let { messageService.sendMessage(it, chatId) }
+            }
+            ?.let { foloPidorService.save(it) }
+            ?.also { logger.debug { "Updated $it score" } }
+            ?.also { logger.info { "Updated foloPidor winner ${it.user.getTagName()} and win date ${LocalDate.now()}" } }
+            ?.let { textService.getPunch(userService.getFoloUserNameLinked(it, chatId)) }
+            ?.let { messageService.sendMessage(it, chatId) }
             ?.also { logger.addMessage(it) }
     }
 
@@ -107,8 +108,8 @@ class TaskService(
         else if (this.hasAudio() || this.hasVoice()) "🔈 "
         else "💬 "
 
-    private fun Message.extractShortText() : String =
+    private fun Message.extractShortText(): String =
         this.extractText()
-            ?.let {it.take(20) + if (it.length > 20) "..." else "" }
+            ?.let { it.take(20) + if (it.length > 20) "..." else "" }
             ?: "сообщение"
 }
