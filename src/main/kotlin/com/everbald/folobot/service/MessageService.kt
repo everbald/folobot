@@ -1,6 +1,7 @@
 package com.everbald.folobot.service
 
 import com.everbald.folobot.FoloBot
+import com.everbald.folobot.domain.FoloMessage
 import com.everbald.folobot.extensions.chatId
 import com.everbald.folobot.extensions.chatIdentity
 import com.everbald.folobot.extensions.from
@@ -52,7 +53,7 @@ class MessageService(
     fun updateReactionCount(chatId: Long, messageId: Int, count: Int) =
         repo.updateReactionCount(chatId, messageId, count)
 
-    fun getTopLiked(chatId: Long, top: Int) = repo.getTopLiked(chatId, top)
+    fun getTopLiked(chatId: Long, top: Int): List<FoloMessage>? = repo.getTopLiked(chatId, top).ifEmpty { null }
 
     private fun buildMessage(
         text: String,

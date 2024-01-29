@@ -62,7 +62,7 @@ data class FoloPidor(
     }
 }
 
-data class FoloPidorWithMessageCount(
+data class FoloPidorWithCount(
     val foloPidor: FoloPidor,
-    val messageCount: Int
+    val count: Int
 )

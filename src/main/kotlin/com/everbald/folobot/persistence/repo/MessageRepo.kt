@@ -51,7 +51,7 @@ class MessageRepo {
             }
     }
 
-    fun getTopLiked(chatId: Long, top: Int) = transaction {
+    fun getTopLiked(chatId: Long, top: Int): List<FoloMessage> = transaction {
         MessageTable
             .select { MessageTable.chatId eq chatId }
             .andWhere {
