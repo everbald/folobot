@@ -25,8 +25,8 @@ val Message?.isAboutFo: Boolean get() =
     this?.replyToMessage?.from?.id == FOLOMKIN_ID ||
             this?.entities?.any { it.type == EntityType.TEXTMENTION && it.user.isFo } == true ||
             listOf(
-                "фоло", "фолик", "алекс", "гуру", "саш", "санчоус", "шурк", "гурманыч", "вайтифас", "просвещения",
-                "цветочкин", "расческин", "folo", "яхтсмен"
+                "фоло", "фолик", "алекс", "гуру", "саш", "санчоус", "саня", "санек", "саньк", "шурк", "гурманыч",
+                "вайтифас", "просвещения", "цветочкин", "расческин", "folo", "яхтсмен"
             ).any {
                 this?.text?.contains(it, true) == true ||
                         this?.caption?.contains(it, true) == true
