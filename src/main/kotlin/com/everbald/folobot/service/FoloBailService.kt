@@ -2,6 +2,7 @@ package com.everbald.folobot.service
 
 import com.everbald.folobot.domain.FoloMessage
 import com.everbald.folobot.domain.type.PluralType
+import com.everbald.folobot.extensions.isBail
 import com.everbald.folobot.extensions.toText
 import com.everbald.folobot.extensions.toTextWithNumber
 import com.everbald.folobot.persistence.repo.MessageRepo
@@ -17,7 +18,7 @@ class FoloBailService(
 ) {
     fun getTodayBails(chatId: Long): List<FoloMessage> =
         repo.getInInterval(chatId, LocalDate.now().toOffsetAtStartOfDay(), LocalDate.now().toOffsetAtEndOfDay())
-            .filter { it.message.text.isBail() }
+            .filter { it.message.isBail }
 
     fun buildTodayBailText(chatId: Long, fullList: Boolean = true) =
         getTodayBails(chatId)
@@ -30,10 +31,6 @@ class FoloBailService(
                 }
                 else "*Сегодня без сливов, но не стоит расслабляться!*"
             }
-
-    private fun String?.isBail(): Boolean =
-        this?.let { it.contains("слив", true) && it.contains("засчит", true) }
-            ?: false
 
     private fun List<FoloMessage>.buildBailText(): String =
         this.withIndex()
