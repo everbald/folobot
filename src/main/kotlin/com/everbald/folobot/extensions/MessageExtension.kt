@@ -39,7 +39,23 @@ val Message?.isBail: Boolean get() =
     this?.text?.let { it.contains("слив", true) && it.contains("засчит", true) }
         ?: false
 val Message?.isLuxuryLife: Boolean get() =
-    this?.entities?.any { it.type == EntityType.HASHTAG && it.text.contains("завидуймолчапетух") } ?: false
+    this?.entities?.any { it.type == EntityType.HASHTAG && it.text.contains("завидуймолчапетух", true) }
+        ?: false
+val Message?.isAboutFood: Boolean get() =
+    this?.text?.let {
+        it.contains("еда", true) ||
+                it.contains("пища", true) ||
+                it.contains("жрат", true) ||
+                it.contains("хрючев", true)
+    }
+        ?: false
+val Message?.isAboutMother: Boolean get() =
+    this?.text?.let {
+        it.contains("мамк", true) ||
+                it.contains("хозяюшк", true) ||
+                it.contains("сожитель", true)
+    }
+        ?: false
 
 
 fun Message?.getBotCommand(): String? {
