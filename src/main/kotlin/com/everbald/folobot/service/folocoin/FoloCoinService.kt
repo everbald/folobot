@@ -44,7 +44,7 @@ class FoloCoinService(
         if (update.message.chat.isFolochat) {
             val points = if (update.message.isAboutFo) 3 else 1
             val receiver =
-                if (update.message.isFromFoloSwarm() || update.message.isAutomaticForward == true) FOLOMKIN_ID
+                if (update.message.isFromFoloSwarm || update.message.isAutomaticForward == true) FOLOMKIN_ID
                 else update.message.from.id
             getById(receiver)
                 .addPoints(points)
