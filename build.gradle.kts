@@ -6,9 +6,9 @@ tasks.getByName<Jar>("jar") { enabled = false }
 plugins {
     id("org.springframework.boot") version "3.2.1"
     id("io.spring.dependency-management") version "1.1.0"
-    kotlin("jvm") version "1.9.21"
-    kotlin("plugin.serialization") version "1.9.21"
-    kotlin("plugin.spring") version "1.9.21"
+    kotlin("jvm") version "1.9.22"
+    kotlin("plugin.serialization") version "1.9.22"
+    kotlin("plugin.spring") version "1.9.22"
 }
 
 group = "com.everbald"
@@ -44,9 +44,9 @@ dependencies {
     // feign
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.1.0")
     // telegram api
-    implementation("org.telegram:telegrambots:6.9.7.0")
+    implementation("org.telegram:telegrambots:6.9.7.1")
     // open api
-    implementation("com.aallam.openai:openai-client:3.6.3")
+    implementation("com.aallam.openai:openai-client:3.7.0")
     // serialisation
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
     // logging
