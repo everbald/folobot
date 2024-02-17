@@ -6,6 +6,8 @@ import com.everbald.folobot.utils.FoloId.FOLO_SWARM
 import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Message
 
+fun Message.extractText(): String? = this.text ?: this.caption
+
 val Message.isForward: Boolean get() = this.forwardDate != null
 val Message.isNotForward: Boolean get() = !this.isForward
 val Message.isUserJoin: Boolean get() = this.newChatMembers.isNotEmpty()
@@ -16,12 +18,9 @@ val Message.isNotSuccessfulPayment: Boolean get() = !this.isSuccessfulPayment
 val Message.isUserShared: Boolean get() = this.userShared != null
 val Message.isNotUserShared: Boolean get() = !this.isUserShared
 val Message.isTextMessage: Boolean get() = this.hasText() || this.caption != null
-val Message.isNotCommand get() = !this.isCommand
-fun Message?.isFromFoloSwarm() =
+val Message.isNotCommand: Boolean get() = !this.isCommand
+val Message?.isFromFoloSwarm: Boolean get() =
     FOLO_SWARM.contains(this?.forwardFromChat?.id) || this?.forwardFrom?.id == FOLOMKIN_ID
-
-fun Message.extractText(): String? = this.text ?: this.caption
-
 val Message?.isAboutFo: Boolean get() =
     this?.replyToMessage?.from?.id == FOLOMKIN_ID ||
             this?.entities?.any { it.type == EntityType.TEXTMENTION && it.user.isFo } == true ||
@@ -32,12 +31,16 @@ val Message?.isAboutFo: Boolean get() =
                 this?.text?.contains(it, true) == true ||
                         this?.caption?.contains(it, true) == true
             }
-
-
 val Message?.isAboutBot: Boolean get() = listOf("гурманыч", "шурка").any {
     this?.text?.contains(it, true) == true ||
             this?.caption?.contains(it, true) == true
 }
+val Message?.isBail: Boolean get() =
+    this?.text?.let { it.contains("слив", true) && it.contains("засчит", true) }
+        ?: false
+val Message?.isLuxuryLife: Boolean get() =
+    this?.entities?.any { it.type == EntityType.HASHTAG && it.text.contains("завидуймолчапетух") } ?: false
+
 
 fun Message?.getBotCommand(): String? {
     var command = this?.entities?.firstOrNull { it.type == EntityType.BOTCOMMAND }?.text?.substringBefore("@")
