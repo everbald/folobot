@@ -19,4 +19,5 @@ object FoloId {
         const val FOLOMKIN_ID = 362689512L
         val VIP_ID = listOf(50496196L, 1435023027L)
         val VASYA_ID = listOf(512485120L, 5038748126L, 5454744825L)
+        const val BARBOSKIN_ID = 377884346L
 }
