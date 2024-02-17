@@ -33,7 +33,7 @@ class SmallTalkHandler(
     override fun handle(update: Update) = handle(update, false)
 
     fun handle(update: Update, withInit: Boolean = false) {
-        if (update.message.isFromFoloSwarm()) {
+        if (update.message.isFromFoloSwarm) {
             if (smallTalkStatus[update.message?.chatId] != false) {
                 smallTalkService.smallTalk(update, withInit)
                 suspend(update, 30.seconds)
