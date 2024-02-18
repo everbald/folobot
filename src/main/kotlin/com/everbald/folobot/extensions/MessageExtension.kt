@@ -49,13 +49,6 @@ val Message?.isAboutFood: Boolean get() =
                 it.contains("хрючев", true)
     }
         ?: false
-val Message?.isAboutMother: Boolean get() =
-    this?.text?.let {
-        it.contains("мамк", true) ||
-                it.contains("хозяюшк", true) ||
-                it.contains("сожитель", true)
-    }
-        ?: false
 
 
 fun Message?.getBotCommand(): String? {
