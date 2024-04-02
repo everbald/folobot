@@ -14,6 +14,7 @@ import com.everbald.folobot.extensions.chatId
 import com.everbald.folobot.extensions.chatIdentity
 import com.everbald.folobot.extensions.extractCommandText
 import com.everbald.folobot.extensions.isAboutBot
+import com.everbald.folobot.extensions.isFromBot
 import com.everbald.folobot.extensions.msg
 import com.everbald.folobot.extensions.name
 import com.everbald.folobot.extensions.telegramEscape
@@ -28,7 +29,7 @@ import org.apache.commons.codec.binary.Base64
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.InputFile
-import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.io.ByteArrayInputStream
 
@@ -36,7 +37,6 @@ import java.io.ByteArrayInputStream
 @Service
 class SmallTalkService(
     private val openAI: OpenAI,
-    private val userService: UserService,
     private val messageQueueService: MessageQueueService,
     private val fileService: FileService,
 ) : KLogging() {
@@ -227,7 +227,7 @@ class SmallTalkService(
             .mapNotNull { stackMessage ->
                 buildPrompt(stackMessage)?.let {
                     ChatMessage(
-                        role = if (userService.isSelf(stackMessage.from)) ChatRole.Assistant else ChatRole.User,
+                        role = if (stackMessage.from.isBot) ChatRole.Assistant else ChatRole.User,
                         content = it,
                         name = stackMessage.from.id.toString()
                     )
@@ -238,7 +238,7 @@ class SmallTalkService(
     private fun Message?.preparePrompt(): String? {
         val request = this?.text?.preparePrompt() ?: this?.caption?.preparePrompt()
         return request?.let {
-            val prefix = if (!userService.isSelf(this?.from) && !this.isAboutBot) "Гурманыч, " else ""
+            val prefix = if (!this.isFromBot && !this.isAboutBot) "Гурманыч, " else ""
             prefix + it
         }
     }

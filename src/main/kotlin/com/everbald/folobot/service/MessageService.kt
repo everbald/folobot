@@ -1,6 +1,5 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.FoloBot
 import com.everbald.folobot.domain.FoloMessage
 import com.everbald.folobot.extensions.chatId
 import com.everbald.folobot.extensions.chatIdentity
@@ -25,20 +24,21 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCa
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 import org.telegram.telegrambots.meta.api.objects.InputFile
-import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.media.InputMedia
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
+import org.telegram.telegrambots.meta.generics.TelegramClient
 import java.time.OffsetDateTime
 
 @Component
 class MessageService(
     private val repo: MessageRepo,
     private val userService: UserService,
-    private val foloBot: FoloBot,
+    private val telegramClient: TelegramClient,
 ) : KLogging() {
 
     fun register(update: Update) {
@@ -78,7 +78,7 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN,
     ): Message? {
         return try {
-            foloBot.execute(
+            telegramClient.execute(
                 SendMessage
                     .builder()
                     .parseMode(parseMode)
@@ -102,7 +102,7 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN,
     ): Message? =
         try {
-            foloBot.execute(buildMessage(text, update, replyMarkup, reply, disablePreview, parseMode))
+            telegramClient.execute(buildMessage(text, update, replyMarkup, reply, disablePreview, parseMode))
                 .also { if (update.msg.isUserMessage && !update.from.isVIP) forwardMessage(FoloId.POC_ID, it) }
         } catch (e: TelegramApiException) {
             logger.error(e) { "Message text was: $text" }
@@ -130,7 +130,7 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN,
     ) {
         try {
-            foloBot.execute(buildEditMessageText(text, update, replyMarkup, parseMode))
+            telegramClient.execute(buildEditMessageText(text, update, replyMarkup, parseMode))
         } catch (e: TelegramApiException) {
             logger.debug { e }
         }
@@ -157,19 +157,20 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN,
     ) {
         try {
-            foloBot.execute(buildEditMessageCaption(text, update, replyMarkup, parseMode))
+            telegramClient.execute(buildEditMessageCaption(text, update, replyMarkup, parseMode))
         } catch (e: TelegramApiException) {
             logger.debug { e }
         }
     }
 
     fun buildInputMediaPhoto(photo: InputFile, text: String?, parseMode: String = ParseMode.MARKDOWN): InputMedia =
-        InputMediaPhoto()
-            .also { mediaPhoto ->
-                mediaPhoto.setMedia(photo.newMediaStream, photo.mediaName)
-                text?.let { mediaPhoto.caption = it }
-                mediaPhoto.parseMode = parseMode
-            }
+        InputMediaPhoto
+            .builder()
+            .newMediaStream(photo.newMediaStream)
+            .mediaName(photo.mediaName)
+            .also { builder -> text?.let { builder.caption(it) } }
+            .parseMode(parseMode)
+            .build()
 
     fun buildEditMessagePhoto(
         photo: InputFile,
@@ -194,7 +195,8 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN,
     ) {
         try {
-            foloBot.execute(buildEditMessagePhoto(photo, text, update, replyMarkup, parseMode))
+            buildEditMessagePhoto(photo, text, update, replyMarkup, parseMode)
+                .let { telegramClient.execute(it) }
         } catch (e: TelegramApiException) {
             logger.debug { e }
         }
@@ -208,7 +210,7 @@ class MessageService(
 
     fun sendSticker(stickerId: String, update: Update): Message? =
         try {
-            foloBot.execute(buildSticker(stickerId, update))
+            telegramClient.execute(buildSticker(stickerId, update))
         } catch (e: TelegramApiException) {
             logger.error { e }
             null
@@ -216,7 +218,7 @@ class MessageService(
 
     fun forwardMessage(chatId: Long, update: Update): Message? =
         try {
-            foloBot.execute(
+            telegramClient.execute(
                 ForwardMessage
                     .builder()
                     .chatId((chatId).toString())
@@ -232,7 +234,7 @@ class MessageService(
     fun forwardMessage(chatId: Long, message: Message?): Boolean {
         message?.let {
             try {
-                foloBot.execute(
+                telegramClient.execute(
                     ForwardMessage
                         .builder()
                         .chatId(chatId.toString())
@@ -252,7 +254,7 @@ class MessageService(
     fun silentForwardMessage(chatId: Long, message: Message?): Message? {
         return message?.let {
             try {
-                foloBot.execute(
+                telegramClient.execute(
                     ForwardMessage
                         .builder()
                         .chatId(chatId.toString())
@@ -307,7 +309,7 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN,
     ): Message? =
         try {
-            foloBot.execute(buildPhoto(photo, chatId, text, replyMarkup, parseMode))
+            telegramClient.execute(buildPhoto(photo, chatId, text, replyMarkup, parseMode))
         } catch (e: TelegramApiException) {
             logger.error { e }
             null
@@ -321,7 +323,7 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN,
     ): Message? =
         try {
-            foloBot.execute(buildPhoto(photoPath, chatId, text, replyMarkup, parseMode))
+            telegramClient.execute(buildPhoto(photoPath, chatId, text, replyMarkup, parseMode))
         } catch (e: Exception) {
             logger.error { e }
             null
@@ -346,7 +348,7 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN,
     ): Message? =
         try {
-            foloBot.execute(buildVoice(voiceId, text, chatId, parseMode))
+            telegramClient.execute(buildVoice(voiceId, text, chatId, parseMode))
         } catch (e: TelegramApiException) {
             logger.error { e }
             null
@@ -355,7 +357,7 @@ class MessageService(
 
     fun deleteMessage(update: Update): Boolean =
         try {
-            foloBot.execute(DeleteMessage(update.message.chatId.toString(), update.message.messageId))
+            telegramClient.execute(DeleteMessage(update.message.chatId.toString(), update.message.messageId))
         } catch (e: TelegramApiException) {
             logger.error { e }
             false
@@ -363,7 +365,7 @@ class MessageService(
 
     fun deleteMessage(chatId: Long, messageId: Int): Boolean =
         try {
-            foloBot.execute(DeleteMessage(chatId.toString(), messageId))
+            telegramClient.execute(DeleteMessage(chatId.toString(), messageId))
         } catch (e: TelegramApiException) {
             logger.error { e }
             false

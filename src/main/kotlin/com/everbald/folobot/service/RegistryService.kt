@@ -24,7 +24,6 @@ import org.telegram.telegrambots.meta.api.objects.Update
 @Component
 class RegistryService(
     private val foloUserService: FoloUserService,
-    private val foloPidorService: FoloPidorService,
     private val messageService: MessageService,
     private val foloIndexService: FoloIndexService,
     private val foloCoinService: FoloCoinService,

@@ -10,7 +10,7 @@ import com.everbald.folobot.service.CommandService
 import com.everbald.folobot.service.MessageService
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
-import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove
 
