@@ -1,6 +1,6 @@
 package com.everbald.folobot.domain
 
-import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import java.time.OffsetDateTime
 
 data class FoloMessage(

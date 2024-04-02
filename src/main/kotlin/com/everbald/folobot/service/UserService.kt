@@ -1,10 +1,10 @@
 package com.everbald.folobot.service
 
-import com.everbald.folobot.FoloBot
-import com.everbald.folobot.extensions.name
-import com.everbald.folobot.extensions.premiumPrefix
+import com.everbald.folobot.config.bot.BotCredentialsConfig
 import com.everbald.folobot.domain.FoloPidor
 import com.everbald.folobot.domain.FoloUser
+import com.everbald.folobot.extensions.name
+import com.everbald.folobot.extensions.premiumPrefix
 import mu.KLogging
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.MemberStatus
@@ -14,7 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.User
 class UserService(
     private val foloUserService: FoloUserService,
     private val chatService: ChatService,
-    private val foloBot: FoloBot
+    private val botCredentialsConfig: BotCredentialsConfig
 ) : KLogging() {
     /**
      * Получение имени пользователя
@@ -115,7 +115,8 @@ class UserService(
      * @param user [User]
      * @return да/нет
      */
-    fun isSelf(user: User?): Boolean = user?.id == foloBot.me.id
+    fun isSelf(user: User?): Boolean =
+      user?.isBot == true && user.userName == botCredentialsConfig.botUsername
 
     /**
      * Проверка, что пользователь состоит в чате

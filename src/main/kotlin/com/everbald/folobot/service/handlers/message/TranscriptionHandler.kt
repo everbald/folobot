@@ -5,7 +5,7 @@ import com.everbald.folobot.domain.type.Action
 import com.everbald.folobot.service.SmallTalkService
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
-import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @Component

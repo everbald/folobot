@@ -21,14 +21,18 @@ class ReactionService(
             ?.let { message ->
                 if (message.isNotCommand) {
                     when {
-                        message.isAboutFo -> messageReactionService.setReaction(update, Reaction.LIKE.emoji)
+                        message.isAboutFo -> runWithProbability(10) {
+                            messageReactionService.setReaction(update, Reaction.LIKE.emoji)
+                        }
                         message.isBail -> when (message.from.id) {
                             BARBOSKIN_ID -> Reaction.POO.emoji
                             else -> Reaction.HANDSHAKE.emoji
                         }
                             .let { messageReactionService.setReaction(update, it) }
                         message.isLuxuryLife -> messageReactionService.setReaction(update, Reaction.HOTDOG.emoji)
-                        message.isAboutFood -> messageReactionService.setReaction(update, Reaction.LOVE.emoji)
+                        message.isAboutFood -> runWithProbability(50) {
+                            messageReactionService.setReaction(update, Reaction.LOVE.emoji)
+                        }
                         else -> runWithProbability(1) {
                             messageReactionService.setReaction(update, Reaction.entries.random().emoji)
                         }

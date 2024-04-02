@@ -10,7 +10,7 @@ import com.everbald.folobot.service.folocoin.FoloIndexService
 import mu.KLogging
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
-import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.OffsetDateTime

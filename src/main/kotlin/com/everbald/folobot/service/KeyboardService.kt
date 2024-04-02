@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButtonRequestUser
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow
@@ -26,19 +27,19 @@ class KeyboardService(
 
     fun getFoloCoinKeyboard(isUserMessage: Boolean): InlineKeyboardMarkup = InlineKeyboardMarkup.builder()
         .keyboardRow(
-            listOf(
+            InlineKeyboardRow(
                 buildCallbackButton(CallbackCommand.BUYCOIN, true),
                 buildTransferCoinButton(isUserMessage)
             )
         )
         .keyboardRow(
-            listOf(
+            InlineKeyboardRow(
                 buildCallbackButton(CallbackCommand.COINBALANCE),
                 buildCallbackButton(CallbackCommand.COINPRICE)
             )
         )
         .keyboardRow(
-            listOf(
+            InlineKeyboardRow(
                 buildCallbackButton(CallbackCommand.FOLOMILLIONAIRE),
                 buildCallbackButton(CallbackCommand.FOLOINDEX)
             )

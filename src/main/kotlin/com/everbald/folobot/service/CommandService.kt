@@ -16,7 +16,7 @@ import com.everbald.folobot.utils.FoloId.ANDREW_ID
 import jakarta.annotation.Priority
 import mu.KLogging
 import org.springframework.stereotype.Component
-import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.time.LocalDate
 import java.time.Period

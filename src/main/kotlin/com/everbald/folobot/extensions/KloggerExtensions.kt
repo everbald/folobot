@@ -4,7 +4,7 @@ import com.everbald.folobot.domain.type.Action
 import com.everbald.folobot.domain.type.BotCommand
 import com.everbald.folobot.domain.type.CallbackCommand
 import mu.KLogger
-import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.message.Message
 
 fun KLogger.addMessage(message: Message?) =
     message?.let { this.debug { "Replied to ${it.chatId.chatIdentity} with ${it.text ?: "pic"}" } }

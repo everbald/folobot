@@ -9,7 +9,7 @@ import com.everbald.folobot.service.SmallTalkService
 import com.everbald.folobot.service.UserService
 import jakarta.annotation.Priority
 import org.springframework.stereotype.Component
-import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.util.*
 import kotlin.concurrent.schedule

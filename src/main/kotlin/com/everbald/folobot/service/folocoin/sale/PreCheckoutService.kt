@@ -1,6 +1,5 @@
 package com.everbald.folobot.service.folocoin.sale
 
-import com.everbald.folobot.FoloBot
 import com.everbald.folobot.extensions.addOutdatedInvoiceCheckout
 import com.everbald.folobot.extensions.name
 import com.everbald.folobot.extensions.toObject
@@ -11,10 +10,11 @@ import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
+import org.telegram.telegrambots.meta.generics.TelegramClient
 
 @Service
 class PreCheckoutService(
-    private val foloBot: FoloBot,
+    private val telegramClient: TelegramClient,
     private val foloCoinService: FoloCoinService
 ) : KLogging() {
     fun confirmOrder(update: Update) {
@@ -26,7 +26,7 @@ class PreCheckoutService(
 
     private fun sendConfirmation(update: Update, isValid: Boolean): Boolean {
         return try {
-            foloBot.execute(buildConfirmation(update, isValid))
+            telegramClient.execute(buildConfirmation(update, isValid))
         } catch (ex: TelegramApiException) {
             logger.error(ex) { "Error occurred while sending pre checkout confirmation" }
             false
