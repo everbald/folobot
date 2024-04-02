@@ -4,7 +4,7 @@ import com.everbald.folobot.domain.type.BotCommand
 import com.everbald.folobot.utils.FoloId.FOLOMKIN_ID
 import com.everbald.folobot.utils.FoloId.FOLO_SWARM
 import org.telegram.telegrambots.meta.api.objects.EntityType
-import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.message.Message
 
 fun Message.extractText(): String? = this.text ?: this.caption
 
@@ -19,6 +19,8 @@ val Message.isUserShared: Boolean get() = this.userShared != null
 val Message.isNotUserShared: Boolean get() = !this.isUserShared
 val Message.isTextMessage: Boolean get() = this.hasText() || this.caption != null
 val Message.isNotCommand: Boolean get() = !this.isCommand
+
+val Message?.isFromBot: Boolean get() = this?.from?.isBot == true
 val Message?.isFromFoloSwarm: Boolean get() =
     FOLO_SWARM.contains(this?.forwardFromChat?.id) || this?.forwardFrom?.id == FOLOMKIN_ID
 val Message?.isAboutFo: Boolean get() =

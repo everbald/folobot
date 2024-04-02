@@ -3,7 +3,7 @@ package com.everbald.folobot.persistence.table
 import com.everbald.folobot.persistence.jsonb
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.timestampWithTimeZone
-import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.message.Message
 
 object MessageTable : Table("message") {
     val id = uuid("id").autoGenerate()

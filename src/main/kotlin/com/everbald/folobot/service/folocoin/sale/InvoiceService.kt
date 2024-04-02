@@ -1,6 +1,5 @@
 package com.everbald.folobot.service.folocoin.sale
 
-import com.everbald.folobot.FoloBot
 import com.everbald.folobot.config.bot.BotCredentialsConfig
 import com.everbald.folobot.extensions.chatId
 import com.everbald.folobot.extensions.isUserMessage
@@ -12,17 +11,18 @@ import com.everbald.folobot.service.folocoin.model.Product
 import mu.KLogging
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.invoices.SendInvoice
-import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
+import org.telegram.telegrambots.meta.generics.TelegramClient
 
 @Service
 class InvoiceService(
-    private val foloBot: FoloBot,
+    private val telegramClient: TelegramClient,
     private val botCredentials: BotCredentialsConfig,
     private val foloCoinService: FoloCoinService,
-    private val messageService: MessageService
+    private val messageService: MessageService,
 ) : KLogging() {
     private val issuedInvoices: MutableList<Message> = mutableListOf()
 
@@ -34,7 +34,7 @@ class InvoiceService(
     fun sendInvoice(update: Update): Message? {
         clearInvoices(update.chatId)
         return try {
-            foloBot.execute(buildInvoice(update)).also {
+            telegramClient.execute(buildInvoice(update)).also {
                 issuedInvoices.add(it)
             }
         } catch (ex: TelegramApiException) {
