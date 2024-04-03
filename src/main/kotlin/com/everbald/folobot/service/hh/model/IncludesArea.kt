@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @param url Ссылка на информацию о регионе
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-
 data class IncludesArea(
 
     @get:JsonProperty("id", required = true) val id: String,
