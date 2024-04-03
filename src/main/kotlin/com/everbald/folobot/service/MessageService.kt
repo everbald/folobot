@@ -164,13 +164,11 @@ class MessageService(
     }
 
     fun buildInputMediaPhoto(photo: InputFile, text: String?, parseMode: String = ParseMode.MARKDOWN): InputMedia =
-        InputMediaPhoto
-            .builder()
-            .newMediaStream(photo.newMediaStream)
-            .mediaName(photo.mediaName)
-            .also { builder -> text?.let { builder.caption(it) } }
-            .parseMode(parseMode)
-            .build()
+        InputMediaPhoto(photo.newMediaStream, photo.mediaName)
+            .also {
+                it.caption = text
+                it.parseMode = parseMode
+            }
 
     fun buildEditMessagePhoto(
         photo: InputFile,
@@ -309,9 +307,10 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN,
     ): Message? =
         try {
-            telegramClient.execute(buildPhoto(photo, chatId, text, replyMarkup, parseMode))
+            buildPhoto(photo, chatId, text, replyMarkup, parseMode)
+                .let { telegramClient.execute(it) }
         } catch (e: TelegramApiException) {
-            logger.error { e }
+            logger.error(e) { "Error while sending photo to chat ${chatId.chatIdentity}" }
             null
         }
 
@@ -323,9 +322,10 @@ class MessageService(
         parseMode: String = ParseMode.MARKDOWN,
     ): Message? =
         try {
-            telegramClient.execute(buildPhoto(photoPath, chatId, text, replyMarkup, parseMode))
+            buildPhoto(photoPath, chatId, text, replyMarkup, parseMode)
+                .let { telegramClient.execute(it) }
         } catch (e: Exception) {
-            logger.error { e }
+            logger.error(e) { "Error while sending photo to chat ${chatId.chatIdentity}" }
             null
         }
 
