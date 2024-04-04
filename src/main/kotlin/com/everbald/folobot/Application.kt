@@ -13,6 +13,5 @@ class Application
 
 fun main(args: Array<String>) {
     runApplication<Application>(DatabaseStartupValidator::class.java.name, *args)
-
 }
 
