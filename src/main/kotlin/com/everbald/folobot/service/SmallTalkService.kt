@@ -123,7 +123,7 @@ class SmallTalkService(
             logger.warn { "Request to OpenAI API finished with socket timeout" }
         } catch (ex: OpenAIException) {
             messageQueueService.sendAndAddToQueue(
-                text = "Нет настроения общаться сегодня. Осеннее обострение",
+                text = "Нет настроения общаться сегодня. Весеннее обострение",
                 update = update,
                 reply = true
             )
@@ -149,7 +149,7 @@ class SmallTalkService(
             logger.warn { "Request to OpenAI API finished with socket timeout" }
         } catch (ex: OpenAIException) {
             messageQueueService.sendAndAddToQueue(
-                text = "Нет настроения общаться сегодня. Осеннее обострение",
+                text = "Нет настроения общаться сегодня. Весеннее обострение",
                 update = update,
                 reply = true
             )
@@ -181,7 +181,7 @@ class SmallTalkService(
             logger.warn { "Request to OpenAI API finished with socket timeout" }
         } catch (ex: OpenAIException) {
             messageQueueService.sendAndAddToQueue(
-                text = "Нет настроения общаться сегодня. Осеннее обострение",
+                text = "Нет настроения общаться сегодня. Весеннее обострение",
                 update = update,
                 reply = true
             )
