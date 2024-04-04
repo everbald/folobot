@@ -44,8 +44,8 @@ dependencies {
     // feign
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.1.0")
     // telegram api
-    implementation("org.telegram:telegrambots-longpolling:7.0.0")
-    implementation("org.telegram:telegrambots-client:7.0.0")
+    implementation("org.telegram:telegrambots-longpolling:7.2.0")
+    implementation("org.telegram:telegrambots-client:7.2.0")
     // open api
     implementation("com.aallam.openai:openai-client:3.7.0")
     // serialisation
