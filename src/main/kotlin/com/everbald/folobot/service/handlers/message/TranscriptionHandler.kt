@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Update
 class TranscriptionHandler(
     private val smallTalkService: SmallTalkService
 ) : AbstractMessageHandler() {
-    fun Message.isTranscribe() = this.hasVoice() || this.hasVideoNote()
+    fun Message.isTranscribe() = false //this.hasVoice() || this.hasVideoNote() FIXME
 
     override fun canHandle(update: Update) = (super.canHandle(update) && update.message.isTranscribe())
             .also { if (it) logger.addActionReceived(Action.TRANSCRIPTION, update.message.chatId) }
