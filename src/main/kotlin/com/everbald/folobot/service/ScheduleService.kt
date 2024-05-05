@@ -13,7 +13,7 @@ class ScheduleService(
         taskService.dayStats(FOLO_CHAT_ID)
     }
 
-    @Scheduled(cron = "0 * * ? * *")
+//    @Scheduled(cron = "0 * * ? * *")
     private fun foloCoin() = taskService.foloCoin()
 
     fun restoreMessages() = taskService.restoreMessages()
