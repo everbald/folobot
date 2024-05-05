@@ -143,7 +143,7 @@ class CommandService(
         messageService.sendPhoto(
             FOLO_STOCK_IMAGE,
             update.message.chatId,
-            "Добро пожаловать на фолобиржу!",
+            "Фаза майнинга завершена",
             keyboardService.getFoloCoinKeyboard(update.message.isUserMessage)
         )
 

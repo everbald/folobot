@@ -29,10 +29,10 @@ class FoloCoinCallbackService(
     fun coinBalance(update: Update) {
         val balance = foloCoinService.getById(update.from.id).coins
         val text = if (balance > 0) {
-            "На твоем счете *${balance.toTextWithNumber(PluralType.COIN)}*, " +
+            "Ты намайнил *${balance.toTextWithNumber(PluralType.PRETOKEN)}*, " +
                     userService.getCustomName(update.from, update.chatId)
         } else {
-            "На твоем счете нет фолокойнов, " +
+            "Ты не майнил претокены, " +
                     userService.getCustomName(update.from, update.chatId)
         }
         messageService.editMessagePhoto(
@@ -60,8 +60,7 @@ class FoloCoinCallbackService(
             buildTitlePhotoFile(),
             foloCoinService.getTop().withIndex().joinToString(
                 separator = "\n",
-                prefix = "*10 богатейших фолопидоров мира, чье состояние исчисляется в фолокойнах " +
-                        "— ${LocalDate.now().year}. Рейтинг Forbes*:\n",
+                prefix = "*10 фолопидоров, намайнивших больше всего претокенов*:\n",
                 transform = {
                     "\u2004*${it.index + 1}*.\u2004${userService.getFoloUserName(it.value.userId)} — " +
                             "*₣${it.value.coins}*"

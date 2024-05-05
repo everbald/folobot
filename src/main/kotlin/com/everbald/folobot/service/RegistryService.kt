@@ -90,7 +90,6 @@ class RegistryService(
 
     private fun addActivityPoints(update: Update) {
         foloIndexService.addActivityPoints(update)
-        foloCoinService.addCoinPoints(update)
     }
 
     private fun addToMessageQueue(update: Update) = messageQueueService.addToQueue(update.message)

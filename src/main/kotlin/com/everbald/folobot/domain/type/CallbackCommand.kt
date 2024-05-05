@@ -1,9 +1,9 @@
 package com.everbald.folobot.domain.type
 
 enum class CallbackCommand(val command: String, val description: String) {
-    COINBALANCE("/coinbalance", "Баланс кошелька"),
-    COINPRICE("/coinprice", "Цена фолокойна"),
-    FOLOMILLIONAIRE("/millionaire", "Топ акционеров"),
+    COINBALANCE("/coinbalance", "Баланс претокенов"),
+    COINPRICE("/coinprice", "Цена претокена"),
+    FOLOMILLIONAIRE("/millionaire", "Топ майнеров"),
     BUYCOIN("/buycoin", "Покупка ₣"),
     TRANSFERCOIN("/transfercoin", "Перевод ₣"),
     FOLOINDEX("/foloindex", "Фолоиндекс");

@@ -28,19 +28,13 @@ class KeyboardService(
     fun getFoloCoinKeyboard(isUserMessage: Boolean): InlineKeyboardMarkup = InlineKeyboardMarkup.builder()
         .keyboardRow(
             InlineKeyboardRow(
-                buildCallbackButton(CallbackCommand.BUYCOIN, true),
-                buildTransferCoinButton(isUserMessage)
-            )
-        )
-        .keyboardRow(
-            InlineKeyboardRow(
-                buildCallbackButton(CallbackCommand.COINBALANCE),
-                buildCallbackButton(CallbackCommand.COINPRICE)
-            )
-        )
-        .keyboardRow(
-            InlineKeyboardRow(
                 buildCallbackButton(CallbackCommand.FOLOMILLIONAIRE),
+                buildCallbackButton(CallbackCommand.COINBALANCE),
+            )
+        )
+        .keyboardRow(
+            InlineKeyboardRow(
+                buildCallbackButton(CallbackCommand.BUYCOIN, true),
                 buildCallbackButton(CallbackCommand.FOLOINDEX)
             )
         )
